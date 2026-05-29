@@ -1,0 +1,6740 @@
+fileFormatVersion: 2
+guid: b1240b97adcc2ce47991b57017ed5d5c
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BeachGround #475134_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8354f843d188ce34695110a361e6836e
+      internalID: -75043139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_1
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a223ed93ef8c34f48a161833bee790d4
+      internalID: 535903071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_2
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3793f6c0e8c032498d163d3d20cab1c
+      internalID: -2100353665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_3
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19087338374e103438fb33953090627b
+      internalID: 90759378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_4
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a14241c7136039643b756b2b69647fe0
+      internalID: -143984078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_5
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 151a9374c174f3b49880cdaeaf2b8d1b
+      internalID: 251323214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_6
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bbf2c7c09cb9a44daada82c7ac687b8
+      internalID: 198602157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_7
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86f5b46090a77ac45b0dc1b6d5e0f5df
+      internalID: -1868598715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_8
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62404acae927ecb4f8f0c64fd8616831
+      internalID: -1597478594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_9
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6e74fe735d8ea8419ccf03061614069
+      internalID: 2115983675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_10
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e8157b2a9f01234b97b4ed2831a2f67
+      internalID: 1580082220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_11
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ce255f184c93ac42a04cb67fe49bd38
+      internalID: 1642310343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_12
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea08e0a5a3da21e4382da9ca24309dab
+      internalID: 24089777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_13
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2c642c816373e046b473e8881efa0c6
+      internalID: 44849700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_14
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae34c8948ba4f794bba334effb17af64
+      internalID: -1846198742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_15
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3f6e5f3502ea1c468f23cc1b5b39787
+      internalID: 1612204018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_16
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84ec9ee51ae82084db90ed2c7f142997
+      internalID: 577184095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_17
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fc152069f8a71c409686d08375a54fa
+      internalID: 844552124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_18
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bca739530abf58e4892d5810d81e9cac
+      internalID: -2112748686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_19
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 1464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a130fa01ec167824c8bb5db78df6d6eb
+      internalID: 1188204344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f9b53755038b384193e03eb42d8af69
+      internalID: 1103651442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_21
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8b9a231b2358594c9a31f8a07c26b52
+      internalID: -330548392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_22
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81c157e47544f7544b22bd8b0a6d4ab9
+      internalID: 1106799499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_23
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecd5da8cf4b47924c95bd24744c9bb27
+      internalID: 132057185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_24
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7ff1d657313d8740a2f2d2e413a648e
+      internalID: 1077732944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_25
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d892b42e9444eb244a3baf0b79174550
+      internalID: 2118870371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_26
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36976873799d8864e9d5fe503f487a2d
+      internalID: 1453238789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_27
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb02f7e88169ce4c9a93d778845af54
+      internalID: 1012444727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_28
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5937ca9bc5debd428d7158c2c8f34a0
+      internalID: 1264449072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_29
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb7af05fbf61f444f916c649dd1bf62e
+      internalID: -163160615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_30
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13f5b1abc9ac50c43b2a822cdf8f4855
+      internalID: -1667725125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_31
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20008f52a1856ad4c9d40da2eda90688
+      internalID: -798523086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_32
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96f29857561d0424a877e7c42d8e9bba
+      internalID: 324791520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_33
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08bf8ed955a23dd49951c3fd6c564407
+      internalID: 1888447470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_34
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d7899233b23b6d4f96c126de0e21e25
+      internalID: -1535588305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_35
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 521fe9b4ff4cbf4419a24c7689ed2736
+      internalID: -680237645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_36
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 434e86b9617450c40947c3591835e703
+      internalID: -1943076269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_37
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fdbfa9c67254274f9cf4455e2d49771
+      internalID: -1883439143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_38
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1856f984f86f51f44bf4bfccbd11408a
+      internalID: -488591475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_39
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 1364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f11cfe9818e927a47bae22a53fee369a
+      internalID: -635956406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6a65e076255c1244a2e137bf35f6599
+      internalID: -1043574399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_41
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a962e9159d7546f4d83fe578e68e5e30
+      internalID: -2125829900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_42
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ad21f999c45c93449a0b6cf9aad000c
+      internalID: 181017073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_43
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a21f28f49c359d4aa0b4f2895f196df
+      internalID: -225787333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_44
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0af53d5e141181f4ea490a107354e6d1
+      internalID: 482738000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_45
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6ea92d992cb8fa458539232d91c6e4d
+      internalID: 1958267718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_46
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0958217e9ad5a8b47aafbb1180087b4b
+      internalID: -1915685230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_47
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c935c7eb0b3ac974c991e9a7f0d9ab39
+      internalID: 1216766847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_48
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dcb713be07f81d4d961f3fbc01f7b14
+      internalID: -1593603803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_49
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64d4e07c2dcc2634fbf5251ad499bebd
+      internalID: -96395206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_50
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a42f6a73fe3d0f4a918c5e98a8239c6
+      internalID: 710500578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_51
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40dc874c914624e4ea24614aef4c4c07
+      internalID: -408291003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_52
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd863d77b37643a43a3fd7f0ad361b9e
+      internalID: 1959172530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_53
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44b76c4aebc337d45a482e7274c28874
+      internalID: -58955908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_54
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9440a15ca7b37d04c81aa2d0acc9bc9b
+      internalID: -1319708535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_55
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96ea90f1dbe213f41a73c0ade793239d
+      internalID: 2011998251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_56
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8aa1611c1e0bab4491d64ecf279380e
+      internalID: -212875442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_57
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cec1f2c809fa9d445b76dbf3f92b460c
+      internalID: 223519530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_58
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8116f7fe55b94c34cbd1302e3be1d180
+      internalID: -1599266558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_59
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 1264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d34a0b6ab7681524fa94e36b47604707
+      internalID: -587161819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_60
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d5259711b89b77438434981cb4585ea
+      internalID: 187258498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_61
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53824e019a9cc13428a05380e231da7c
+      internalID: 2503388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_62
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e09180608484cf478fad1c5f9f3c28e
+      internalID: -980853335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_63
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c773958f185db93429585f7976b1621a
+      internalID: 270538712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_64
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfdee8771db61c740b03a4d6208ea888
+      internalID: 1331677495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_65
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da48638202c63ff46a47149d99122729
+      internalID: -1790315058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_66
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a5193d9f7c5d0e4b974c1cd6811ef4a
+      internalID: -1359778988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_67
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6500f4aa42b0444fa91e4be9b9b2fb7
+      internalID: 1063706596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_68
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c1a337aaf939534995607b5e9a32ebf
+      internalID: -1438272844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_69
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba288ec86dbc94a418ab28f5ecb2f496
+      internalID: 693798298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_70
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84fdb53764ae09144a8086f9c31075ae
+      internalID: -1772629962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_71
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2611096fa1345441977f096b5752952
+      internalID: 695124863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_72
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64257004b14afef41b73b4806c9ebc59
+      internalID: 509243366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_73
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfbde84b48bdd2d4b9d690fb763b5b88
+      internalID: 1884816605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_74
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 537406cccb3ccea4f9e4d83805716090
+      internalID: 1108160238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_75
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e12628a36bbc884408324205d2953460
+      internalID: -713857251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_76
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 371457a792626724a8a9237676015858
+      internalID: 398296987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_77
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea3ede1c69f18b04da4305cc5c31ecaa
+      internalID: 9629260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_78
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8d1c8829c9a4eb45982add7472eddff
+      internalID: 215525343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_79
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 1164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 223e2984b6f133b42975de765703d537
+      internalID: 72306870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_80
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a5b78a9b85891b4aa0bf432c8a1c386
+      internalID: 1405306627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_81
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b740a53e2889a7d4ca640910203c64ac
+      internalID: 1044439859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_82
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ce69cb8103b8f94f935ea18266097f8
+      internalID: -1862350092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_83
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aea682695d40ebc45804372044f3c7fd
+      internalID: 198829874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_84
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8af885c0e3e38494aa5a3432f6f6313f
+      internalID: -979183381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_85
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fb41719ee14dc348928cf437d4cbc54
+      internalID: 1803098254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_86
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32cad445522bfef48bacdc9da1652073
+      internalID: -1362818752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_87
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b955696ae6ed16149bc56cc3fbb6afcd
+      internalID: 1792731339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_88
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f833cc682a9e2445b58ccb4a956725f
+      internalID: -247470567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_89
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca8696e3fab63b44c8980c810b39dbc9
+      internalID: -1164769393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_90
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1753518b41d1db845ad7dd5ae03648ee
+      internalID: -1109522306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_91
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8ce275f8a0cb974e8d0e79c2d2367f2
+      internalID: -880385089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_92
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 123cea343c1aed9479087e283e3910b2
+      internalID: -1692210194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_93
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c8ffe8c27a3086489a755bd676316ce
+      internalID: -484023855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_94
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b683d57c5d8adf7448b42343afecb55e
+      internalID: 1687252228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_95
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c06f761f90bcf2c46b5a04f4ad58e4bd
+      internalID: 1391217697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_96
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88e5fa58c78bbd845bf42d49b2384f7c
+      internalID: 1010765526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_97
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f5f35bbc0f720840a9582f3aff5f310
+      internalID: -1073694824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_98
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0676d374c274e6478e9764c0d1d9fb9
+      internalID: -1254782171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_99
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 1064
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9b261e2c561f0a4ea494af3635e86b7
+      internalID: -945374322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_100
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9aa6b617e06ec3d459a5ccff78cd7347
+      internalID: -1398280379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_101
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45e43f3f73479264eb0b44584fbada9d
+      internalID: -302324575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_102
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e8af81642b132d429d78ff75d9f9498
+      internalID: -1689285160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_103
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc9a98ec7e4ffe945a86ecef74a2693c
+      internalID: 427423502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_104
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b14a6af6654c8964bb2940d91bfcb7c2
+      internalID: 1222975943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_105
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5918016454f51a45a4f776a72e65a75
+      internalID: 2128094017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_106
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 079d45941ad8fea4c930bacf9f0ad92c
+      internalID: 413827508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_107
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e9c677d02f2c24469c22707f7a7bbaa
+      internalID: 137176138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_108
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab01b3e3d9d03734cb0f277cd4f8030b
+      internalID: -429055906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_109
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bbcbcf72290c404095380a082400818
+      internalID: -1315624732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_110
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12bab8ab2f2fde340bea11534c8183ce
+      internalID: -2056033213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_111
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5d465bc5010e654fb0b272a9993aeb2
+      internalID: 494324596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_112
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a925841c4b0951443aa8464ab2e97259
+      internalID: 962390146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_113
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 254ea715770eb544088319c0a58678bb
+      internalID: -828761665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_114
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccd77369ff2fd3941bb93795b07b2d56
+      internalID: -521746955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_115
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a519f6d543c7a574cbacf2fd24ef4600
+      internalID: 630437608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_116
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48679acfd621fee48bd9b83a84167ecb
+      internalID: 273796817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_117
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d93867ba558a814b8bd51a0b06fc45f
+      internalID: -2047083914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_118
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06dfb9a546a533841a32406bc5fb4b10
+      internalID: 958397389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_119
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 964
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b81bf13e0f784fa4d8c5ffe6df0a10b3
+      internalID: 1203248795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_120
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6d416e2de052c846b030dc2adec8624
+      internalID: -516637899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_121
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc363c5293e31a24ca4d045b16050dd8
+      internalID: -110204761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_122
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9aee7e445062284dbd70f21d82e4f40
+      internalID: 1226809449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_123
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2f2afea35dc849469c5785e22518b01
+      internalID: -113256557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_124
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 973eac034557fec42a8c1eebe73af696
+      internalID: 836877165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_125
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2a4bec11c425214c96dedfafb4a637e
+      internalID: -592690607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_126
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3edd6c26ad48fda428af837e286b817f
+      internalID: -702072067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_127
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c07824ac09d49b9418e453403e2040a7
+      internalID: -413599206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_128
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebaf282d53406ec4dadae444245d1fed
+      internalID: -303427376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_129
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cba9801c0e5ea2d4c9923edf2b2f51b5
+      internalID: -1394224174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_130
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62a94233372bbab4eacaa22912e64759
+      internalID: 1243615306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_131
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71485251ffcbd3a44bc00953ffbf25f0
+      internalID: -752634161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_132
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ccb6346e9ca131428a35173cdf1e580
+      internalID: -520956996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_133
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85f59f82e65dae147a77e560d52017ad
+      internalID: -452164680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_134
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63a8dba1e7ec0b2408c53ddf2ae99cbc
+      internalID: 146651618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_135
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9beef8ab970826944857dcad0e449848
+      internalID: 377669032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_136
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 325ad512e95e6704d9e2c1aaf6f19dc8
+      internalID: -1165273513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_137
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cacb3593b91e17e4fbd59c5be8ada3af
+      internalID: -1075979398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_138
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d29833cc6c8dbd648bcb1e6ebdad9e34
+      internalID: -1215621916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_139
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 864
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 316fd5c0e3fd80447a6fc68791db7389
+      internalID: -711793549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_140
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9265b85a04d7de44dadfb64e38a0ad10
+      internalID: 1118862159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_141
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8642a3b4128d214db87db2e3424829d
+      internalID: -1839900398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_142
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0256810799359ce49aaa2e66024032be
+      internalID: -223724676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_143
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8449d33f07905aa4dab0ae7e3dbc3cbe
+      internalID: 642013442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_144
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07a12caef014b484d844d98093a92e1e
+      internalID: -1933135201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_145
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 485e2e86532576a428df1fd3ed84fd9a
+      internalID: 2032558877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_146
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3938fef014a506346ba4d4bd39445fbc
+      internalID: -640944517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_147
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d7d5b4436b521d4187f7dfe5f9c0a33
+      internalID: 705584378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_148
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62f16953df09894499d0a6f2702d34bc
+      internalID: 1658372625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_149
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65120620d87f28e4c8c2e5fe528ea65f
+      internalID: -1540497958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_150
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d931ffd14a7cd498e224276d0dfc46
+      internalID: 1978501461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_151
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01ecfeb1bda3eaa4898a4e436df6ed7b
+      internalID: 1094782205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_152
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4197f021c99cc6c45a0f94ca5ec751d0
+      internalID: -1660240868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_153
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50b21e328a65e3447a56c450a834ab7b
+      internalID: 1428891712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_154
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c648b556cfd4b84eb67b2676081ac1a
+      internalID: -959370413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_155
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b36d5d1275f80db4bbdf889e30b1bb14
+      internalID: 2120432020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_156
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20366738526252744ba6822a68fee1e5
+      internalID: -1454409123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_157
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dc73610f87181a4e993ac7ca2b6afd0
+      internalID: 2023953719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_158
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a62650b3fcf8b84e8a41aefa789d21b
+      internalID: 1144555377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_159
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 764
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5df32aaf71d517428be6606cc6e1270
+      internalID: -143420592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_160
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48ed9d89e1fdc76478647a6c60b576a3
+      internalID: 92941415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_161
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3aa211a24589d04429842ebb032718e7
+      internalID: -285494383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_162
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5292d66aad685341834ebcc49d89db1
+      internalID: -1779138927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_163
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bab183918c28f04c9d1330e2ddd9201
+      internalID: -1160473810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_164
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e1725c6901f3954dac50a74504d9f29
+      internalID: -1111539842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_165
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ae7c208da3e0cb43a25ff37cd4df7f1
+      internalID: 139903621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_166
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83ccc1ee880667f468bf84c47d02cbac
+      internalID: 1844937033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_167
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 343d137bab4f77040aa2ac8739bfcb2d
+      internalID: 825237206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_168
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96a945349c12d944983f1d5a13dc61da
+      internalID: -1927910640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_169
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6da29f9b9484064cab569a73e71faf3
+      internalID: -1286598521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_170
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f833f1476c764054fbab068ee2cb2b78
+      internalID: -199914680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_171
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b1ad84310f6b6247aa0c6fca05ee658
+      internalID: -221330674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_172
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a8ce90849cddf14bbfbbb1a536391fa
+      internalID: 1514323575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_173
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a73fcec2720e66f428876ea280279f89
+      internalID: 1850743679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_174
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76c596d3574baca44aae63dda07b85f8
+      internalID: -1651176800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_175
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 665c662a8f49d89478b613d15db05acc
+      internalID: -91878192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_176
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 994acb542f3c3324fa46a2089be37f35
+      internalID: 1096517293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_177
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60b6ae8e5aaf9244ba0675a698a95053
+      internalID: 319506301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_178
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee3e08332be9f9844b33fa368e9f95bd
+      internalID: -229501048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_179
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 664
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 315cee8f5f67af04eb8dafe07931cb6e
+      internalID: -1953726653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_180
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d2f568926c912946baeb69e18743add
+      internalID: -2026838925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_181
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: faf8bc7520824b8468e619ba1e814adb
+      internalID: 1569735310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_182
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58456877140026d4bb330b09417244e7
+      internalID: 1571783147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_183
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f98dfa1240eb56419254638c0bcf052
+      internalID: -2098271348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_184
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c5152b25a49ab4a92870807aeead1d
+      internalID: 870672454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_185
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2b54917dc74feb468142770bc26a9bf
+      internalID: 156081742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_186
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1af0bdfaac6cabe4ea55f086ef70c649
+      internalID: -399748241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_187
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 872e1e2781a0b9c4a93b82d0b77ab94c
+      internalID: 410343593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_188
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 780f50cc7fb5e654c844898e41ed487d
+      internalID: -1749050268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_189
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5419c72c93b634244b96a899db43a2ab
+      internalID: 371408833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_190
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc7a98f7f2215bc4982560ffbb96add6
+      internalID: 1332497661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_191
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01819bbda2883b74abd4e5d711a93e22
+      internalID: 1554075769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_192
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56a8e41846e889a4b85852e62cb95924
+      internalID: -316778432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_193
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21896340628f0c049a5afeff4d0abcc6
+      internalID: 1330565413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_194
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2c2177bb37f4d8459bb2e0b4a999666
+      internalID: 1991810809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_195
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c1182ca66f70304fbc2d67d52b2fb32
+      internalID: 752775284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_196
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b54d26f19eb3b0438cffb07a68644c4
+      internalID: 1399188180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_197
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2c2c130bcb5d9f4585193dc8e99e10d
+      internalID: -2126014655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_198
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21148041573669946b326ab4bcc5a89b
+      internalID: -153617494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_199
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 564
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a2b27548ec4e754db2a4fe23ddbc05d
+      internalID: 767927317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_200
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f23d76f3b03c1034ba4d953dc5e376a6
+      internalID: 62925531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_201
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d95ad95dffd2e814fa3d717f8dc1f4ec
+      internalID: 406850997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_202
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 998b6b07e3f8be845ac219d9cf356f93
+      internalID: 1396586414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_203
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d033d28f3e9fe9e48bb62692561da332
+      internalID: 1021885143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_204
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5339998d9b91ee46b660586f9965a06
+      internalID: 1553904613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_205
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0855f9b230b9cb4684532d0262c21cd
+      internalID: 222180711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_206
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aad9b8ef5e0997c45bc9442771db6b3b
+      internalID: -1576404287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_207
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5ed3cb88604d014eb359ee005d11695
+      internalID: -60743907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_208
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6c5fb2ef29a2f044ba4b592414aabdd
+      internalID: -777537357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_209
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0800000a5f226549bfa8dfc8ed52ceb
+      internalID: 2014256873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_210
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03ed390d8bd9a9d4b8e85899ae97d702
+      internalID: 1076977709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_211
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 559cb66aa8162bf4ba6f33e3b170f414
+      internalID: 1634413631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_212
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 923653153332ea846b00c1c7802d8a63
+      internalID: 1021500144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_213
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2aecf940555afd459129c4db4c8c6b3
+      internalID: 721491025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_214
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d9ff145fb8abcb4d846490288566ab8
+      internalID: 705975524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_215
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a43520a552ada8f4e812772d1ea6eac9
+      internalID: -136122800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_216
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e99a3a42e1b3f484c946159dc286d656
+      internalID: -1246174088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_217
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3aaaaea7ad53044fb4d9c47d7964ee8
+      internalID: -659650202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_218
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77472710c89a0b6489a2b4eec9bf0318
+      internalID: 829505403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_219
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 464
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf8ab444cdf0e8e4aa2a137bc725ea64
+      internalID: 1309955637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_220
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ba88173ce7512f45a769f89bc552ee9
+      internalID: -555697272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_221
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 834913ac377bc4a468499439b1acfcc2
+      internalID: 961158670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_222
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b59fd89727f2bb241a2671d237d0c369
+      internalID: 1965509115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_223
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee735ce25c73d984da01131cb7e0fa89
+      internalID: 1305342633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_224
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dd5d12ec0711324a899fea494c11cd8
+      internalID: -1966207255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_225
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f4c12aea600f584999eb87878745100
+      internalID: -1585100062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_226
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb4e6fe8d655730419d3dae60fc59672
+      internalID: -119821002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_227
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 528a62f4525928f44b7717287c690337
+      internalID: -854938361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_228
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac48ef1a380a713479d6577dba0dcaf2
+      internalID: 2126817209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_229
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79dc45f57af47684ab7ebce830b0130b
+      internalID: 1394389101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_230
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64e9a796732d651418f1ad2d3e80db93
+      internalID: 1871888631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_231
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f27afc68dd430540af54efbaed05347
+      internalID: 1056106459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_232
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c6c9c22bdee08e4f9397ac8b82a640c
+      internalID: 1128220195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_233
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23f2d150eeaa7044091257dd5727aa91
+      internalID: 1193138881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_234
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50c2621779b65e44b8a27606674fd490
+      internalID: -1405636313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_235
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42b69a6933f5038448fbf4d81b83a4a7
+      internalID: 1895134338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_236
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca7fad1159f39e2499bf0392bc31146c
+      internalID: 757069655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_237
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 990212d0f0f8d39419180ddec1d8099d
+      internalID: 525149355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_238
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6307798af819c6b47b09f40ecbfce762
+      internalID: 2098928766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_239
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 364
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed8c6f27ea555a9459efad96de864635
+      internalID: -220301612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_240
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 833c1495de16af6408b9d69abf14175e
+      internalID: -279547258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_241
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5eb5924abddb1254e833c1ae95f57b3f
+      internalID: 734150997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_242
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b476967a2c28654fbddbe63a5c45319
+      internalID: 1207684894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_243
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba33047ba6f7b9945bbf5c81b30777d0
+      internalID: 1766877215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_244
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5048ac4bc94fd4e4f8ef1d5ca75f5919
+      internalID: -510503356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_245
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f412b903e872164796c962ac462b0e2
+      internalID: -1194256491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_246
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0293c78d2b80d4344a708e71e1a40a1e
+      internalID: 1087712488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_247
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9fde20a2ce2197498f95095b355c0b0
+      internalID: -301593794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_248
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8adc462d15c8eb045bc2528fce37644b
+      internalID: 995710108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_249
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a70f70ad3b6eb9e4b96486771a675f37
+      internalID: 2064626495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_250
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 912e92f619235964687ec324ab5e9f17
+      internalID: -273162656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_251
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa575b073d865f540b6595bd466dd098
+      internalID: 979352013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_252
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3902048ecf535f64b9a0a8d9bbddc3f5
+      internalID: 1189231423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_253
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9679595f987dc854c821cf408b8d3439
+      internalID: 1069130520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_254
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc29ef695143e8543bef194fb5371c87
+      internalID: -1707857902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_255
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d77c0706440ada4199e2efe8e565a6f
+      internalID: 508209771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_256
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b60f9ada928a33458b0b90a684351fa
+      internalID: -1545285980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_257
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a6f41aae3dc7f94d82046bf8ec0c779
+      internalID: -1795184302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_258
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1051dac69f758aa4cbb597bc7f4d21d0
+      internalID: -1540209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_259
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 264
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54eb9e7ca5bba1247ae87b94eef7641c
+      internalID: 1631696310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_260
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa0b0ff8353a38a4aab13c22a278fe06
+      internalID: 669964929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_261
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1fe589126ff3e344969fec6a48bc309
+      internalID: 895439088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_262
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45610e8df8b12094e9db22d8ab46c7f8
+      internalID: -1012509401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_263
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3fe37c1a614a1c49a2ec70c039e819b
+      internalID: 1396783848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_264
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e060fc231eea782408ec576fe38eed82
+      internalID: 898415313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_265
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8e4e53c4e873ae4aa270fbbffeccedc
+      internalID: -1744451614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_266
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36ea0dc93c6532b4e9db257cf1cecea0
+      internalID: 370552317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_267
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52ed5a82a4eacc9479ef2ccb8b96aec1
+      internalID: 300903008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_268
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e466deeedefb27344bbe6c67ca7af2fe
+      internalID: -114638525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_269
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c41042632b44d94478189fb5aaaa5881
+      internalID: 379213303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_270
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bd5ba9bb6fc7b24eb1cccf605dbc967
+      internalID: 1248719549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_271
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b765b7ce80c391640a6b598af95e16f3
+      internalID: -939381904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_272
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd5aedc8b16e178478639de4ff06250e
+      internalID: -1844962330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_273
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d09dfb46f8d5c8a49a88c59ee01713b1
+      internalID: 278363285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_274
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9564838431b1e6c428713a109bf6e18d
+      internalID: -902342571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_275
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a5aab0817c56594e9428ad7e28dadc0
+      internalID: 669796110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_276
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 156ffecb9059cc54bb295e939743ee94
+      internalID: -1943174454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_277
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cd2a603c19a22b4797abd89bc4cf1f2
+      internalID: -547176050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_278
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e5672e984baeba438c8bd30e3759d17
+      internalID: 1107644875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_279
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 164
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1e8e7821dc0d974b95169924580ca43
+      internalID: 423049379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_280
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3814ce69fc8283c4babbb46212402937
+      internalID: 1787335078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_281
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4713a5ef16085604b83a40155d96e2c4
+      internalID: 600103831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_282
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0540258ecf4ba984e8805b605e7f2d50
+      internalID: 228602415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_283
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed25ea0a93f80784393f61d9c74b2244
+      internalID: -955142500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_284
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e060aa7f36777c441a6887a12931380f
+      internalID: -2058842206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_285
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02bcd63acab48ab4991f390b42afc1c8
+      internalID: 2096803301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_286
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0727d8db95b8d1c44a6a4ac2e17c2477
+      internalID: 226667427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_287
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1baf482c00349d14ebc97bdc4d27eb71
+      internalID: 395406703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_288
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe334463f160e5443b8aed21fed5f223
+      internalID: -1927280036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_289
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a079f9f191ef741b41e536979f293c
+      internalID: 366530067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_290
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a2f6668ae697e94d8aab423725f07ab
+      internalID: 1365632439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_291
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c6d8afa3c10a074cbe886c4a4de67f3
+      internalID: 1199973348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_292
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0c517b144b5475429de0e939089c3bd
+      internalID: -1487258895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_293
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c2889f67b4f4624e82e1c5e50a3ce46
+      internalID: 659720577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_294
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7198cbc4a93b4de479761497f7cdb5a9
+      internalID: -1154170595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_295
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b449f80fd5149c479cbbf8111affe6d
+      internalID: 176358133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_296
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9c11a60b7e4f1040ab59266d169728d
+      internalID: -724191048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_297
+      rect:
+        serializedVersion: 2
+        x: 1700
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d13db91bc8d2444ab9e592faebe652f
+      internalID: -205220296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_298
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c73158159159f0347b1402fa508c3e06
+      internalID: 114663979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachGround #475134_299
+      rect:
+        serializedVersion: 2
+        x: 1900
+        y: 64
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f469c412a49bf04cbce3c4a3240f791
+      internalID: 962232829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      BeachGround #475134_0: -75043139
+      BeachGround #475134_1: 535903071
+      BeachGround #475134_10: 1580082220
+      BeachGround #475134_100: -1398280379
+      BeachGround #475134_101: -302324575
+      BeachGround #475134_102: -1689285160
+      BeachGround #475134_103: 427423502
+      BeachGround #475134_104: 1222975943
+      BeachGround #475134_105: 2128094017
+      BeachGround #475134_106: 413827508
+      BeachGround #475134_107: 137176138
+      BeachGround #475134_108: -429055906
+      BeachGround #475134_109: -1315624732
+      BeachGround #475134_11: 1642310343
+      BeachGround #475134_110: -2056033213
+      BeachGround #475134_111: 494324596
+      BeachGround #475134_112: 962390146
+      BeachGround #475134_113: -828761665
+      BeachGround #475134_114: -521746955
+      BeachGround #475134_115: 630437608
+      BeachGround #475134_116: 273796817
+      BeachGround #475134_117: -2047083914
+      BeachGround #475134_118: 958397389
+      BeachGround #475134_119: 1203248795
+      BeachGround #475134_12: 24089777
+      BeachGround #475134_120: -516637899
+      BeachGround #475134_121: -110204761
+      BeachGround #475134_122: 1226809449
+      BeachGround #475134_123: -113256557
+      BeachGround #475134_124: 836877165
+      BeachGround #475134_125: -592690607
+      BeachGround #475134_126: -702072067
+      BeachGround #475134_127: -413599206
+      BeachGround #475134_128: -303427376
+      BeachGround #475134_129: -1394224174
+      BeachGround #475134_13: 44849700
+      BeachGround #475134_130: 1243615306
+      BeachGround #475134_131: -752634161
+      BeachGround #475134_132: -520956996
+      BeachGround #475134_133: -452164680
+      BeachGround #475134_134: 146651618
+      BeachGround #475134_135: 377669032
+      BeachGround #475134_136: -1165273513
+      BeachGround #475134_137: -1075979398
+      BeachGround #475134_138: -1215621916
+      BeachGround #475134_139: -711793549
+      BeachGround #475134_14: -1846198742
+      BeachGround #475134_140: 1118862159
+      BeachGround #475134_141: -1839900398
+      BeachGround #475134_142: -223724676
+      BeachGround #475134_143: 642013442
+      BeachGround #475134_144: -1933135201
+      BeachGround #475134_145: 2032558877
+      BeachGround #475134_146: -640944517
+      BeachGround #475134_147: 705584378
+      BeachGround #475134_148: 1658372625
+      BeachGround #475134_149: -1540497958
+      BeachGround #475134_15: 1612204018
+      BeachGround #475134_150: 1978501461
+      BeachGround #475134_151: 1094782205
+      BeachGround #475134_152: -1660240868
+      BeachGround #475134_153: 1428891712
+      BeachGround #475134_154: -959370413
+      BeachGround #475134_155: 2120432020
+      BeachGround #475134_156: -1454409123
+      BeachGround #475134_157: 2023953719
+      BeachGround #475134_158: 1144555377
+      BeachGround #475134_159: -143420592
+      BeachGround #475134_16: 577184095
+      BeachGround #475134_160: 92941415
+      BeachGround #475134_161: -285494383
+      BeachGround #475134_162: -1779138927
+      BeachGround #475134_163: -1160473810
+      BeachGround #475134_164: -1111539842
+      BeachGround #475134_165: 139903621
+      BeachGround #475134_166: 1844937033
+      BeachGround #475134_167: 825237206
+      BeachGround #475134_168: -1927910640
+      BeachGround #475134_169: -1286598521
+      BeachGround #475134_17: 844552124
+      BeachGround #475134_170: -199914680
+      BeachGround #475134_171: -221330674
+      BeachGround #475134_172: 1514323575
+      BeachGround #475134_173: 1850743679
+      BeachGround #475134_174: -1651176800
+      BeachGround #475134_175: -91878192
+      BeachGround #475134_176: 1096517293
+      BeachGround #475134_177: 319506301
+      BeachGround #475134_178: -229501048
+      BeachGround #475134_179: -1953726653
+      BeachGround #475134_18: -2112748686
+      BeachGround #475134_180: -2026838925
+      BeachGround #475134_181: 1569735310
+      BeachGround #475134_182: 1571783147
+      BeachGround #475134_183: -2098271348
+      BeachGround #475134_184: 870672454
+      BeachGround #475134_185: 156081742
+      BeachGround #475134_186: -399748241
+      BeachGround #475134_187: 410343593
+      BeachGround #475134_188: -1749050268
+      BeachGround #475134_189: 371408833
+      BeachGround #475134_19: 1188204344
+      BeachGround #475134_190: 1332497661
+      BeachGround #475134_191: 1554075769
+      BeachGround #475134_192: -316778432
+      BeachGround #475134_193: 1330565413
+      BeachGround #475134_194: 1991810809
+      BeachGround #475134_195: 752775284
+      BeachGround #475134_196: 1399188180
+      BeachGround #475134_197: -2126014655
+      BeachGround #475134_198: -153617494
+      BeachGround #475134_199: 767927317
+      BeachGround #475134_2: -2100353665
+      BeachGround #475134_20: 1103651442
+      BeachGround #475134_200: 62925531
+      BeachGround #475134_201: 406850997
+      BeachGround #475134_202: 1396586414
+      BeachGround #475134_203: 1021885143
+      BeachGround #475134_204: 1553904613
+      BeachGround #475134_205: 222180711
+      BeachGround #475134_206: -1576404287
+      BeachGround #475134_207: -60743907
+      BeachGround #475134_208: -777537357
+      BeachGround #475134_209: 2014256873
+      BeachGround #475134_21: -330548392
+      BeachGround #475134_210: 1076977709
+      BeachGround #475134_211: 1634413631
+      BeachGround #475134_212: 1021500144
+      BeachGround #475134_213: 721491025
+      BeachGround #475134_214: 705975524
+      BeachGround #475134_215: -136122800
+      BeachGround #475134_216: -1246174088
+      BeachGround #475134_217: -659650202
+      BeachGround #475134_218: 829505403
+      BeachGround #475134_219: 1309955637
+      BeachGround #475134_22: 1106799499
+      BeachGround #475134_220: -555697272
+      BeachGround #475134_221: 961158670
+      BeachGround #475134_222: 1965509115
+      BeachGround #475134_223: 1305342633
+      BeachGround #475134_224: -1966207255
+      BeachGround #475134_225: -1585100062
+      BeachGround #475134_226: -119821002
+      BeachGround #475134_227: -854938361
+      BeachGround #475134_228: 2126817209
+      BeachGround #475134_229: 1394389101
+      BeachGround #475134_23: 132057185
+      BeachGround #475134_230: 1871888631
+      BeachGround #475134_231: 1056106459
+      BeachGround #475134_232: 1128220195
+      BeachGround #475134_233: 1193138881
+      BeachGround #475134_234: -1405636313
+      BeachGround #475134_235: 1895134338
+      BeachGround #475134_236: 757069655
+      BeachGround #475134_237: 525149355
+      BeachGround #475134_238: 2098928766
+      BeachGround #475134_239: -220301612
+      BeachGround #475134_24: 1077732944
+      BeachGround #475134_240: -279547258
+      BeachGround #475134_241: 734150997
+      BeachGround #475134_242: 1207684894
+      BeachGround #475134_243: 1766877215
+      BeachGround #475134_244: -510503356
+      BeachGround #475134_245: -1194256491
+      BeachGround #475134_246: 1087712488
+      BeachGround #475134_247: -301593794
+      BeachGround #475134_248: 995710108
+      BeachGround #475134_249: 2064626495
+      BeachGround #475134_25: 2118870371
+      BeachGround #475134_250: -273162656
+      BeachGround #475134_251: 979352013
+      BeachGround #475134_252: 1189231423
+      BeachGround #475134_253: 1069130520
+      BeachGround #475134_254: -1707857902
+      BeachGround #475134_255: 508209771
+      BeachGround #475134_256: -1545285980
+      BeachGround #475134_257: -1795184302
+      BeachGround #475134_258: -1540209
+      BeachGround #475134_259: 1631696310
+      BeachGround #475134_26: 1453238789
+      BeachGround #475134_260: 669964929
+      BeachGround #475134_261: 895439088
+      BeachGround #475134_262: -1012509401
+      BeachGround #475134_263: 1396783848
+      BeachGround #475134_264: 898415313
+      BeachGround #475134_265: -1744451614
+      BeachGround #475134_266: 370552317
+      BeachGround #475134_267: 300903008
+      BeachGround #475134_268: -114638525
+      BeachGround #475134_269: 379213303
+      BeachGround #475134_27: 1012444727
+      BeachGround #475134_270: 1248719549
+      BeachGround #475134_271: -939381904
+      BeachGround #475134_272: -1844962330
+      BeachGround #475134_273: 278363285
+      BeachGround #475134_274: -902342571
+      BeachGround #475134_275: 669796110
+      BeachGround #475134_276: -1943174454
+      BeachGround #475134_277: -547176050
+      BeachGround #475134_278: 1107644875
+      BeachGround #475134_279: 423049379
+      BeachGround #475134_28: 1264449072
+      BeachGround #475134_280: 1787335078
+      BeachGround #475134_281: 600103831
+      BeachGround #475134_282: 228602415
+      BeachGround #475134_283: -955142500
+      BeachGround #475134_284: -2058842206
+      BeachGround #475134_285: 2096803301
+      BeachGround #475134_286: 226667427
+      BeachGround #475134_287: 395406703
+      BeachGround #475134_288: -1927280036
+      BeachGround #475134_289: 366530067
+      BeachGround #475134_29: -163160615
+      BeachGround #475134_290: 1365632439
+      BeachGround #475134_291: 1199973348
+      BeachGround #475134_292: -1487258895
+      BeachGround #475134_293: 659720577
+      BeachGround #475134_294: -1154170595
+      BeachGround #475134_295: 176358133
+      BeachGround #475134_296: -724191048
+      BeachGround #475134_297: -205220296
+      BeachGround #475134_298: 114663979
+      BeachGround #475134_299: 962232829
+      BeachGround #475134_3: 90759378
+      BeachGround #475134_30: -1667725125
+      BeachGround #475134_31: -798523086
+      BeachGround #475134_32: 324791520
+      BeachGround #475134_33: 1888447470
+      BeachGround #475134_34: -1535588305
+      BeachGround #475134_35: -680237645
+      BeachGround #475134_36: -1943076269
+      BeachGround #475134_37: -1883439143
+      BeachGround #475134_38: -488591475
+      BeachGround #475134_39: -635956406
+      BeachGround #475134_4: -143984078
+      BeachGround #475134_40: -1043574399
+      BeachGround #475134_41: -2125829900
+      BeachGround #475134_42: 181017073
+      BeachGround #475134_43: -225787333
+      BeachGround #475134_44: 482738000
+      BeachGround #475134_45: 1958267718
+      BeachGround #475134_46: -1915685230
+      BeachGround #475134_47: 1216766847
+      BeachGround #475134_48: -1593603803
+      BeachGround #475134_49: -96395206
+      BeachGround #475134_5: 251323214
+      BeachGround #475134_50: 710500578
+      BeachGround #475134_51: -408291003
+      BeachGround #475134_52: 1959172530
+      BeachGround #475134_53: -58955908
+      BeachGround #475134_54: -1319708535
+      BeachGround #475134_55: 2011998251
+      BeachGround #475134_56: -212875442
+      BeachGround #475134_57: 223519530
+      BeachGround #475134_58: -1599266558
+      BeachGround #475134_59: -587161819
+      BeachGround #475134_6: 198602157
+      BeachGround #475134_60: 187258498
+      BeachGround #475134_61: 2503388
+      BeachGround #475134_62: -980853335
+      BeachGround #475134_63: 270538712
+      BeachGround #475134_64: 1331677495
+      BeachGround #475134_65: -1790315058
+      BeachGround #475134_66: -1359778988
+      BeachGround #475134_67: 1063706596
+      BeachGround #475134_68: -1438272844
+      BeachGround #475134_69: 693798298
+      BeachGround #475134_7: -1868598715
+      BeachGround #475134_70: -1772629962
+      BeachGround #475134_71: 695124863
+      BeachGround #475134_72: 509243366
+      BeachGround #475134_73: 1884816605
+      BeachGround #475134_74: 1108160238
+      BeachGround #475134_75: -713857251
+      BeachGround #475134_76: 398296987
+      BeachGround #475134_77: 9629260
+      BeachGround #475134_78: 215525343
+      BeachGround #475134_79: 72306870
+      BeachGround #475134_8: -1597478594
+      BeachGround #475134_80: 1405306627
+      BeachGround #475134_81: 1044439859
+      BeachGround #475134_82: -1862350092
+      BeachGround #475134_83: 198829874
+      BeachGround #475134_84: -979183381
+      BeachGround #475134_85: 1803098254
+      BeachGround #475134_86: -1362818752
+      BeachGround #475134_87: 1792731339
+      BeachGround #475134_88: -247470567
+      BeachGround #475134_89: -1164769393
+      BeachGround #475134_9: 2115983675
+      BeachGround #475134_90: -1109522306
+      BeachGround #475134_91: -880385089
+      BeachGround #475134_92: -1692210194
+      BeachGround #475134_93: -484023855
+      BeachGround #475134_94: 1687252228
+      BeachGround #475134_95: 1391217697
+      BeachGround #475134_96: 1010765526
+      BeachGround #475134_97: -1073694824
+      BeachGround #475134_98: -1254782171
+      BeachGround #475134_99: -945374322
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
