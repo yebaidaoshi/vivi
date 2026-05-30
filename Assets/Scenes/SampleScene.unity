@@ -10007,8 +10007,8 @@ MonoBehaviour:
   idleModel: {fileID: 681803736}
   runModel: {fileID: 1067329205}
   moveAction: {fileID: -4201088738920624603, guid: 28ff6e8a65c7ee84880353281c2cea8b, type: 3}
-  runStateName: Run
-  idleLoopStateName: Idle
+  runStateName: "\u8DD1\u6B65"
+  idleLoopStateName: "\u7AD9"
   runStopTriggerName: Stop
   idleStopTriggerName: Stop
   runStopDuration: 0.5
