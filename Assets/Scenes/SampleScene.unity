@@ -2189,6 +2189,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: -8653719598885068355, guid: 767ffb6caf5cdef40aacb204dbb8302e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -7731006596124022593, guid: 767ffb6caf5cdef40aacb204dbb8302e, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -4361,7 +4365,7 @@ MonoBehaviour:
   checkRadius: 3
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   bo: {x: 0, y: 0}
 --- !u!114 &681803741
 MonoBehaviour:
@@ -10011,8 +10015,8 @@ MonoBehaviour:
   idleLoopStateName: "\u7AD9"
   runStopTriggerName: Stop
   idleStopTriggerName: Stop
-  runStopDuration: 0.5
-  idleStopDuration: 1
+  runStopDuration: 0.782
+  idleStopDuration: 0.5
   keepIdleAlwaysActive: 0
 --- !u!50 &1722235625
 Rigidbody2D:
