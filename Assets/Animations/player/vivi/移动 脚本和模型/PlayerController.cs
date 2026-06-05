@@ -5,7 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
-{  //人物的输入系统
+{ 
+    
+    //人物的输入系统
     public Moren yidong;
     //人物的刚体组件
     private Rigidbody2D sd;
@@ -13,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private PhysicsCheck ph;
     //人物移动的输入值
     public Vector2 yidongdh;
+    [Header("基本参数")]
     //人物移动的速度
     public float shudu;
     //人物跳跃的力度
@@ -68,8 +71,10 @@ public class PlayerController : MonoBehaviour
     }
 
     // 将 Jump 事件处理器实现为接受 CallbackContext 的方法
+
     public void Jump(InputAction.CallbackContext context)
     {
+
         //Debug.Log("JUMP");
         if (ph.onGround)
             sd.AddForce(transform.up * Jumpyue, ForceMode2D.Impulse);

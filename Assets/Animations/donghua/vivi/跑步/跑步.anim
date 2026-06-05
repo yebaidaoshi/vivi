@@ -27,8 +27,8 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 0.31428573
-        value: {x: 0, y: 0, z: 56.297}
+        time: 0.34285715
+        value: {x: 0, y: 0, z: 54.976}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -2678,7 +2678,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.31428573
+        time: 0.34285715
         value: 0
         inSlope: 0
         outSlope: 0
@@ -2717,7 +2717,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.31428573
+        time: 0.34285715
         value: 0
         inSlope: 0
         outSlope: 0
@@ -2756,8 +2756,8 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.31428573
-        value: 56.297
+        time: 0.34285715
+        value: 54.976
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -10125,7 +10125,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: "\u80EF\u90E8"
+    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -10137,7 +10137,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: "\u80EF\u90E8"
+    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -10149,7 +10149,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: "\u80EF\u90E8"
+    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -10629,7 +10629,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
+    path: "\u80EF\u90E8"
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -10641,7 +10641,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
+    path: "\u80EF\u90E8"
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -10653,7 +10653,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: "\u80EF\u90E8/\u8170\u90E8/\u80F8\u90E8/\u9888\u90E8/\u80A9\u8180_1/\u5C0F\u81C2_1/\u624B_1"
+    path: "\u80EF\u90E8"
     classID: 4
     script: {fileID: 0}
     flags: 0

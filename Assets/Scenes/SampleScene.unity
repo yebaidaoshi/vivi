@@ -10121,7 +10121,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  bo: {x: 0, y: 0}
+  bo: {x: 0, y: 5}
 --- !u!114 &1722235630
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class PhysicsCheck : MonoBehaviour
+    //这个脚本名称意为物理检测
+    //这个脚本的作用是检测角色是否在地面上，以便限制跳跃次数等功能
 {    //限制跳跃次数
     [Header("状态")]
     public bool onGround;
