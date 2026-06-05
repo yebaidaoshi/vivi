@@ -10,10 +10,13 @@ public class PlayerAnimation : MonoBehaviour
 
     private PlayerController playerController;   // 添加这一行
 
+    private PhysicsCheck physicCheck;
+
     private void Awake()
     {
         anim= GetComponent<Animator>();
         sd = GetComponent<Rigidbody2D>();
+        physicCheck = GetComponent<PhysicsCheck>();
         playerController = GetComponent<PlayerController>();
     }
     private void Update()
@@ -23,6 +26,8 @@ public class PlayerAnimation : MonoBehaviour
     public void SetAnimation()
     {
         anim.SetFloat("isMove",Mathf.Abs( sd.velocity.x));
+        anim.SetFloat("valocityY",sd.velocity.y);
+        anim.SetBool("onGround", physicCheck.onGround);
         anim.SetBool("isDead", playerController.isDead);
 
     }

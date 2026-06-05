@@ -14,13 +14,25 @@ public class PhysicsCheck : MonoBehaviour
 
     public LayerMask groundLayer;
 
+    private Rigidbody2D rb;
+
     public Vector2 bo;
     private void Update()
     {
-        Check();
+        Check();  // 更新 onGround
+        if (anim != null)
+            anim.SetBool("onGround", onGround);   // 这行必须有
+         // 关键：更新 velocity 参数，通常取水平速度的绝对值
+        float horizontalSpeed = Mathf.Abs(rb.velocity.x);
+        anim.SetFloat("velocity", horizontalSpeed);
     }
+    private Animator anim;
 
-
+    void Start()
+    {
+        anim = GetComponentInChildren<Animator>();  // 改为在子物体中查找
+        rb = GetComponent<Rigidbody2D>();  // 获取刚体
+    }
     public void Check()
     {
         //检测地面
