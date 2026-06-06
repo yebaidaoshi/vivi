@@ -4362,10 +4362,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onGround: 0
-  checkRadius: 3
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  checkRadius: 3
   bo: {x: 0, y: 0}
 --- !u!114 &681803741
 MonoBehaviour:
@@ -10375,7 +10375,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727879485}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d58b0e2140c37ef43b83a1a5fc7473d5, type: 3}
   m_Name: 
@@ -10393,10 +10393,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onGround: 0
-  checkRadius: 3
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  checkRadius: 3
   bo: {x: 0, y: 5}
 --- !u!114 &1722235630
 MonoBehaviour:
@@ -10791,10 +10791,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onGround: 0
-  checkRadius: 3
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  checkRadius: 3
   bo: {x: 0, y: 0}
 --- !u!114 &2013192648
 MonoBehaviour:
