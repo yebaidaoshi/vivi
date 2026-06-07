@@ -8654,6 +8654,14 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 2384080844765507025, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3686511964119649481, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4775135929679729682, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
       propertyPath: m_Name
       value: player
@@ -8698,7 +8706,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6920947876829657979, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
+      propertyPath: keepIdleAlwaysActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7085834080849127583, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
+      propertyPath: checkRadius
+      value: 1.48
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7834946627524175556, guid: f9cc36ab6abac6740b793e946770a562, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

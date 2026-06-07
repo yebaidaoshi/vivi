@@ -30,7 +30,7 @@ public class PhysicsCheck : MonoBehaviour
     {
         CheckOnGround();  // 更新 onGround
         float horizontalSpeed = Mathf.Abs(rb.velocity.x);
-        anim.SetFloat("velocity", horizontalSpeed);  // 该参数目前没有被使用，但可以在动画中根据水平速度切换动画状态
+        //anim.SetFloat("velocity", horizontalSpeed);  // 该参数目前没有被使用，但可以在动画中根据水平速度切换动画状态
     }
 
     public void CheckOnGround()

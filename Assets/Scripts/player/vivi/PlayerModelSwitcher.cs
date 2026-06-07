@@ -6,7 +6,7 @@ using System.Text;
 public class PlayerModelSwitcher : MonoBehaviour
 {
     [Header("模型引用")]
-    [SerializeField] private GameObject idleModel;
+    [SerializeField] public GameObject idleModel;
     [SerializeField] private GameObject runModel;
 
     [Header("输入动作")]
@@ -15,6 +15,7 @@ public class PlayerModelSwitcher : MonoBehaviour
     [Header("动画状态名称（必须与Animator中完全一致）")]
     [SerializeField] private string runStateName = "Run";
     [SerializeField] private string idleLoopStateName = "Idle";
+    [SerializeField] private string idleJumpStateName = "Jump";
     [SerializeField] private string runStopTriggerName = "Stop";
     [SerializeField] private string idleStopTriggerName = "Stop";
 
@@ -27,8 +28,8 @@ public class PlayerModelSwitcher : MonoBehaviour
 
     private bool isMoving = false;
     private float runStopTimer = -1f;
-    private Animator runAnimator;
-    private Animator idleAnimator;
+    public Animator runAnimator { get; private set; }
+    public Animator idleAnimator { get; private set; }
     private Renderer runRenderer;
     private Renderer idleRenderer;
     private RuntimeAnimatorController originalRunController;
@@ -51,6 +52,32 @@ public class PlayerModelSwitcher : MonoBehaviour
             idleModel.SetActive(true);
     }
 
+    private void Start()
+    {
+        SetModelVisible(idleModel, idleRenderer, true);
+        SetModelVisible(runModel, runRenderer, false);
+        isMoving = false;
+        runStopTimer = -1f;
+        if (idleAnimator != null && !string.IsNullOrEmpty(idleLoopStateName))
+        {
+            if (StateExists(idleAnimator, idleLoopStateName))
+                idleAnimator.Play(idleLoopStateName, 0, 0f);
+        }
+    }
+
+    private void Update()
+    {
+        if (runStopTimer >= 0f)
+        {
+            runStopTimer += Time.deltaTime;
+            if (runStopTimer >= runStopDuration)
+            {
+                runStopTimer = -1f;
+                FinishRunStopTransition();
+            }
+        }
+    }
+
     private void OnEnable()
     {
         if (moveAction == null) { Debug.LogError("moveAction未绑定！"); return; }
@@ -71,6 +98,7 @@ public class PlayerModelSwitcher : MonoBehaviour
     }
 
     private void OnMove(InputAction.CallbackContext ctx) => UpdateMovementState(ctx.ReadValue<Vector2>());
+
     private void OnMoveCanceled(InputAction.CallbackContext ctx) => UpdateMovementState(Vector2.zero);
 
     private void UpdateMovementState(Vector2 moveValue)
@@ -87,6 +115,25 @@ public class PlayerModelSwitcher : MonoBehaviour
             if (runStopTimer < 0f)
                 StartRunStopTransition();
             isMoving = false;
+        }
+    }
+
+    public void ForceSwitchToIdleModelJump()
+    {
+        /*
+         * 从跑步模型强制切换到站立模型的跳跃状态，通常在玩家按下跳跃键时调用。这个方法会立即显示站立模型并隐藏跑步模型，然后设置站立模型的Animator参数以触发跳跃动画。需要确保idleJumpStateName在Animator中存在，并且有一个布尔参数（onGround）来控制跳跃动画状态。
+         */
+        SetModelVisible(idleModel, idleRenderer, true);
+        SetModelVisible(runModel, runRenderer, false);
+        if (idleAnimator == null) return;
+        if (!string.IsNullOrEmpty(idleJumpStateName))
+        {
+            if (!StateExists(idleAnimator, idleJumpStateName))
+            {
+                Debug.LogError($"站立模型：找不到状态 '{idleJumpStateName}'！可用状态：{GetAllStateNames(idleAnimator)}");
+                return;
+            }
+            idleAnimator.SetBool("onGround", false);
         }
     }
 
@@ -142,19 +189,6 @@ public class PlayerModelSwitcher : MonoBehaviour
         runStopTimer = 0f;
     }
 
-    private void Update()
-    {
-        if (runStopTimer >= 0f)
-        {
-            runStopTimer += Time.deltaTime;
-            if (runStopTimer >= runStopDuration)
-            {
-                runStopTimer = -1f;
-                FinishRunStopTransition();
-            }
-        }
-    }
-
     private void FinishRunStopTransition()
     {
         if (moveAction != null)
@@ -172,6 +206,8 @@ public class PlayerModelSwitcher : MonoBehaviour
 
     private void SwitchToIdleModel()
     {
+        if (idleModel.activeSelf) return;
+
         SetModelVisible(idleModel, idleRenderer, true);
         SetModelVisible(runModel, runRenderer, false);
         if (idleAnimator == null) return;
@@ -232,19 +268,6 @@ public class PlayerModelSwitcher : MonoBehaviour
         else
         {
             model.SetActive(visible);
-        }
-    }
-
-    private void Start()
-    {
-        SetModelVisible(idleModel, idleRenderer, true);
-        SetModelVisible(runModel, runRenderer, false);
-        isMoving = false;
-        runStopTimer = -1f;
-        if (idleAnimator != null && !string.IsNullOrEmpty(idleLoopStateName))
-        {
-            if (StateExists(idleAnimator, idleLoopStateName))
-                idleAnimator.Play(idleLoopStateName, 0, 0f);
         }
     }
 }

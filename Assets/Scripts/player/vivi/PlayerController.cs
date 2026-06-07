@@ -6,15 +6,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 { 
-    
-    //人物的输入系统
     public Moren yidong;
-    //人物的刚体组件
     private Rigidbody2D sd;
-    //人物是否在地面上
     private PhysicsCheck ph;
+    private PlayerModelSwitcher modelSwitcher;
+
     //人物移动的输入值
     public Vector2 yidongdh;
+
     [Header("基本参数")]
     //人物移动的速度
     public float shudu;
@@ -30,13 +29,19 @@ public class PlayerController : MonoBehaviour
         yidong = new Moren();
         sd = GetComponent<Rigidbody2D>();
         ph = GetComponent<PhysicsCheck>();
+        modelSwitcher = GetComponent<PlayerModelSwitcher>();
 
-
-        //+=是时间注册 意思是把后面的函数方法添加到按键按下的那一刻来执行
+        //+=是事件注册 意思是把后面的函数方法添加到按键按下的那一刻来执行
         //started 按下那一刻执行 且按一次只执行一次
         yidong.Player.Jump.started += Jump;
 
     }
+
+    private void Start()
+    {
+        jumpTimer = Time.time;
+    }
+
     private void OnEnable()
     {
         yidong.Enable();
@@ -70,14 +75,21 @@ public class PlayerController : MonoBehaviour
         transform.localScale = new Vector3(faceDir, 1, 1);
     }
 
-    // 将 Jump 事件处理器实现为接受 CallbackContext 的方法
-
+    private float jumpTimer;
     public void Jump(InputAction.CallbackContext context)
     {
-
         //Debug.Log("JUMP");
-        if (ph.onGround)
-            sd.AddForce(transform.up * Jumpyue, ForceMode2D.Impulse);
+        if (!ph.onGround || Time.time - jumpTimer < 0.2f) return;
+        // 还需要检查玩家能否移动（击飞、束缚、后摇）
+
+        jumpTimer = Time.time;
+        if (modelSwitcher.idleModel.activeSelf)
+        {
+            modelSwitcher.idleAnimator.SetTrigger("jump");
+        }
+        else 
+            modelSwitcher.ForceSwitchToIdleModelJump();
+        sd.AddForce(transform.up * Jumpyue, ForceMode2D.Impulse);
     }
 
     public void GetHurt(Transform attacker)
