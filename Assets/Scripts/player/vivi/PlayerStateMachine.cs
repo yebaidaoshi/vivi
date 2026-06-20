@@ -14,9 +14,6 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerIdleState IdleState { get; private set; }
     public PlayerRunState RunState { get; private set; }
 
-    [Header("µØÃæ×´Ì¬")]
-    public bool onGround;
-
     public void Awake()
     {
         inputActions = new Moren();

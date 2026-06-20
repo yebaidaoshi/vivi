@@ -12,7 +12,7 @@ public class PlayerRunState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (player.onGround && player.inputActions.Player.Move.ReadValue<Vector2>().x == 0)
+        if (player.physicsCheck.onGround && player.inputActions.Player.Move.ReadValue<Vector2>().x == 0)
         {
             player.ChangeState(player.IdleState);
         }

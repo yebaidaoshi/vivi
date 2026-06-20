@@ -14,7 +14,7 @@ public class PlayerIdleState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (player.onGround && player.inputActions.Player.Jump.triggered)  // 跳跃条件
+        if (player.physicsCheck.onGround && player.inputActions.Player.Jump.triggered)  // 跳跃条件
         {
             player.ChangeState(new PlayerJumpState(player));
             return;
