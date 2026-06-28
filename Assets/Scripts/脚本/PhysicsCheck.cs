@@ -22,7 +22,7 @@ public class PhysicsCheck : MonoBehaviour
 
     void Start()
     {
-        anim = transform.Find("IdleModel").GetComponentInChildren<Animator>();  // 获取Idle模型的Animator组件
+        anim = transform.Find("Heroine").GetComponentInChildren<Animator>();  // 获取Idle模型的Animator组件
         rb = GetComponent<Rigidbody2D>();  // 获取刚体
     }
 
