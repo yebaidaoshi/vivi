@@ -136,7 +136,7 @@ public class PlayerModelSwitcher : MonoBehaviour
             idleAnimator.SetBool("onGround", false);
         }
     }
-
+    
     private void ForceSwitchToRunModel()
     {
         SetModelVisible(idleModel, idleRenderer, false);
@@ -239,7 +239,7 @@ public class PlayerModelSwitcher : MonoBehaviour
                 idleAnimator.Play(idleLoopStateName, 0, 0f);
         }
     }
-
+    
     private bool StateExists(Animator anim, string stateName)
     {
         if (anim == null) return false;
