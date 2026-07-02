@@ -10,6 +10,7 @@ public class PlayerIdleState : PlayerState
 
     public override void Enter()
     {
+        Debug.Log("进入Idle状态");
         // 进入这个状态时，需要做的事
         base.Enter();
         // 动画切换到Idle
@@ -21,7 +22,8 @@ public class PlayerIdleState : PlayerState
         base.Update();
         // 生命值为0，切换到死亡状态
         // 如果玩家按下了移动键，就切换到跑步状态
-        if (player.inputActions.Player.Move.ReadValue<Vector2>().x != 0)
+        float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+        if (Mathf.Abs(moveX) > 0.01f)
         {
             player.ChangeState(player.RunState);
             return;

@@ -4,8 +4,6 @@ public class PlayerAttackState : PlayerState
 {
     public PlayerAttackState(PlayerStateMachine player) : base(player) { }
 
-    protected PlayerStateMachine player;
-
     public override void Enter()
     {
         // 进入这个状态时，需要做的事

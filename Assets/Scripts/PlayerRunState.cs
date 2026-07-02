@@ -6,6 +6,7 @@ public class PlayerRunState : PlayerState
 
     public override void Enter()
     {
+        Debug.Log("进入Run状态");
         // 进入这个状态时，需要做的事
         base.Enter();
         // 动画切换到Run
@@ -23,8 +24,6 @@ public class PlayerRunState : PlayerState
             return;
         }
         // 玩家按下攻击键，切换到攻击状态
-        
-
 
         // 移动
         player.rb.velocity = new Vector2(player.inputActions.Player.Move.ReadValue<Vector2>().x *3, player.rb.velocity.y);

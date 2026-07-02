@@ -31,6 +31,9 @@ public class PlayerStateMachine : MonoBehaviour
         currentState?.Update();
     }
 
+    void OnEnable() => inputActions.Enable();
+    void OnDisable() => inputActions.Disable();
+
     public void ChangeState(PlayerState newState)
     {
         // 切换到状态
