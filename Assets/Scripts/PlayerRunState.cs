@@ -27,7 +27,7 @@ public class PlayerRunState : PlayerState
 
 
         // 移动
-        player.rb.velocity = new Vector2(player.inputActions.Player.Move.ReadValue<Vector2>().x * player.moveSpeed, player.rb.velocity.y);
+        player.rb.velocity = new Vector2(player.inputActions.Player.Move.ReadValue<Vector2>().x *3, player.rb.velocity.y);
     }
 
     public override void Exit() 

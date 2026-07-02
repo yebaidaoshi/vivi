@@ -9,12 +9,14 @@ public class PlayerStateMachine : MonoBehaviour
     // 所有状态
     public PlayerIdleState IdleState { get; private set; }
     public PlayerRunState RunState { get; private set; }
-
+    public Rigidbody2D rb;
+    public Moren inputActions;
     public void Awake()
     {
         // 游戏启动时运行一次
         IdleState = new PlayerIdleState(this);
         RunState = new PlayerRunState(this);
+        inputActions = new Moren();
     }
 
     private void Start()
