@@ -12,6 +12,9 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerRunState RunState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerJumpState JumpState { get; private set; }
+    public PlayerAirAttackState AirAttackState { get; private set; }
+    public float previousMoveX; // 上一帧水平输入
+    public int facingDirectionBeforeJump; // 跳跃前的朝向
     public Rigidbody2D rb;
     public Moren inputActions;
     public SkeletonAnimation skeletonAnim;
@@ -22,6 +25,9 @@ public class PlayerStateMachine : MonoBehaviour
     public int maxJumpCount = 1;  // 最大跳跃次数
     public int currentJumpCount  = 0;
     public int facingDirection = 1;   // 1=右，-1=左 角色翻转
+    public bool forceRunLoop = false; // 强制直接播放跑步循环，跳过 Run_Start  第三段攻击的下一个状态需要
+    public PlayerDashState DashState { get; private set; }
+    public float dashSpeed = 50f;   // 冲刺速度，可在 Inspector 调整
 
 
     [Header("地面检测")]
@@ -42,8 +48,10 @@ public class PlayerStateMachine : MonoBehaviour
         AttackState= new PlayerAttackState(this);
         JumpState = new PlayerJumpState(this);
         inputActions = new Moren();
+        DashState = new PlayerDashState(this);
         rb = GetComponent<Rigidbody2D>();
         skeletonAnim = GetComponent<SkeletonAnimation>();
+        AirAttackState = new PlayerAirAttackState(this);
     }
 
     private void Start()
@@ -87,6 +95,11 @@ public class PlayerStateMachine : MonoBehaviour
         animStateData.SetMix("Run_Turning", "Run", mixTime);
         animStateData.SetMix("Run_Turning", "Run_Start", mixTime);
 
+        // 第三段攻击 → 跑步（混合时间设为0，避免腿部异常）
+        animStateData.SetMix("Attack3_BU", "Run", 0f);
+        // 跑步 → 第三段攻击（也设为0，保持对称）
+        animStateData.SetMix("Run", "Attack3_BU", 0f);
+
         // ★ 默认混合（兜底）
         animStateData.DefaultMix = mixTime;
 
@@ -97,8 +110,10 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
-        // 每帧运行一次
-        currentState?.Update();
+       
+        // 先更新上一帧输入，再更新状态
+        previousMoveX = inputActions.Player.Move.ReadValue<Vector2>().x;
+        currentState?.Update(); // 只调用一次
     }
 
     void OnEnable() => inputActions.Enable();//角色激活时监听输入

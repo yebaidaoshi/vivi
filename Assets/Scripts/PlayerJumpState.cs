@@ -10,14 +10,31 @@ public class PlayerJumpState : PlayerState
     private const string AirForward = "Jump/Jump_OnAir_Forward";
     private const string AirBackward = "Jump/Jump_OnAir_Backward";
     private const string Landing = "Landing";
+    private const string BackFlip = "Jump/Jump_BackFlip";
+    private const string BackFlipLand = "Jump/Jump_BackFlip_Land";
 
     private const float AirMoveSpeed = 25f;
     private const float SwitchCooldown = 0.12f;
+
+    [SerializeField] private float backflipDistance = 15f;
+    [SerializeField] private float backflipEffectiveRatio = 0.7f;
 
     private bool isLanding = false;
     private float landingTimer = 0f;
     private float lastSwitchTime = -10f;
     private string currentDirectionAnim = AirIdle;
+
+    private bool isBackflip = false;
+    private float backflipTimer = 0f;
+    private float backflipDuration = 0f;
+    private float backflipEffectiveDuration = 0f;
+    private float backflipInitialSpeed = 0f;
+    private int backflipDirection = 0;
+
+    private bool isBackflipLanding = false;
+    private float backflipLandingTimer = 0f;
+
+    public bool skipJump = false;
 
     public PlayerJumpState(PlayerStateMachine player) : base(player) { }
 
@@ -25,18 +42,52 @@ public class PlayerJumpState : PlayerState
     {
         base.Enter();
         Debug.Log("进入Jump状态");
-        player.currentJumpCount++;
 
         isLanding = false;
         landingTimer = 0f;
         lastSwitchTime = -10f;
+        isBackflip = false;
+        isBackflipLanding = false;
 
         player.skeletonAnim.Skeleton.ScaleX = player.facingDirection;
+
+        if (skipJump)
+        {
+            skipJump = false;
+            float horizontal = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+            UpdateAirLoop(horizontal);
+            return;
+        }
+
+        float moveInput = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+        bool isOppositePressed = (Mathf.Abs(moveInput) > 0.1f) && (Mathf.Sign(moveInput) != player.facingDirectionBeforeJump);
+
+        if (isOppositePressed)
+        {
+            Jump();
+            player.skeletonAnim.AnimationState.SetAnimation(0, BackFlip, false);
+
+            isBackflip = true;
+            backflipDuration = player.GetAnimationDuration(BackFlip);
+            if (backflipDuration <= 0f)
+            {
+                backflipDuration = 0.5f;
+                Debug.LogWarning($"后空翻动画 {BackFlip} 未找到，使用默认时长 0.5 秒");
+            }
+            backflipTimer = backflipDuration;
+
+            backflipDirection = -player.facingDirectionBeforeJump;
+            backflipEffectiveDuration = backflipDuration * backflipEffectiveRatio;
+            backflipInitialSpeed = 2f * backflipDistance / backflipEffectiveDuration;
+
+            currentDirectionAnim = AirIdle;
+            return;
+        }
+
         Jump();
 
         string start = JumpStart;
         string follow = AirIdle;
-
         bool isRunningJump = player.isRunningJump;
 
         if (isRunningJump)
@@ -45,25 +96,13 @@ public class PlayerJumpState : PlayerState
             float relative = moveX * player.facingDirection;
             if (Mathf.Abs(moveX) > 0.01f)
             {
-                if (relative > 0)
-                {
-                    start = JumpForward;
-                    follow = AirForward;
-                }
-                else
-                {
-                    start = JumpBackward;
-                    follow = AirBackward;
-                }
+                if (relative > 0) { start = JumpForward; follow = AirForward; }
+                else { start = JumpBackward; follow = AirBackward; }
                 player.isRunningJump = false;
             }
-            else
-            {
-                player.isRunningJump = false;
-            }
+            else { player.isRunningJump = false; }
         }
 
-        // ★★★ 关键：捕获 TrackEntry 并设置混合时间 ★★★
         var track1 = player.skeletonAnim.AnimationState.SetAnimation(0, start, false);
         var track2 = player.skeletonAnim.AnimationState.AddAnimation(0, follow, true, 0f);
         if (isRunningJump)
@@ -71,38 +110,100 @@ public class PlayerJumpState : PlayerState
             track1.MixDuration = 0f;
             track2.MixDuration = 0f;
         }
-
         currentDirectionAnim = follow;
-        Debug.Log($"起跳: 开头={start}, 后续循环={follow}");
     }
 
     public override void Update()
     {
         base.Update();
 
-        float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+        float horizontalInput = player.inputActions.Player.Move.ReadValue<Vector2>().x;
         bool isGrounded = player.IsGrounded();
 
-        // 攻击 / 跳跃（绝对优先）
         if (player.inputActions.Player.Attack.WasPressedThisFrame())
         {
-            player.ChangeState(player.AttackState);
+            player.ChangeState(player.AirAttackState);
             return;
         }
 
-        // 允许在地面或落地动画中按空格起跳
+        if (isBackflip)
+        {
+            if (isGrounded && player.rb.velocity.y <= 0.1f)
+            {
+                isBackflip = false;
+                player.skeletonAnim.AnimationState.SetAnimation(0, BackFlipLand, false);
+                isBackflipLanding = true;
+                backflipLandingTimer = player.GetAnimationDuration(BackFlipLand);
+                if (backflipLandingTimer <= 0f) backflipLandingTimer = 0.8f;
+                player.rb.velocity = new Vector2(0f, player.rb.velocity.y);
+                return;
+            }
+
+            backflipTimer -= Time.deltaTime;
+
+            float currentSpeed = 0f;
+            float remaining = backflipTimer;
+            float decelerationStart = backflipDuration - backflipEffectiveDuration;
+
+            if (remaining > decelerationStart)
+            {
+                float effectiveRemaining = remaining - decelerationStart;
+                currentSpeed = backflipInitialSpeed * (effectiveRemaining / backflipEffectiveDuration);
+            }
+            else
+            {
+                currentSpeed = 0f;
+            }
+
+            player.rb.velocity = new Vector2(backflipDirection * currentSpeed, player.rb.velocity.y);
+
+            if (backflipTimer <= 0f)
+            {
+                isBackflip = false;
+                player.skeletonAnim.AnimationState.SetAnimation(0, BackFlipLand, false);
+                isBackflipLanding = true;
+                backflipLandingTimer = player.GetAnimationDuration(BackFlipLand);
+                if (backflipLandingTimer <= 0f) backflipLandingTimer = 0.8f;
+                player.rb.velocity = new Vector2(0f, player.rb.velocity.y);
+            }
+            return;
+        }
+
+        if (isBackflipLanding)
+        {
+            if (player.inputActions.Player.Jump.WasPressedThisFrame())
+            {
+                player.currentJumpCount = 0;
+                player.ChangeState(player.JumpState);
+                return;
+            }
+
+            if (Mathf.Abs(horizontalInput) > 0.01f)
+            {
+                player.playLandingToRun = true;
+                player.ChangeState(player.RunState);
+                return;
+            }
+
+            backflipLandingTimer -= Time.deltaTime;
+            if (backflipLandingTimer <= 0f)
+            {
+                player.ChangeState(player.IdleState);
+                return;
+            }
+            return;
+        }
+
         if (player.inputActions.Player.Jump.WasPressedThisFrame() && (isLanding || isGrounded))
         {
-            player.currentJumpCount = 0; // ★ 重置跳跃计数
-            Debug.Log("落地时按空格起跳");
+            player.currentJumpCount = 0;
             player.ChangeState(player.JumpState);
             return;
         }
 
-        // 落地动画处理
         if (isLanding)
         {
-            if (Mathf.Abs(moveX) > 0.01f)
+            if (Mathf.Abs(horizontalInput) > 0.01f)
             {
                 player.playLandingToRun = true;
                 player.ChangeState(player.RunState);
@@ -117,10 +218,9 @@ public class PlayerJumpState : PlayerState
             return;
         }
 
-        // 刚落地检测
         if (player.rb.velocity.y <= 0 && isGrounded)
         {
-            if (Mathf.Abs(moveX) > 0.01f)
+            if (Mathf.Abs(horizontalInput) > 0.01f)
             {
                 player.playLandingToRun = true;
                 player.ChangeState(player.RunState);
@@ -131,25 +231,26 @@ public class PlayerJumpState : PlayerState
                 player.skeletonAnim.AnimationState.SetAnimation(0, Landing, false);
                 isLanding = true;
                 landingTimer = player.GetAnimationDuration(Landing);
-                Debug.Log($"播放落地动画，时长 {landingTimer}");
                 return;
             }
         }
 
-        // 地面稳定后进入跑步
-        if (isGrounded && Mathf.Abs(moveX) > 0.01f && player.rb.velocity.y <= 0.1f)
+        if (isGrounded && Mathf.Abs(horizontalInput) > 0.01f && player.rb.velocity.y <= 0.1f)
         {
             player.ChangeState(player.RunState);
             return;
         }
 
-        // 空中移动与切换
-        player.rb.velocity = new Vector2(moveX * AirMoveSpeed, player.rb.velocity.y);
+        player.rb.velocity = new Vector2(horizontalInput * AirMoveSpeed, player.rb.velocity.y);
+        UpdateAirLoop(horizontalInput);
+    }
 
+    private void UpdateAirLoop(float horizontal)
+    {
         string targetLoop = AirIdle;
-        if (Mathf.Abs(moveX) > 0.01f)
+        if (Mathf.Abs(horizontal) > 0.01f)
         {
-            float relative = moveX * player.facingDirection;
+            float relative = horizontal * player.facingDirection;
             targetLoop = (relative > 0f) ? AirForward : AirBackward;
         }
 
@@ -171,12 +272,10 @@ public class PlayerJumpState : PlayerState
         {
             player.skeletonAnim.AnimationState.SetAnimation(0, startAnim, false);
             player.skeletonAnim.AnimationState.AddAnimation(0, targetLoop, true, 0f);
-            Debug.Log($"★ 空中转向：{startAnim} → {targetLoop}");
         }
         else
         {
             player.skeletonAnim.AnimationState.SetAnimation(0, targetLoop, true);
-            Debug.Log($"○ 空中切换循环：{targetLoop}");
         }
 
         currentDirectionAnim = targetLoop;
@@ -188,6 +287,9 @@ public class PlayerJumpState : PlayerState
         base.Exit();
         isLanding = false;
         landingTimer = 0f;
+        isBackflip = false;
+        isBackflipLanding = false;
+        backflipLandingTimer = 0f;
     }
 
     private void Jump()

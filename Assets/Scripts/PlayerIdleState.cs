@@ -43,8 +43,9 @@ public class PlayerIdleState : PlayerState
             return;
         }
         // 按下跳跃键，切换到跳跃状态
-        if (player.inputActions.Player.Jump.WasPressedThisFrame() && player.currentJumpCount < player.maxJumpCount&& player.IsGrounded())   // 新增地面检查
+        if (player.inputActions.Player.Jump.WasPressedThisFrame() && player.currentJumpCount < player.maxJumpCount && player.IsGrounded())
         {
+            player.facingDirectionBeforeJump = player.facingDirection; // ★ 保存跳跃前朝向
             player.ChangeState(player.JumpState);
             return;
         }
