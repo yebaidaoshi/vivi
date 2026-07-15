@@ -41,7 +41,7 @@ public class PlayerJumpState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("进入Jump状态");
+       
 
         isLanding = false;
         landingTimer = 0f;
@@ -122,9 +122,14 @@ public class PlayerJumpState : PlayerState
 
         if (player.inputActions.Player.Attack.WasPressedThisFrame())
         {
-            player.ChangeState(player.AirAttackState);
+            // ★ 根据是否在地面选择攻击类型
+            if (player.IsGrounded())
+                player.ChangeState(player.AttackState);
+            else
+                player.ChangeState(player.AirAttackState);
             return;
         }
+
 
         if (isBackflip)
         {

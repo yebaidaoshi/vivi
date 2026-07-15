@@ -4756,10 +4756,11 @@ MonoBehaviour:
   isRunningJump: 0
   playLandingToRun: 0
   moveSpeed: 25
-  jumpForce: 30
+  jumpForce: 35
   maxJumpCount: 1
   currentJumpCount: 0
   facingDirection: 1
+  forceRunLoop: 0
   dashSpeed: 50
   groundCheck: {fileID: 610813387}
   groundLayer:
