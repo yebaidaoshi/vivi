@@ -19,49 +19,65 @@ public class PlayerRunState : PlayerState
 
     private void PlayRunWithStart()
     {
-        player.skeletonAnim.AnimationState.SetAnimation(0, RunStartAnim, false);
+        var track = player.skeletonAnim.AnimationState.SetAnimation(0, RunStartAnim, false);
+        track.MixDuration = 0f;
+        track.AttachmentThreshold = 0f;
         player.skeletonAnim.AnimationState.AddAnimation(0, RunLoopAnim, true, 0f);
     }
 
     private void PlayRunLoopDirectly()
     {
-        player.skeletonAnim.AnimationState.SetAnimation(0, RunLoopAnim, true);
+        var track = player.skeletonAnim.AnimationState.SetAnimation(0, RunLoopAnim, true);
+        track.MixDuration = 0f;
+        track.AttachmentThreshold = 0f;
     }
 
     private void PlayTurningThenRun()
     {
-        player.skeletonAnim.AnimationState.SetAnimation(0, RunTurningAnim, false);
+        var track = player.skeletonAnim.AnimationState.SetAnimation(0, RunTurningAnim, false);
+        track.MixDuration = 0f;
+        track.AttachmentThreshold = 0f;
         player.skeletonAnim.AnimationState.AddAnimation(0, RunLoopAnim, true, 0f);
     }
 
     public override void Enter()
     {
         base.Enter();
-        
         player.currentJumpCount = 0;
 
         float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
 
-        if (player.playLandingToRun)
+        var currentTrack = player.skeletonAnim.AnimationState.GetCurrent(0);
+        bool isRunLoopPlaying = (currentTrack != null && currentTrack.Animation.Name == RunLoopAnim && currentTrack.Loop);
+
+        if (!isRunLoopPlaying)
         {
-            var track = player.skeletonAnim.AnimationState.SetAnimation(0, LandingToRunAnim, false);
-            track.MixDuration = 0f;
-            isLandingToRun = true;
-            landingToRunTimer = player.GetAnimationDuration(LandingToRunAnim);
-            player.playLandingToRun = false;
-        }
-        else
-        {
-            // ★ 检查是否强制跳过 Run_Start
-            if (player.forceRunLoop)
+            if (player.playLandingToRun)
             {
-                player.forceRunLoop = false; // 重置标志
-                PlayRunLoopDirectly();       // 直接播放 Run 循环
+                var track = player.skeletonAnim.AnimationState.SetAnimation(0, LandingToRunAnim, false);
+                track.MixDuration = 0f;
+                track.AttachmentThreshold = 0f;
+                isLandingToRun = true;
+                landingToRunTimer = player.GetAnimationDuration(LandingToRunAnim);
+                player.playLandingToRun = false;
             }
             else
             {
-                PlayRunWithStart();          // 正常播放 Run_Start → Run
+                if (player.forceRunLoop)
+                {
+                    player.forceRunLoop = false;
+                    PlayRunLoopDirectly();
+                }
+                else
+                {
+                    PlayRunWithStart();
+                }
+                isLandingToRun = false;
             }
+        }
+        else
+        {
+            player.forceRunLoop = false;
             isLandingToRun = false;
         }
 
@@ -89,6 +105,14 @@ public class PlayerRunState : PlayerState
         float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
         bool isGrounded = player.IsGrounded();
 
+        // ★ 同时按下 S + 攻击 → 直接进入蹲下攻击（优先级最高）
+        if (player.inputActions.Player.Crouch.IsPressed() &&
+            player.inputActions.Player.Attack.WasPressedThisFrame())
+        {
+            player.ChangeState(player.CrouchAttackState);
+            return;
+        }
+
         if (player.inputActions.Player.Attack.WasPressedThisFrame())
         {
             player.ChangeState(player.AttackState);
@@ -99,6 +123,19 @@ public class PlayerRunState : PlayerState
             player.facingDirectionBeforeJump = player.facingDirection;
             player.isRunningJump = true;
             player.ChangeState(player.JumpState);
+            return;
+        }
+
+        if (player.inputActions.Player.Crouch.WasPressedThisFrame())
+        {
+            if (isTransitioning || isLandingToRun)
+            {
+                player.ChangeState(player.CrouchState);
+                return;
+            }
+            int dir = (Mathf.Abs(moveX) > 0.1f) ? (moveX > 0 ? 1 : -1) : player.facingDirection;
+            player.SlideState.SetDirection(dir);
+            player.ChangeState(player.SlideState);
             return;
         }
 
@@ -126,10 +163,18 @@ public class PlayerRunState : PlayerState
 
         if (isLandingToRun)
         {
+            if (player.inputActions.Player.Crouch.WasPressedThisFrame())
+            {
+                player.ChangeState(player.CrouchState);
+                return;
+            }
+
             if (Mathf.Approximately(moveX, 0f))
             {
                 player.rb.velocity = new Vector2(0, player.rb.velocity.y);
-                player.skeletonAnim.AnimationState.SetAnimation(0, RunToIdleAnim, false);
+                var track = player.skeletonAnim.AnimationState.SetAnimation(0, RunToIdleAnim, false);
+                track.MixDuration = 0f;
+                track.AttachmentThreshold = 0f;
                 isLandingToRun = false;
                 isTransitioning = true;
                 transitionTimer = player.GetAnimationDuration(RunToIdleAnim);
@@ -147,19 +192,6 @@ public class PlayerRunState : PlayerState
 
         if (isTransitioning)
         {
-            if (player.inputActions.Player.Attack.WasPressedThisFrame())
-            {
-                player.ChangeState(player.AttackState);
-                return;
-            }
-            if (player.inputActions.Player.Jump.WasPressedThisFrame() && player.currentJumpCount < player.maxJumpCount && isGrounded)
-            {
-                player.facingDirectionBeforeJump = player.facingDirection;
-                player.isRunningJump = true;
-                player.ChangeState(player.JumpState);
-                return;
-            }
-
             if (Mathf.Abs(moveX) > 0.01f)
             {
                 isTransitioning = false;
@@ -206,7 +238,9 @@ public class PlayerRunState : PlayerState
                 isTransitioning = true;
                 transitionTimer = player.GetAnimationDuration(RunToIdleAnim);
                 player.rb.velocity = new Vector2(0, player.rb.velocity.y);
-                player.skeletonAnim.AnimationState.SetAnimation(0, RunToIdleAnim, false);
+                var track = player.skeletonAnim.AnimationState.SetAnimation(0, RunToIdleAnim, false);
+                track.MixDuration = 0f;
+                track.AttachmentThreshold = 0f;
                 idleDelayTimer = 0f;
             }
         }

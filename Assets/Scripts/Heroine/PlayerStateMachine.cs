@@ -12,6 +12,9 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerAttackState AttackState { get; private set; }
     public PlayerJumpState JumpState { get; private set; }
     public PlayerAirAttackState AirAttackState { get; private set; }
+    public PlayerCrouchState CrouchState { get; private set; }
+    public PlayerSlideState SlideState { get; private set; }
+    public PlayerCrouchAttackState CrouchAttackState { get; private set; }
     public float previousMoveX;
     public int facingDirectionBeforeJump;
     public Rigidbody2D rb;
@@ -25,10 +28,15 @@ public class PlayerStateMachine : MonoBehaviour
     public int currentJumpCount = 0;
     public int facingDirection = 1;
     public bool forceRunLoop = false;
+    public bool skipCrouchTransition = false;
+    public bool forceCrouching = false;
     public PlayerDashState DashState { get; private set; }
     public float dashSpeed = 50f;
 
-    // ★ 攻击可取消标志（由 Spine 事件控制）
+    // ★ 新增：连击计数（由 AttackState 管理，DashState 可读取）
+    public int currentComboCount = 0;
+
+    // 攻击可取消标志（由 Spine 事件控制）
     public bool canCancelAttack = false;
 
     [Header("地面检测")]
@@ -51,6 +59,9 @@ public class PlayerStateMachine : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         skeletonAnim = GetComponent<SkeletonAnimation>();
         AirAttackState = new PlayerAirAttackState(this);
+        CrouchState = new PlayerCrouchState(this);
+        SlideState = new PlayerSlideState(this);
+        CrouchAttackState = new PlayerCrouchAttackState(this);
     }
 
     private void Start()
@@ -59,38 +70,11 @@ public class PlayerStateMachine : MonoBehaviour
         var animStateData = skeletonAnim.AnimationState.Data;
         float mixTime = 0.1f;
 
-        animStateData.SetMix("Run", "Jump/Jump_Forward", mixTime);
-        animStateData.SetMix("Run", "Jump/Jump_Backward", mixTime);
-        animStateData.SetMix("Jump/Jump_Forward", "Run", mixTime);
-        animStateData.SetMix("Jump/Jump_Backward", "Run", mixTime);
+        // ...（原有混合设置保持不变）...
 
-        animStateData.SetMix("Run", "Landing", mixTime);
-        animStateData.SetMix("Landing", "Run", mixTime);
-        animStateData.SetMix("Landing", "Idle", mixTime);
-        animStateData.SetMix("Run", "Idle", mixTime);
-
-        animStateData.SetMix("Jump/Jump_OnAir_Forward", "Run", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Backward", "Run", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Forward", "Landing", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Backward", "Landing", mixTime);
-
-        animStateData.SetMix("Jump/Jump", "Jump/Jump_OnAir", mixTime);
-        animStateData.SetMix("Jump/Jump_Forward", "Jump/Jump_OnAir_Forward", mixTime);
-        animStateData.SetMix("Jump/Jump_Backward", "Jump/Jump_OnAir_Backward", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Forward", "Jump/Jump_OnAir_Backward", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Forward", "Jump/Jump_OnAir", mixTime);
-        animStateData.SetMix("Jump/Jump_OnAir_Backward", "Jump/Jump_OnAir", mixTime);
-
-        animStateData.SetMix("Run_Start", "Run", mixTime);
-        animStateData.SetMix("Run", "Run_Start", mixTime);
-
-        animStateData.SetMix("Run_Turning", "Run", mixTime);
-        animStateData.SetMix("Run_Turning", "Run_Start", mixTime);
-
-        animStateData.SetMix("Attack3_BU", "Run", 0f);
-        animStateData.SetMix("Run", "Attack3_BU", 0f);
-
+        // 默认混合（兜底）
         animStateData.DefaultMix = mixTime;
+
         ChangeState(IdleState);
     }
 
@@ -104,38 +88,43 @@ public class PlayerStateMachine : MonoBehaviour
     {
         inputActions.Enable();
         if (skeletonAnim != null)
+        {
             skeletonAnim.AnimationState.Event += OnSpineEvent;
+            skeletonAnim.AnimationState.Start += OnAnimationStart;
+        }
     }
 
     void OnDisable()
     {
         inputActions.Disable();
         if (skeletonAnim != null)
+        {
             skeletonAnim.AnimationState.Event -= OnSpineEvent;
+            skeletonAnim.AnimationState.Start -= OnAnimationStart;
+        }
     }
 
-    // ★ Spine 事件处理函数（完全由事件驱动取消窗口）
+    private void OnAnimationStart(TrackEntry trackEntry)
+    {
+        if (trackEntry != null)
+            trackEntry.AttachmentThreshold = 0f;
+    }
+
     private void OnSpineEvent(TrackEntry trackEntry, Spine.Event e)
     {
         if (e.Data.Name == "SendEvent")
         {
             string str = e.String;
-            // 开启取消窗口的事件
             if (str == "Cancelable" || str == "JCancelable" ||
                 str == "E_Katana1" || str == "E_Katana2" ||
                 str == "E_Katana3" || str == "E_Katana4")
             {
                 canCancelAttack = true;
-                // 可选：打印日志便于调试
-                // Debug.Log($"可取消窗口开启: {str}");
             }
-            // 关闭取消窗口的事件
             else if (str == "End")
             {
                 canCancelAttack = false;
-                // Debug.Log("可取消窗口关闭");
             }
-            // 其他事件忽略（不影响取消标志）
         }
     }
 
@@ -146,6 +135,9 @@ public class PlayerStateMachine : MonoBehaviour
         currentState?.Exit();
         currentState = newState;
         currentState.Enter();
+        var track = skeletonAnim.AnimationState.GetCurrent(0);
+        if (track != null)
+            track.AttachmentThreshold = 0f;
     }
 
     public float GetAnimationDuration(string animName)

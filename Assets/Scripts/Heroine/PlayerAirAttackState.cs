@@ -30,12 +30,11 @@ public class PlayerAirAttackState : PlayerState
     {
         base.Update();
 
-        // ---- 落地动画播放阶段 ----
+        // ---- 落地动画播放阶段（仅用于上升攻击后的落地） ----
         if (isLandingAfterAttack)
         {
             float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
 
-            // 按方向键 → 跑步（带 Landing_to_Run 过渡）
             if (Mathf.Abs(moveX) > 0.01f)
             {
                 player.playLandingToRun = true;
@@ -43,7 +42,6 @@ public class PlayerAirAttackState : PlayerState
                 return;
             }
 
-            // 按跳跃键 → 重新起跳
             if (player.inputActions.Player.Jump.WasPressedThisFrame())
             {
                 player.currentJumpCount = 0;
@@ -51,25 +49,46 @@ public class PlayerAirAttackState : PlayerState
                 return;
             }
 
-            // ★ 检查当前动画是否播放完毕
             var currentTrack = player.skeletonAnim.AnimationState.GetCurrent(0);
             if (currentTrack != null && currentTrack.IsComplete)
             {
                 player.ChangeState(player.IdleState);
                 return;
             }
-
-            // 未结束则继续等待
             return;
         }
 
-        // ---- 可取消且落地 → 播放 Landing2 ----
-        if (player.canCancelAttack && player.IsGrounded())
+        // ---- ★ 修改：落地处理 ----
+        if (player.IsGrounded())
         {
-            // 播放落地动画（非循环）
-            player.skeletonAnim.AnimationState.SetAnimation(0, Landing, false);
-            isLandingAfterAttack = true;
-            return;
+            // 获取当前播放的动画名称
+            var currentTrack = player.skeletonAnim.AnimationState.GetCurrent(0);
+            string currentAnim = currentTrack?.Animation?.Name;
+            bool isAttackDown = (currentAnim == AttackDown);
+
+            // 如果是下落攻击，立即终止攻击，直接切换到 Idle 或 Run
+            if (isAttackDown)
+            {
+                float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+                if (Mathf.Abs(moveX) > 0.01f)
+                {
+                    player.playLandingToRun = true;
+                    player.ChangeState(player.RunState);
+                }
+                else
+                {
+                    player.ChangeState(player.IdleState);
+                }
+                return;
+            }
+
+            // 上升攻击或未明确时，依旧使用原有 Landing2 逻辑（需要可取消窗口）
+            if (player.canCancelAttack)
+            {
+                player.skeletonAnim.AnimationState.SetAnimation(0, Landing, false);
+                isLandingAfterAttack = true;
+                return;
+            }
         }
 
         // ---- 空中攻击动画正常计时 ----
