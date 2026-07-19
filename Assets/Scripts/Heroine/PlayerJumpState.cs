@@ -41,7 +41,10 @@ public class PlayerJumpState : PlayerState
     public override void Enter()
     {
         base.Enter();
-       
+
+        // ★ 清除第三段攻击留下的全局标志，确保后续状态正常
+        player.isInThirdAttack = false;
+        player.ignoreDashInput = false;
 
         isLanding = false;
         landingTimer = 0f;
@@ -122,14 +125,13 @@ public class PlayerJumpState : PlayerState
 
         if (player.inputActions.Player.Attack.WasPressedThisFrame())
         {
-            // ★ 根据是否在地面选择攻击类型
+            // 根据是否在地面选择攻击类型
             if (player.IsGrounded())
                 player.ChangeState(player.AttackState);
             else
                 player.ChangeState(player.AirAttackState);
             return;
         }
-
 
         if (isBackflip)
         {

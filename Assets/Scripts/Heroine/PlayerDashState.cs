@@ -35,6 +35,24 @@ public class PlayerDashState : PlayerState
     {
         base.Enter();
 
+        // ★ 如果距离第三段攻击结束小于 0.2 秒，不允许冲刺，转为跑步
+        if (Time.time - player.lastThirdAttackExitTime < 0.2f)
+        {
+            float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
+            if (Mathf.Abs(moveX) > 0.01f)
+            {
+                player.skeletonAnim.Skeleton.ScaleX = (moveX > 0) ? 1 : -1;
+                player.facingDirection = (moveX > 0) ? 1 : -1;
+                player.rb.velocity = new Vector2(moveX * player.moveSpeed, player.rb.velocity.y);
+                player.ChangeState(player.RunState);
+            }
+            else
+            {
+                player.ChangeState(player.IdleState);
+            }
+            return;
+        }
+
         player.rb.velocity = Vector2.zero;
 
         isForward = (direction == player.facingDirection);

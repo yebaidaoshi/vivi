@@ -45,6 +45,7 @@ public class PlayerRunState : PlayerState
         base.Enter();
         player.currentJumpCount = 0;
 
+
         float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
 
         var currentTrack = player.skeletonAnim.AnimationState.GetCurrent(0);
@@ -105,7 +106,7 @@ public class PlayerRunState : PlayerState
         float moveX = player.inputActions.Player.Move.ReadValue<Vector2>().x;
         bool isGrounded = player.IsGrounded();
 
-        // ★ 同时按下 S + 攻击 → 直接进入蹲下攻击（优先级最高）
+        // 同时按下 S + 攻击 → 直接进入蹲下攻击（优先级最高）
         if (player.inputActions.Player.Crouch.IsPressed() &&
             player.inputActions.Player.Attack.WasPressedThisFrame())
         {
@@ -113,11 +114,14 @@ public class PlayerRunState : PlayerState
             return;
         }
 
+        // 攻击键 → 进入攻击状态（连击计数已在 AttackState 中处理）
         if (player.inputActions.Player.Attack.WasPressedThisFrame())
         {
             player.ChangeState(player.AttackState);
             return;
         }
+
+        // 跳跃
         if (player.inputActions.Player.Jump.WasPressedThisFrame() && player.currentJumpCount < player.maxJumpCount && isGrounded)
         {
             player.facingDirectionBeforeJump = player.facingDirection;
@@ -126,6 +130,7 @@ public class PlayerRunState : PlayerState
             return;
         }
 
+        // 蹲下 → 根据当前状态进入滑铲或直接蹲下
         if (player.inputActions.Player.Crouch.WasPressedThisFrame())
         {
             if (isTransitioning || isLandingToRun)
@@ -141,6 +146,7 @@ public class PlayerRunState : PlayerState
 
         player.rb.velocity = new Vector2(moveX * player.moveSpeed, player.rb.velocity.y);
 
+        // 处理转向
         if (Mathf.Abs(moveX) > 0.01f && isGrounded)
         {
             int newDirection = (moveX > 0) ? 1 : -1;
@@ -161,6 +167,7 @@ public class PlayerRunState : PlayerState
             }
         }
 
+        // Landing_to_Run 过渡处理
         if (isLandingToRun)
         {
             if (player.inputActions.Player.Crouch.WasPressedThisFrame())
@@ -190,6 +197,7 @@ public class PlayerRunState : PlayerState
             return;
         }
 
+        // Run_to_Idle 过渡处理
         if (isTransitioning)
         {
             if (Mathf.Abs(moveX) > 0.01f)
@@ -219,6 +227,7 @@ public class PlayerRunState : PlayerState
             return;
         }
 
+        // 静止一小段时间后播放 Run_to_Idle
         var currentTrack2 = player.skeletonAnim.AnimationState.GetCurrent(0);
         bool isPlayingTurning2 = (currentTrack2 != null && currentTrack2.Animation.Name == RunTurningAnim);
         bool isPlayingStart2 = (currentTrack2 != null && currentTrack2.Animation.Name == RunStartAnim);

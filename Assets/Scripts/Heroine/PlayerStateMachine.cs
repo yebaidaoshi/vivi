@@ -32,12 +32,20 @@ public class PlayerStateMachine : MonoBehaviour
     public bool forceCrouching = false;
     public PlayerDashState DashState { get; private set; }
     public float dashSpeed = 50f;
+   
+    public float lastThirdAttackExitTime = -1f;
 
-    // ★ 新增：连击计数（由 AttackState 管理，DashState 可读取）
+    // ★ 连击计数（由 AttackState 管理，DashState 可读取）
     public int currentComboCount = 0;
 
     // 攻击可取消标志（由 Spine 事件控制）
     public bool canCancelAttack = false;
+
+    // ★ 新增：第三段攻击隔离标志（由 AttackState 管理）
+    public bool isInThirdAttack = false;
+
+    // ★ 新增：禁止冲刺输入标志（由 AttackState 设置，DashState 消费）
+    public bool ignoreDashInput = false;
 
     [Header("地面检测")]
     public Transform groundCheck;
@@ -70,9 +78,7 @@ public class PlayerStateMachine : MonoBehaviour
         var animStateData = skeletonAnim.AnimationState.Data;
         float mixTime = 0.1f;
 
-        // ...（原有混合设置保持不变）...
-
-        // 默认混合（兜底）
+        // 原有混合设置保持不变（这里仅示例，实际按您的混合配置写）
         animStateData.DefaultMix = mixTime;
 
         ChangeState(IdleState);
@@ -110,8 +116,16 @@ public class PlayerStateMachine : MonoBehaviour
             trackEntry.AttachmentThreshold = 0f;
     }
 
+    // ★ 全局 Spine 事件处理（已添加第三段隔离）
     private void OnSpineEvent(TrackEntry trackEntry, Spine.Event e)
     {
+        // ★ 如果当前处于第三段攻击，完全忽略全局事件，避免干扰 canCancelAttack
+        if (isInThirdAttack)
+        {
+            Debug.Log("[PlayerStateMachine] 第三段攻击中，忽略全局 Spine 事件");
+            return;
+        }
+
         if (e.Data.Name == "SendEvent")
         {
             string str = e.String;
@@ -120,10 +134,12 @@ public class PlayerStateMachine : MonoBehaviour
                 str == "E_Katana3" || str == "E_Katana4")
             {
                 canCancelAttack = true;
+                Debug.Log($"[PlayerStateMachine] 全局事件 {str} 开启 canCancelAttack");
             }
             else if (str == "End")
             {
                 canCancelAttack = false;
+                Debug.Log("[PlayerStateMachine] 全局事件 End 关闭 canCancelAttack");
             }
         }
     }
