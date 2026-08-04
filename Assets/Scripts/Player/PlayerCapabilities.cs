@@ -26,7 +26,7 @@ namespace Player
     }
 
     /// <summary>
-    /// Per-frame capability / ownership snapshot. Produced only by <see cref="PlayerArbiter"/>.
+    /// 每帧能力 / 所有权快照。仅由 <see cref="PlayerArbiter"/> 产出。
     /// </summary>
     public struct PlayerCapabilities
     {
@@ -39,10 +39,10 @@ namespace Player
         public bool CanEvade;
         public bool CanMagic;
 
-        /// <summary>Jump Tick movementLocked (includes ADS).</summary>
+        /// <summary>Jump.Tick 的 movementLocked（含 ADS）。</summary>
         public bool JumpLocked;
 
-        /// <summary>Blocks Idle/Run/Turn/Stop anim updates.</summary>
+        /// <summary>阻止 Idle/Run/Turn/Stop 动画更新。</summary>
         public bool BlockLocomotionAnim;
 
         public bool OverrideSpeed;
@@ -52,48 +52,48 @@ namespace Player
         public PlayerFacingOwner FacingOwner;
     }
 
-    /// <summary>Layer flags fed into <see cref="PlayerArbiter.Resolve"/>.</summary>
+    /// <summary>送入 <see cref="PlayerArbiter.Resolve"/> 的层级标志。</summary>
     public struct PlayerLayerSnapshot
     {
-        /// <summary>Until Movable — blocks run / crouch (jump uses <see cref="MeleeLocksActions"/> instead).</summary>
+        /// <summary>直到 Movable —— 阻止跑 / 蹲（跳跃改用 <see cref="MeleeLocksActions"/>）。</summary>
         public bool MeleeLocksMovement;
-        /// <summary>Until Cancelable — blocks ADS / backstep / jump.</summary>
+        /// <summary>直到 Cancelable —— 阻止 ADS / 后撤步 / 跳跃。</summary>
         public bool MeleeLocksActions;
         public bool MeleeIsAttacking;
         /// <summary>
-        /// Crouch authority (PlayerCrouch FSM) as a single state. The bool accessors below derive
-        /// the arbiter rules from it — no more parallel crouch flags to keep in sync.
+        /// 蹲下权威（PlayerCrouch FSM）以单一状态表示。下方布尔访问器由此推导
+        /// 仲裁规则——不再维护需同步的并行蹲下标志。
         /// </summary>
         public PlayerCrouchState CrouchState;
         public bool CrouchIsSliding => CrouchState == PlayerCrouchState.Sliding;//=>只读
-        /// <summary>Entering / crouching / sliding — gates ADS / facing / crouch walk.</summary>
+        /// <summary>进入 / 蹲着 / 滑铲 —— 门控 ADS / 朝向 / 蹲走。</summary>
         public bool CrouchIsBusy => CrouchState == PlayerCrouchState.Entering
             || CrouchState == PlayerCrouchState.Crouching
             || CrouchState == PlayerCrouchState.Sliding
             || CrouchState == PlayerCrouchState.SlideToCrouch;
-        /// <summary>Stand-up clip hold; yield immediately on other actions.</summary>
+        /// <summary>起身片段保持；其他动作应立即让出。</summary>
         public bool CrouchIsStandingUp => CrouchState == PlayerCrouchState.StandingUp;
-        /// <summary>Before the crouch-enter clip's own Attackable event — melee may not cut it
-        /// short (PlayerCrouch.CrouchEnterLocked). Raw flag: depends on elapsed time within
-        /// Entering, not derivable from <see cref="CrouchState"/> alone.</summary>
+        /// <summary>在蹲下进入片段自身的 Attackable 事件之前——近战不得打断该过渡
+        ///（PlayerCrouch.CrouchEnterLocked）。原始标志：取决于 Entering 内已过时间，
+        /// 无法仅从 <see cref="CrouchState"/> 推导。</summary>
         public bool CrouchEnterLocked;
         public bool JumpOnAir;
-        /// <summary>Soft land-anim hold; not a hard action lock.</summary>
+        /// <summary>软落地动画保持；非硬动作锁。</summary>
         public bool JumpLandingLocked;
-        /// <summary>Landing_to_Run until first SE_Run — hard-locks actions.</summary>
+        /// <summary>Landing_to_Run 直到首次 SE_Run —— 硬锁动作。</summary>
         public bool JumpLandToRunLocksActions;
-        /// <summary>Air backflip only.</summary>
+        /// <summary>仅空中后空翻。</summary>
         public bool JumpIsBackFlipping;
         public bool JumpCanBackFlip;
-        /// <summary>BackStep hard coast until Movable @ 0.3s.</summary>
+        /// <summary>BackStep 硬滑行直到 Movable @ 0.3s。</summary>
         public bool BackStepActive;
-        /// <summary>BackStep hard or soft recovery still playing.</summary>
+        /// <summary>BackStep 硬直或软恢复仍在播放。</summary>
         public bool BackStepBusy;
         public bool GunIsAds;
         public bool GunIsBusy;
-        /// <summary>Aim_SMG_Reload — other actions may cancel ADS; RMB release / A-D do not.</summary>
+        /// <summary>Aim_SMG_Reload —— 其他动作可取消 ADS；松开 RMB / A-D 不会。</summary>
         public bool GunIsReloading;
-        /// <summary>Magic channel / cast / cancel — hard action lock.</summary>
+        /// <summary>魔法蓄力 / 施放 / 取消 —— 硬动作锁。</summary>
         public bool MagicBusy;
         public bool LocoTurnLock;
         public bool Grounded;

@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Player.Editor
 {
 	/// <summary>
-	/// Force-assigns AudioClips onto the selected PlayerAudio components (for scenes that keep
-	/// serialized clip refs). Shares the filename map with <see cref="PlayerAudio.EditorAssignClips"/>.
+	/// 强制把 AudioClip 赋给选中的 PlayerAudio 组件（用于保留序列化片段引用的场景）。
+	/// 与 <see cref="PlayerAudio.EditorAssignClips"/> 共享文件名映射。
 	/// </summary>
 	public static class PlayerAudioClipAssigner
 	{

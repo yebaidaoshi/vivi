@@ -15,15 +15,15 @@ namespace Player
     }
 
     /// <summary>
-    /// floor Magic FSM (LeftShift / GAME_SKILL + LMB / GAME_FIRE):
-    /// Hold Shift → channel (ManaFlow + Magic_Channel*);
-    /// LMB while holding Shift → Magic_FrontCast + WindMagic;
-    /// release Shift alone → Magic_Channel_Cancel.
-    /// Air channel uses OnAir anims; landing while still charging switches to ground channel anims.
+    /// floor Magic FSM（LeftShift / GAME_SKILL + LMB / GAME_FIRE）：
+    /// 按住 Shift → 引导（ManaFlow + Magic_Channel*）；
+    /// 按住 Shift 时 LMB → Magic_FrontCast + WindMagic；
+    /// 单独松开 Shift → Magic_Channel_Cancel。
+    /// 空中引导使用 OnAir 动画；仍在蓄力时落地切换到地面引导动画。
     /// </summary>
     public class PlayerMagic : MonoBehaviour
     {
-        [Header("Prefabs (Monkey / floor magic toolkit)")]
+        [Header("预制体（Monkey / floor 魔法工具集）")]
         [SerializeField] private GameObject manaFlowPrefab;
         [SerializeField] private GameObject windMagicPrefab;
         [SerializeField] private float manaFlowScale = 3f;
@@ -38,7 +38,7 @@ namespace Player
         private PlayerMagicPhase _phase = PlayerMagicPhase.Idle;
         private float _phaseTimer;
         private bool _wasSkill;
-        /// <summary>Frozen at channel start so ground/air anims do not flip mid-charge.</summary>
+        /// <summary>在引导开始时冻结，以免地面/空中动画在蓄力中途翻转。</summary>
         private bool _airChannel;
         private GameObject _manaFlow;
 
@@ -50,7 +50,7 @@ namespace Player
             || _phase == PlayerMagicPhase.Cancel;
         public bool LocksActions => LocksMovement;
 
-        /// <summary>While magic owns movement: pin velocity (air = hover / no gravity).</summary>
+        /// <summary>魔法占用移动时：钉住速度（空中 = 悬停 / 无重力）。</summary>
         public bool HasVelocityOverride => IsBusy;
 
         public void Init(PlayerContext context)
@@ -90,8 +90,8 @@ namespace Player
                 return;
             }
 
-            // Chronos integrates gravity on its own timeline — zero velocity each FixedUpdate
-            // so air channel hovers and ground channel stays planted.
+            // Chronos 在自己的时间线上积分重力 — 每个 FixedUpdate 清零速度，
+            // 使空中引导悬停、地面引导定住。
             _motor.SetVelocity(Vector2.zero);
         }
 
@@ -144,7 +144,7 @@ namespace Player
                         break;
                     }
 
-                    // Animator may already have exitTime'd into Channeling — follow it once.
+                    // 动画器可能已经 exitTime 进入 Channeling — 跟随一次即可。
                     if (IsPlayingHold() || _phaseTimer <= 0f || ChannelIntroFinished())
                     {
                         BeginChannelHold();
@@ -203,8 +203,8 @@ namespace Player
                 ? PlayerAnimTimings.MagicChannelOnAir.ClipLength
                 : PlayerAnimTimings.MagicChannel.ClipLength;
 
-            // Play intro once (Magic_Channel / Magic_Channel_OnAir → clip Magic_Magic_Channel*).
-            // ChannelIntro only SyncCurrent afterward so Mecanim exitTime → Channeling* is not fought.
+            // 播放一次 intro（Magic_Channel / Magic_Channel_OnAir → 片段 Magic_Magic_Channel*）。
+            // ChannelIntro 之后只 SyncCurrent，以免与 Mecanim exitTime → Channeling* 打架。
             _anim.ForcePlay(IntroState());
             if (_airChannel && _motor != null)
             {
@@ -231,8 +231,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Air charge while falling: on touchdown keep charging, swap to ground channel anims.
-        /// Gravity / velocity override left as-is (not fully cancelled today).
+        /// 下落中空中蓄力：落地后继续蓄力，切换到地面引导动画。
+        /// 重力 / 速度覆盖保持原样（目前未完全取消）。
         /// </summary>
         private void TryLandChannelToGround()
         {
@@ -258,7 +258,7 @@ namespace Player
             }
             else
             {
-                // Still in air intro — continue with ground intro.
+                // 仍在空中 intro — 继续用地面 intro。
                 _phase = PlayerMagicPhase.ChannelIntro;
                 _phaseTimer = PlayerAnimTimings.MagicChannel.ClipLength;
                 _anim.ForcePlay(PlayerAnimDriver.States.MagicChannel);

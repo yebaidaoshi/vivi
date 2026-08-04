@@ -1,0 +1,34 @@
+
+Ptera.png
+size: 2048,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Beak
+  rotate: true
+  xy: 1611, 108
+  size: 210, 108
+  orig: 210, 108
+  offset: 0, 0
+  index: -1
+Body
+  rotate: false
+  xy: 2, 2
+  size: 742, 316
+  orig: 742, 316
+  offset: 0, 0
+  index: -1
+Wing_Down
+  rotate: true
+  xy: 1202, 105
+  size: 213, 407
+  orig: 213, 407
+  offset: 0, 0
+  index: -1
+Wing_Up
+  rotate: false
+  xy: 746, 14
+  size: 454, 304
+  orig: 454, 304
+  offset: 0, 0
+  index: -1

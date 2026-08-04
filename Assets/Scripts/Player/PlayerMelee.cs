@@ -8,19 +8,19 @@ namespace Player
     public enum PlayerMeleePhase
     {
         Idle,
-        /// <summary>Before Cancelable — fully locked.</summary>
+        /// <summary>Cancelable 之前 — 完全锁定。</summary>
         WindupLocked,
-        /// <summary>After Cancelable — ADS / behind-A/D backstep may cut in.</summary>
+        /// <summary>Cancelable 之后 — ADS / 背后 A/D 后撤可切入。</summary>
         ActionCancelable,
-        /// <summary>After Movable — run / jump / crouch may also cut in.</summary>
+        /// <summary>Movable 之后 — 跑步 / 跳跃 / 蹲下也可切入。</summary>
         MovableSheath
     }
 
     /// <summary>
-    /// Ground combo: chain on <c>Attackable</c>;
-    /// <c>Cancelable</c> unlocks ADS / behind-A/D backstep (jump too, see <see cref="LocksActions"/>);
-    /// <c>Movable</c> unlocks run / crouch.
-    /// Attack3 Movable = Melee INIT (combo reset); new Attack1 needs a fresh SlashPressed after that.
+    /// 地面连招：在 <c>Attackable</c> 上衔接；
+    /// <c>Cancelable</c> 解锁 ADS / 背后 A/D 后撤（跳跃亦然，见 <see cref="LocksActions"/>）；
+    /// <c>Movable</c> 解锁跑步 / 蹲下。
+    /// Attack3 Movable = 近战 INIT（连招重置）；之后需要新的 SlashPressed 才能开 Attack1。
     /// </summary>
     public class PlayerMelee : MonoBehaviour
     {
@@ -58,7 +58,7 @@ namespace Player
             },
         };
 
-        [Header("Slash VFX (Effects E_Katana1/2/3)")]
+        [Header("斩击特效（Effects E_Katana1/2/3）")]
         [SerializeField] private GameObject slash1Prefab;
         [SerializeField] private GameObject slash2Prefab;
         [SerializeField] private GameObject slash3Prefab;
@@ -66,24 +66,26 @@ namespace Player
         [SerializeField] private GameObject jumpSlashUpPrefab;
         [SerializeField] private GameObject jumpSlashDownPrefab;
 
-        [Header("Attack4 / Melee4 VFX (Effects E_Katana4 → State 15)")]
-        [Tooltip("Primary crescent — CreateObject #1.")]
+        [Header("Attack4 / Melee4 特效（Effects E_Katana4 → State 15）")]
+        [Tooltip("主新月 — CreateObject #1。")]
         [SerializeField] private GameObject slash4Prefab;
-        [Tooltip("Dust/smoke — CreateObject #2, then SetScale x = heroineScale * -2.")]
+        [Tooltip("尘烟 — CreateObject #2，随后 SetScale x = heroineScale * -2。")]
         [SerializeField] private GameObject katana4SmokePrefab;
-        [Tooltip("Afterwind driver — CreateObject #3 (_Melee4AfterSlash FSM spawns Melee4After / AfterShock).")]
+        [Tooltip("余风驱动 — CreateObject #3（_Melee4AfterSlash FSM；无 PlayMaker 时仅 hitbox）。")]
         [SerializeField] private GameObject melee4AfterSlashPrefab;
-        [Tooltip("World offset from heroine root: (facing * x, y). Matches floor GetScale→*3→SetVector3XYZ when |scale|=1.")]
+        [Tooltip("可见余斩 — 原先由 _Melee4AfterSlash State 6 CreateObject 生成。")]
+        [SerializeField] private GameObject melee4AfterPrefab;
+        [Tooltip("相对女主根的世界偏移：(facing * x, y)。匹配 floor GetScale→*3→SetVector3XYZ，当 |scale|=1。")]
         [SerializeField] private float slash4OffsetXScale = 3f;
         [SerializeField] private float slash4OffsetY = 3.6f;
-        [Tooltip("_Melee4AfterSlash must outlive its ChronosWait / Melee4After chain.")]
+        [Tooltip("_Melee4AfterSlash 必须长于其 ChronosWait / Melee4After 链。")]
         [SerializeField] private float melee4AfterLifetime = 4f;
 
-        [Tooltip("Spawn parent. floor.unity CreateObject uses the _Heroine root; leave null for that.")]
+        [Tooltip("生成父节点。floor.unity CreateObject 使用 _Heroine 根；留空即如此。")]
         [SerializeField] private Transform slashSpawn;
-        [Tooltip("LOCAL offset on the heroine root (parented). +x is always forward and the arc " +
-            "auto-mirrors when facing left. The body box is ~8 units tall (feet y0 / torso y4 / " +
-            "head y8), so torso height is ~4. Tune in the inspector to sit on the blade.")]
+        [Tooltip("女主根上的本地偏移（已挂接）。+x 始终为前方，弧线朝左时自动镜像。" +
+            "身体盒约高 8 单位（脚 y0 / 躯干 y4 / 头 y8），故躯干高度约 4。" +
+            "在检视器中微调以贴合刀刃。")]
         [SerializeField] private Vector2 slashOffset = new Vector2(0.7f, 4f);
         [SerializeField] private float slashLifetime = 1.2f;
 
@@ -104,21 +106,21 @@ namespace Player
         private float _overrideVx;
         private bool _hasOverrideVx;
         private string _activeState;
-        /// <summary>Attack2 fires a second slash on anim event E_Katana3 @ 0.3167s.</summary>
+        /// <summary>Attack2 在动画事件 E_Katana3 @ 0.3167s 再发第二道斩击。</summary>
         private bool _pendingAttack2Katana3;
-        /// <summary>Attack3/Attack4 fires Melee4 VFX on anim event E_Katana4 @ 0.1667s.</summary>
+        /// <summary>Attack3/Attack4 在动画事件 E_Katana4 @ 0.1667s 发出 Melee4 特效。</summary>
         private bool _pendingAttack3Katana4;
-        /// <summary>Play Melee4After SE after _Melee4AfterSlash State 1 wait (0.5s from Katana4).</summary>
+        /// <summary>_Melee4AfterSlash State 1 等待后播放 Melee4After 音效（距 Katana4 0.5s）。</summary>
         private bool _pendingMelee4AfterSe;
         private float _melee4AfterSeAt;
 
         public PlayerMeleePhase Phase => _phase;
         public bool IsAttacking => _phase != PlayerMeleePhase.Idle;
-        /// <summary>Until Cancelable — blocks ADS / backstep / jump
-        /// (PlayerArbiter.CanJump gates on this, not on <see cref="LocksMovement"/>).</summary>
+        /// <summary>直到 Cancelable — 阻挡 ADS / 后撤 / 跳跃
+        ///（PlayerArbiter.CanJump 据此门控，而非 <see cref="LocksMovement"/>）。</summary>
         public bool LocksActions => _phase == PlayerMeleePhase.WindupLocked;
-        /// <summary>Until Movable — blocks run / crouch (PlayerArbiter.CanCrouch gates on this)
-        /// (and pins velocity to 0 while grounded).</summary>
+        /// <summary>直到 Movable — 阻挡跑步 / 蹲下（PlayerArbiter.CanCrouch 据此门控）
+        ///（地面时并把速度钉为 0）。</summary>
         public bool LocksMovement => _phase == PlayerMeleePhase.WindupLocked
             || _phase == PlayerMeleePhase.ActionCancelable;
         public int Combo => _combo;
@@ -133,11 +135,11 @@ namespace Player
 
         private void ResolveVfx()
         {
-            // Procedural fallback (刀光) — renders when an authored slash prefab is missing.
+            // 程序化回退（刀光）— 缺少已制作斩击预制体时渲染。
             _slashVfx = GetComponent<PlayerSlashVfx>() ?? gameObject.AddComponent<PlayerSlashVfx>();
 
 #if UNITY_EDITOR
-			// Editor convenience (modules are composed at runtime with no serialized refs).
+			// 编辑器便利（模块在运行时组合，无序列化引用）。
 			if (slash1Prefab == null) slash1Prefab = LoadPrefab("Slash1_1");
 			if (slash2Prefab == null) slash2Prefab = LoadPrefab("Slash2");
 			if (slash3Prefab == null) slash3Prefab = LoadPrefab("Slash3");
@@ -147,6 +149,7 @@ namespace Player
 			if (slash4Prefab == null) slash4Prefab = LoadPrefab("Slash4");
 			if (katana4SmokePrefab == null) katana4SmokePrefab = LoadPrefab("Katana4_Smoke");
 			if (melee4AfterSlashPrefab == null) melee4AfterSlashPrefab = LoadPrefab("_Melee4AfterSlash");
+			if (melee4AfterPrefab == null) melee4AfterPrefab = LoadPrefab("Melee4After");
 #endif
         }
 
@@ -158,16 +161,16 @@ namespace Player
 #endif
 
         /// <summary>
-        /// Spawn a slash on the heroine. The slash is PARENTED to the _Heroine root
-        /// (<c>PlayerMelee.transform</c>) — the same transform whose <c>localScale.x</c> the motor
-        /// flips to ±1 for facing (<see cref="PlayerMotor.ForceFacing"/>). Because of that:
-        ///   • <see cref="slashOffset"/> is a LOCAL offset, so +x is always "forward" and the whole
-        ///     arc auto-mirrors when the heroine faces left — no manual facing math, no wrong side;
-        ///   • the prefab keeps its authored local scale/rotation, inheriting only the ±1 flip;
-        ///   • it tracks the heroine for its short lifetime (matches floor State 22 SetParent, and is
-        ///     harmless for the others since a slash only lives ~1s).
-        /// This replaces the earlier world-space spawn, which never mirrored and needed guessed
-        /// offsets that could not be recovered from floor.unity's runtime FSM variables.
+        /// 在女主上生成斩击。斩击挂接到 _Heroine 根
+        /// （<c>PlayerMelee.transform</c>）— 即电机翻转 <c>localScale.x</c> 为 ±1 以表示朝向的同一变换
+        /// （<see cref="PlayerMotor.ForceFacing"/>）。因此：
+        ///   • <see cref="slashOffset"/> 为本地偏移，故 +x 始终为「前方」，整段弧线朝左时自动镜像 —
+        ///     无需手动朝向计算，也不会跑到错误一侧；
+        ///   • 预制体保留其制作时的本地缩放/旋转，仅继承 ±1 翻转；
+        ///   • 在短生命周期内跟随女主（匹配 floor State 22 SetParent，对其余斩击也无害，
+        ///     因为斩击仅存活约 1s）。
+        /// 这取代了早先的世界空间生成（从不镜像，且依赖无法从 floor.unity 运行时 FSM
+        /// 变量还原的猜测偏移）。
         /// </summary>
         private GameObject SpawnSlash(GameObject prefab, PlayerSlashVfx.SlashKind kind,
             Vector2 extraOffset = default)
@@ -181,7 +184,7 @@ namespace Player
 
             if (prefab == null)
             {
-                // Procedural crescent: it builds its own object, so hand it the mirrored world pose.
+                // 程序化新月：自行构建对象，因此传入已镜像的世界姿势。
                 Vector3 worldPos = spawnRoot.TransformPoint(localPos);
                 return _slashVfx != null
                     ? _slashVfx.Play(kind, worldPos, spawnRoot.rotation, facing, slashLifetime)
@@ -189,7 +192,7 @@ namespace Player
             }
 
             var fx = Instantiate(prefab);
-            // Parent under the heroine (localScale.x = ±facing) → position + arc mirror for free.
+            // 挂到女主下（localScale.x = ±facing）→ 位置 + 弧线免费镜像。
             fx.transform.SetParent(spawnRoot, false);
             fx.transform.localPosition = localPos;
 
@@ -209,12 +212,12 @@ namespace Player
             switch (index)
             {
                 case 2:
-                    // Attack2.anim: E_Katana2 @ 0.0333 (near start) + E_Katana3 @ 0.3167.
+                    // Attack2.anim：E_Katana2 @ 0.0333（近起点）+ E_Katana3 @ 0.3167。
                     SpawnSlash(slash2Prefab, PlayerSlashVfx.SlashKind.Attack2);
                     _pendingAttack2Katana3 = true;
                     break;
                 case 3:
-                    // Attack3.anim (Animator Attack4): only E_Katana4 @ 0.1667 — deferred.
+                    // Attack3.anim（动画器 Attack4）：仅 E_Katana4 @ 0.1667 — 延迟。
                     _pendingAttack3Katana4 = true;
                     break;
                 default:
@@ -224,7 +227,7 @@ namespace Player
         }
 
         /// <summary>
-        /// Timed slash VFX / SE matching clip SendEvents that fire after attack start.
+        /// 匹配攻击开始后触发的片段 SendEvent 的定时斩击特效 / 音效。
         /// </summary>
         private void TickPendingSlashVfx()
         {
@@ -254,20 +257,39 @@ namespace Player
 
             _pendingMelee4AfterSe = false;
             _audio?.PlayMelee4After();
+            SpawnMelee4AfterSlashFx();
         }
 
         /// <summary>
-        /// floor Effects State 15 (E_Katana4): world-space CreateObject of Slash4
-        /// (offset = (facing * 3, 3.6)), Katana4_Smoke (scale.x = |prefab.x| * -facing), and
-        /// _Melee4AfterSlash (scale.x = facing; FSM drives afterwind + Melee4After SE).
+        /// _Melee4AfterSlash FSM State 6：在所有者处 CreateObject(Melee4After) + SetScale x = facing。
+        /// 无 PlayMaker，故在此与延迟音效一起生成可见斩击。
+        /// </summary>
+        private void SpawnMelee4AfterSlashFx()
+        {
+            Transform spawnRoot = slashSpawn != null ? slashSpawn : transform;
+            int facing = _motor != null ? _motor.Facing : 1;
+            var after = SpawnWorldFx(
+                melee4AfterPrefab,
+                PlayerSlashVfx.SlashKind.After,
+                spawnRoot.position,
+                spawnRoot.rotation,
+                facing,
+                slashLifetime > 0f ? slashLifetime : 1.2f);
+            MirrorScaleX(after != null ? after.transform : null, facing);
+        }
+
+        /// <summary>
+        /// floor Effects State 15（E_Katana4）：世界空间 CreateObject Slash4
+        ///（偏移 = (facing * 3, 3.6)）、Katana4_Smoke（scale.x = |prefab.x| * -facing），以及
+        /// _Melee4AfterSlash（scale.x = facing；FSM 驱动余风 + Melee4After 音效）。
         /// </summary>
         private void SpawnMelee4Vfx()
         {
-            // Immediate SEs: Melee4_2 + Meleeplus + Melee4Afterwind (Effects State 15).
+            // 立即音效：Melee4_2 + Meleeplus + Melee4Afterwind（Effects State 15）。
             _audio?.PlayMelee4();
-            // Delayed SE: Melee4After — originally _Melee4AfterSlash State1 ChronosWait(0.5) → State6.
-            // Do not rely on that FSM: ChronosWait stalls without a Clock, and AudioPlay needs AudioMaster.
-            // Use Time.time so the SE still fires if the attack ends before 0.5s (prefab is unparented).
+            // 延迟音效：Melee4After — 原先 _Melee4AfterSlash State1 ChronosWait(0.5) → State6。
+            // 不依赖该 FSM：无 Clock 时 ChronosWait 会卡住，且 AudioPlay 需要 AudioMaster。
+            // 使用 Time.time，以便攻击在 0.5s 前结束时音效仍会触发（预制体未挂接）。
             _pendingMelee4AfterSe = true;
             _melee4AfterSeAt = Time.time + PlayerAnimTimings.Attack3.Melee4AfterSe;
 
@@ -276,9 +298,9 @@ namespace Player
             Vector3 rootPos = spawnRoot.position;
             Quaternion rootRot = spawnRoot.rotation;
 
-            // CreateObject #1 — Slash4. Keep authored scale (9,8,9); facing-left = Y+180 Flip
-            // (floor SetFsmFloat → FloatSignTest → SetRotation Y+=180). Do NOT overwrite scale
-            // with heroine localScale (that collapsed 9→±1 and broke the mesh).
+            // CreateObject #1 — Slash4。保留制作缩放 (9,8,9)；朝左 = Y+180 Flip
+            //（floor SetFsmFloat → FloatSignTest → SetRotation Y+=180）。不要用女主
+            // localScale 覆盖缩放（那会把 9→±1 并弄坏网格）。
             var slash4 = SpawnWorldFx(
                 slash4Prefab,
                 PlayerSlashVfx.SlashKind.Attack3,
@@ -291,7 +313,7 @@ namespace Player
                 slash4.transform.Rotate(0f, 180f, 0f, Space.Self);
             }
 
-            // CreateObject #2 — Katana4_Smoke at root; SetScale x = facing * -2 on |prefab.x|=2.
+            // CreateObject #2 — Katana4_Smoke 在根处；SetScale x = facing * -2，当 |prefab.x|=2。
             var smoke = SpawnWorldFx(
                 katana4SmokePrefab,
                 PlayerSlashVfx.SlashKind.After,
@@ -301,7 +323,7 @@ namespace Player
                 slashLifetime);
             MirrorScaleX(smoke != null ? smoke.transform : null, -facing);
 
-            // CreateObject #3 — _Melee4AfterSlash VFX/hitbox driver (SE is owned by PlayerAudio above).
+            // CreateObject #3 — _Melee4AfterSlash 特效/hitbox 驱动（音效由上方 PlayerAudio 拥有）。
             var after = SpawnWorldFx(
                 melee4AfterSlashPrefab,
                 PlayerSlashVfx.SlashKind.After,
@@ -313,8 +335,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Unparented world spawn (matches floor CreateObject spawnPoint + position, no SetParent).
-        /// Keeps the prefab's authored localScale; only position/rotation are assigned.
+        /// 未挂接的世界空间生成（匹配 floor CreateObject spawnPoint + position，无 SetParent）。
+        /// 保留预制体制作时的 localScale；仅赋值位置/旋转。
         /// </summary>
         private GameObject SpawnWorldFx(GameObject prefab, PlayerSlashVfx.SlashKind kind,
             Vector3 worldPos, Quaternion worldRot, int facing, float lifetime)
@@ -339,7 +361,7 @@ namespace Player
             return fx;
         }
 
-        /// <summary>Keep authored |x| magnitude; apply facing sign (floor GetScale → SetScale pattern).</summary>
+        /// <summary>保留制作时的 |x| 幅度；应用朝向符号（floor GetScale → SetScale 模式）。</summary>
         private static void MirrorScaleX(Transform t, int sign)
         {
             if (t == null)
@@ -369,8 +391,8 @@ namespace Player
                 return;
             }
 
-            // Sliding: no attack of any kind (incl. the former Slide_Attack special) — see
-            // PlayerArbiter.CanMelee, which now also gates on !CrouchIsSliding.
+            // 滑铲：禁止任何攻击（含原先的 Slide_Attack 特殊招）— 见
+            // PlayerArbiter.CanMelee，现亦对 !CrouchIsSliding 门控。
             if (!canMelee || !intent.SlashPressed)
             {
                 return;
@@ -385,8 +407,8 @@ namespace Player
             DoGroundCombo(1);
         }
 
-        /// <summary>Starts a jump attack, picking Up/Down by the current vertical velocity
-        /// (mirrors the initial-trigger check in <see cref="Tick"/>).</summary>
+        /// <summary>开始跳跃攻击，按当前竖直速度选择 Up/Down
+        ///（镜像 <see cref="Tick"/> 中的初始触发检查）。</summary>
         private void BeginJumpAttack()
         {
             float vy = _motor.GetVelocity().y;
@@ -428,12 +450,10 @@ namespace Player
         }
 
         /// <summary>
-        /// floor SE_JumpAttack(Down) / EventLand: touching ground while Jump_Attack_Up or
-        /// Jump_Attack_Down is playing cuts straight to the Landing clip instead of finishing the
-        /// slash pose on the ground. Ending the attack here — before PlayerJump.Tick runs later
-        /// this frame — hands movement/anim ownership straight back to PlayerJump so its normal
-        /// Land() plays this same frame instead of the silent ClearAirOnOwnedLand() it uses while
-        /// melee still owns anim.
+        /// floor SE_JumpAttack(Down) / EventLand：Jump_Attack_Up 或 Jump_Attack_Down 播放中
+        /// 触地会直接切到 Landing 片段，而不是在地面上播完斩击姿势。在此结束攻击 —
+        /// 本帧稍后 PlayerJump.Tick 运行之前 — 把移动/动画所有权交回 PlayerJump，使其
+        /// 正常 Land() 在本帧播放，而非近战仍占用动画时使用的静默 ClearAirOnOwnedLand()。
         /// </summary>
         private bool TickJumpAttackLanding()
         {
@@ -461,10 +481,9 @@ namespace Player
             TickLunge(dt);
             TickPendingSlashVfx();
 
-            // Movable unlocks crouch / run — the most-recently-unlocked action takes priority
-            // over simply continuing to swing, so check it before a held Slash gets to chain
-            // the ground combo (TickComboChain) or restart it (TickAttack3Restart). Grounded-only:
-            // airborne / jump-attack chaining is untouched, still resolved further below.
+            // Movable 解锁蹲下 / 跑步 — 最近解锁的动作优先于继续挥砍，
+            // 故在按住 Slash 衔接地面连招（TickComboChain）或重启（TickAttack3Restart）之前检查。
+            // 仅地面：空中 / 跳跃攻击衔接不受影响，仍在下方处理。
             if (TickMovableGroundInterrupt(intent))
             {
                 return;
@@ -496,12 +515,11 @@ namespace Player
         }
 
         /// <summary>
-        /// Movable unlocks crouch (PlayerArbiter.CanCrouch) / run (CanMove) — check them first so
-        /// the newest-unlocked action wins over the attack continuing. Mirrors the crouch / move
-        /// conditions in <see cref="TickCancelableInterrupts"/>, just evaluated earlier and keyed
-        /// off <see cref="_elapsed"/> directly (no AdvancePhase lag) so it lands the same frame
-        /// Movable fires. Grounded-only — airborne/jump-attack OnAir handling stays untouched,
-        /// still covered later by TickCancelableInterrupts.
+        /// Movable 解锁蹲下（PlayerArbiter.CanCrouch）/ 跑步（CanMove）— 先检查它们，
+        /// 使最新解锁的动作优先于攻击继续。镜像 <see cref="TickCancelableInterrupts"/> 中的
+        /// 蹲下 / 移动条件，但更早求值并直接按 <see cref="_elapsed"/> 键控
+        ///（无 AdvancePhase 滞后），以便 Movable 触发的同一帧生效。仅地面 —
+        /// 空中/跳跃攻击 OnAir 处理不变，稍后仍由 TickCancelableInterrupts 覆盖。
         /// </summary>
         private bool TickMovableGroundInterrupt(PlayerIntent intent)
         {
@@ -523,8 +541,7 @@ namespace Player
         }
 
         /// <summary>
-        /// While movement is locked by melee, pin horizontal velocity to 0 so the character
-        /// does not keep sliding from a prior run.
+        /// 近战锁定移动时，把水平速度钉为 0，以免角色继续滑行（先前跑步惯性）。
         /// </summary>
         private void TickLunge(float dt)
         {
@@ -537,7 +554,7 @@ namespace Player
             _hasOverrideVx = true;
         }
 
-        /// <summary>Returns true when a chained hit started (caller should stop this frame).</summary>
+        /// <summary>衔接攻击已开始时返回 true（调用方应停止本帧）。</summary>
         private bool TickComboChain(PlayerIntent intent)
         {
             bool groundCombo = _combo >= 1 && _combo <= _settings.maxMeleeCombo;
@@ -545,10 +562,9 @@ namespace Player
                 && _combo < _settings.maxMeleeCombo
                 && _ctx.IsGrounded && !_ctx.IsSliding;
 
-            // No buffering: input BEFORE Attackable does nothing. From the Attackable event until
-            // the clip ends, ANY frame with the attack key down (held or a fresh press in that
-            // window) advances the combo (1→2 / 2→3). A single tap released before Attackable can
-            // never chain, so one click = one attack.
+            // 无缓冲：Attackable 之前的输入无效。从 Attackable 事件到片段结束，
+            // 任意一帧攻击键按下（该窗口内按住或新按下）都会推进连招（1→2 / 2→3）。
+            // Attackable 前松开的单击无法衔接，故一次点击 = 一次攻击。
             if (!canChain || _elapsed < _attackableAt)
             {
                 return false;
@@ -563,11 +579,11 @@ namespace Player
             return false;
         }
 
-        /// <summary>Returns true when a new jump attack chained in (caller should stop this frame).
-        /// Jump attacks are not part of the ground combo (<see cref="_combo"/> stays 0), so they
-        /// chain on their own: once JCancelable fires (<see cref="_cancelableAt"/>) the swing lock
-        /// lifts, and holding the attack key while still airborne throws another jump attack
-        /// (picked Up/Down by the current vertical velocity, same as the initial trigger).</summary>
+        /// <summary>新的跳跃攻击已衔接时返回 true（调用方应停止本帧）。
+        /// 跳跃攻击不属于地面连招（<see cref="_combo"/> 保持 0），故自行衔接：
+        /// 一旦 JCancelable 触发（<see cref="_cancelableAt"/>）挥砍锁定解除，
+        /// 仍在空中时按住攻击键再抛出一次跳跃攻击
+        ///（按当前竖直速度选 Up/Down，与初始触发相同）。</summary>
         private bool TickJumpAttackChain(PlayerIntent intent)
         {
             bool isJumpAttack = _activeState == PlayerAnimDriver.States.JumpAttackUp
@@ -595,8 +611,8 @@ namespace Player
             }
         }
 
-        /// <summary>After Attack3 Movable: a held or fresh attack key loops back to Attack1
-        /// (Attack1→2→3→1 cycle while held); returns true when a new combo started.</summary>
+        /// <summary>Attack3 Movable 之后：按住或新按攻击键循环回 Attack1
+        ///（按住时 Attack1→2→3→1 循环）；新连招开始时返回 true。</summary>
         private bool TickAttack3Restart(PlayerIntent intent, bool gunBusy)
         {
             if (_combo == 3 && _elapsed >= _movableAt && intent.Slash
@@ -609,7 +625,7 @@ namespace Player
             return false;
         }
 
-        /// <summary>Cancelable / Movable action + move interrupts. Returns true if the attack ended.</summary>
+        /// <summary>Cancelable / Movable 动作 + 移动打断。攻击结束时返回 true。</summary>
         private bool TickCancelableInterrupts(PlayerIntent intent, bool gunBusy)
         {
             if (_phase != PlayerMeleePhase.ActionCancelable
@@ -620,23 +636,23 @@ namespace Player
 
             bool actionInterrupt = gunBusy || intent.WantsAds || intent.ReloadPressed;
 
-            // Behind A/D after Cancelable → BackStep (Controller); do not soft-end first.
+            // Cancelable 后背后 A/D → BackStep（Controller）；不要先软结束。
             bool behind = PlayerJump.IsMoveBehind(intent.Move, _motor.Facing);
 
-            // Crouch is Movable-gated (PlayerArbiter.CanCrouch) — same point run unlocks —
-            // so only end the attack for crouch once MovableSheath, not from Cancelable.
-            // Sliding itself force-ends via actionInterrupt (gunBusy = !CanMelee, which is
-            // now also gated on !CrouchIsSliding) — this covers the plain crouch/stand-up case.
+            // 蹲下由 Movable 门控（PlayerArbiter.CanCrouch）— 与跑步解锁同一点 —
+            // 故仅在 MovableSheath 时为蹲下结束攻击，而非从 Cancelable。
+            // 滑铲本身经 actionInterrupt 强制结束（gunBusy = !CanMelee，现亦对
+            // !CrouchIsSliding 门控）— 此处覆盖普通蹲下/起身情况。
             bool crouchInterrupt = _phase == PlayerMeleePhase.MovableSheath
                 && (intent.CrouchPressed || _ctx.IsCrouchBusy);
 
-            // Jump is Cancelable-gated (PlayerArbiter.CanJump uses MeleeLocksActions), so a jump
-            // press ends a GROUND attack from ActionCancelable onward — not just after Movable.
-            // Grounded-only: jump attacks (already airborne) chain via TickJumpAttackChain on the
-            // Slash key, not the Jump key, so this must not touch them.
+            // 跳跃由 Cancelable 门控（PlayerArbiter.CanJump 使用 MeleeLocksActions），故跳跃
+            // 按下从 ActionCancelable 起即可结束地面攻击 — 不只在 Movable 之后。
+            // 仅地面：跳跃攻击（已在空中）经 TickJumpAttackChain 用 Slash 键衔接，
+            // 而非 Jump 键，故此处不得触碰它们。
             bool jumpInterrupt = _ctx.IsGrounded && !behind && (intent.JumpPressed || intent.Jump);
 
-            // Run / general movement still waits for Movable.
+            // 跑步 / 一般移动仍等待 Movable。
             bool moveInterrupt = _phase == PlayerMeleePhase.MovableSheath
                 && !behind
                 && (Mathf.Abs(intent.Move) > 0.1f || _ctx.OnAir);
@@ -663,8 +679,8 @@ namespace Player
 
             if (_elapsed >= _sheathEndAt || animDone)
             {
-                // Sheath SEs (SE_Noutou / SE_Noutou2 / SE_NoutouFast) come from the clip's
-                // baked animation events → PlayerAudio.SendEvent; no timer-driven SE here.
+                // 收刀音效（SE_Noutou / SE_Noutou2 / SE_NoutouFast）来自片段的
+                // 烘焙动画事件 → PlayerAudio.SendEvent；此处无定时驱动音效。
                 EndAttack();
             }
         }
@@ -689,8 +705,8 @@ namespace Player
             AttackTiming timing = GroundTimings[index];
             BeginAttack(state, timing.Attackable, timing.Cancelable, timing.Movable,
                 timing.SheathEnd, index);
-            // Attack3 / Attack4 SE is played with E_Katana4 VFX (PlayMelee4), not at windup.
-            // combo1 → E_Katana1 (Attack), combo2 → E_Katana2 (Attack2).
+            // Attack3 / Attack4 音效与 E_Katana4 特效一起播放（PlayMelee4），而非起手。
+            // combo1 → E_Katana1（Attack），combo2 → E_Katana2（Attack2）。
             if (index != 3)
             {
                 _audio?.PlayKatana(index);
@@ -711,7 +727,7 @@ namespace Player
             _combo = combo;
             _activeState = state;
             _anim.ForcePlay(state);
-            // Kill any incoming run/slide momentum so the hit doesn't carry sideways.
+            // 清掉任何到来的跑步/滑铲动量，以免打击带着横向惯性。
             _overrideVx = 0f;
             _hasOverrideVx = true;
             _motor.SetImmediateVelocityX(0f);
@@ -725,7 +741,7 @@ namespace Player
             _hasOverrideVx = false;
             _pendingAttack2Katana3 = false;
             _pendingAttack3Katana4 = false;
-            // Keep _pendingMelee4AfterSe — afterslash SE is timed from Time.time and outlives the attack.
+            // 保留 _pendingMelee4AfterSe — 余斩音效按 Time.time 定时，比攻击更长寿。
         }
 
         public void Cancel()

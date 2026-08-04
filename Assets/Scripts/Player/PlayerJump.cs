@@ -13,16 +13,16 @@ namespace Player
     }
 
     /// <summary>
-    /// Jump / fall / land / backflip — port of Jump FSM.
-    /// Idle Landing: soft hold, interruptible. Landing_to_Run: hard-lock until first SE_Run,
-    /// then yield; facing flips to move dir on land (Movement LRAnim).
-    /// Rule : left/right only drives airfloat lean.
+    /// 跳跃 / 下落 / 落地 / 后空翻 — Jump FSM 的移植。
+    /// Idle Landing：软保持，可打断。Landing_to_Run：硬锁定直到首次 SE_Run，
+    /// 然后让出；落地时朝向翻转到移动方向（Movement LRAnim）。
+    /// 规则：左右仅驱动 airfloat 倾侧。
     /// </summary>
     public class PlayerJump : MonoBehaviour
     {
-        [Header("Jump smoke VFX (floor Movement Jump CreateObject → JumpEffect)")]
+        [Header("跳跃烟雾 VFX（floor Movement Jump CreateObject → JumpEffect）")]
         [SerializeField] private GameObject jumpSmokePrefab;
-        [Tooltip("Offset from the _Heroine root; x mirrored by facing.")]
+        [Tooltip("相对 _Heroine 根节点的偏移；x 随朝向镜像。")]
         [SerializeField] private Vector2 jumpSmokeOffset = Vector2.zero;
         [SerializeField] private float jumpSmokeLifetime = 1.2f;
 
@@ -43,19 +43,19 @@ namespace Player
         public PlayerAirState State => _state;
         public bool OnAir => _state == PlayerAirState.Rising || _state == PlayerAirState.Falling
             || _state == PlayerAirState.BackFlip;
-        /// <summary>Soft idle / backflip land hold — interruptible.</summary>
+        /// <summary>软 Idle / 后空翻落地保持 — 可打断。</summary>
         public bool LandingLocked => !_landToRun
             && (_state == PlayerAirState.Landing || _state == PlayerAirState.BackFlipLand);
-        /// <summary>Landing_to_Run before first SE_Run — hard-locks actions.</summary>
+        /// <summary>Landing_to_Run 在首次 SE_Run 之前 — 硬锁定动作。</summary>
         public bool LandToRunLocksActions => _landToRun
             && _landToRunElapsed < PlayerAnimTimings.LandingToRun.SeRun;
-        /// <summary>Air backflip only (land is interruptible soft hold).</summary>
+        /// <summary>仅空中后空翻（落地为可打断的软保持）。</summary>
         public bool IsBackFlipping => _state == PlayerAirState.BackFlip;
-        /// <summary>Grounded; W + behind A/D → Jump State 7.</summary>
+        /// <summary>着地时；W + 身后 A/D → Jump State 7。</summary>
         public bool CanBackFlip => _motor != null && _motor.IsGrounded
             && !OnAir
             && !LandToRunLocksActions;
-        /// <summary>Blocks loco ramp during flip; velocity is one-shot (no per-frame rewrite).</summary>
+        /// <summary>后空翻期间阻塞 loco 加速；速度为一次性写入（不按帧重写）。</summary>
         public bool HasVelocityOverride => IsBackFlipping;
 
         public void Init(PlayerContext context)
@@ -67,7 +67,7 @@ namespace Player
         private void ResolveVfx()
         {
 #if UNITY_EDITOR
-			// Modules are composed at runtime with no serialized refs; pull the prefab by path.
+			// 模块在运行时组合且无序列化引用；按路径拉取预制体。
 			if (jumpSmokePrefab == null)
 			{
 				jumpSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
@@ -104,7 +104,7 @@ namespace Player
 
             if (_state == PlayerAirState.BackFlip)
             {
-                // JumpLocked is always set during backflip — use actionOwnsAnim, not movementLocked.
+                // 后空翻期间 JumpLocked 始终为真 — 用 actionOwnsAnim，不用 movementLocked。
                 TickBackFlip(grounded, suppressAnim);
                 return;
             }
@@ -116,7 +116,7 @@ namespace Player
                 {
                     return;
                 }
-                // SE_Run reached — fall through with actions unlocked.
+                // 已到达 SE_Run — 动作已解锁，继续往下走。
             }
 
             if (LandingLocked)
@@ -124,7 +124,7 @@ namespace Player
                 if (intent.WantsSoftActionInterrupt || actionOwnsAnim)
                 {
                     FinishLanding();
-                    // Fall through so jump / grounded logic can run same frame.
+                    // 继续往下走，使跳跃 / 着地逻辑可在同一帧运行。
                 }
                 else
                 {
@@ -135,12 +135,12 @@ namespace Player
 
             if (OnAir)
             {
-                // JumpLocked (e.g. MagicBusy): keep air state / land clear, but do not steal anim.
+                // JumpLocked（例如 MagicBusy）：保持空中状态 / 落地清理，但不抢动画。
                 TickAir(intent, grounded, suppressAnim: movementLocked || suppressAnim);
                 return;
             }
 
-            // Walk-off ledge (Fall event equivalent).
+            // 走出平台边缘（等价于 Fall 事件）。
             if (!grounded && _state == PlayerAirState.Grounded && !_motor.CanJump)
             {
                 EnterFall();
@@ -152,9 +152,9 @@ namespace Player
                 return;
             }
 
-            // W + behind A/D → BackFlip; plain W → Jump. A held W keeps taking off each time the
-            // character is grounded (idle jump→land→jump loop); _jumpConsumed gates one takeoff per
-            // ground contact. Buffer still catches a tap made just before touchdown.
+            // W + 身后 A/D → BackFlip；普通 W → Jump。按住 W 时每次着地都会起跳
+            //（idle 跳→落→跳 循环）；_jumpConsumed 限制每次着地只起跳一次。
+            // 缓冲仍可接住落地前刚按下的轻点。
             if (_motor.CanJump && !_jumpConsumed)
             {
                 bool behind = IsMoveBehind(intent.Move);
@@ -174,13 +174,13 @@ namespace Player
             }
         }
 
-        /// <summary>A/D toward the character's back (opposite facing).</summary>
+        /// <summary>A/D 朝向角色背后（与朝向相反）。</summary>
         public static bool IsMoveBehind(float move, int facing)
         {
             return Mathf.Abs(move) > 0.5f && move * facing < 0f;
         }
 
-        /// <summary>W + behind A/D — do not flip facing (backflip takeoff).</summary>
+        /// <summary>W + 身后 A/D — 不翻转朝向（后空翻起跳）。</summary>
         public static bool IsHoldingBackForFlip(float move, int facing, bool jumpHeld)
         {
             return jumpHeld && IsMoveBehind(move, facing);
@@ -188,7 +188,7 @@ namespace Player
 
         private bool IsMoveBehind(float move) => IsMoveBehind(move, _motor.Facing);
 
-        /// <summary>Hard-lock until first SE_Run, then Grounded so loco soft-continues the clip.</summary>
+        /// <summary>硬锁定直到首次 SE_Run，然后切 Grounded，由 loco 软续播该片段。</summary>
         private void TickLandToRun()
         {
             _landToRunElapsed += _motor.DeltaTime;
@@ -203,7 +203,7 @@ namespace Player
 
             if (_landToRunElapsed >= PlayerAnimTimings.LandingToRun.SeRun)
             {
-                // Unlock actions; leave anim playing for locomotion soft hold.
+                // 解锁动作；把动画留给 locomotion 软保持继续播。
                 _landToRun = false;
                 _state = PlayerAirState.Grounded;
                 _landLock = 0f;
@@ -211,7 +211,7 @@ namespace Player
             }
         }
 
-        /// <summary>Hold land clip until BaseFinished; landLock is only a safety timeout.</summary>
+        /// <summary>保持落地片段直到 BaseFinished；landLock 仅作安全超时。</summary>
         private void TickLandHold(string expectedState)
         {
             bool onClip = !string.IsNullOrEmpty(expectedState) && _anim.IsPlaying(expectedState);
@@ -227,7 +227,7 @@ namespace Player
                     _anim.SyncCurrent(expectedState);
                 }
 
-                // Prefer clip end; landLock is a safety timeout if BaseFinished never fires.
+                // 优先以片段结束为准；若 BaseFinished 永不触发，landLock 作安全超时。
                 if (_anim.BaseFinished || _landLock <= 0f)
                 {
                     FinishLanding();
@@ -236,7 +236,7 @@ namespace Player
                 return;
             }
 
-            // Lost the land state (interrupted) or timeout.
+            // 丢失落地状态（被打断）或超时。
             if (_landLock <= 0f)
             {
                 FinishLanding();
@@ -250,7 +250,7 @@ namespace Player
             _landingState = null;
             _landToRun = false;
             _landToRunElapsed = 0f;
-            // BackFlipLand used to leave this stuck true while grounded (CanJump never clears it).
+            // BackFlipLand 曾在着地时把此标志卡在 true（CanJump 永远清不掉）。
             _jumpConsumed = false;
         }
 
@@ -258,8 +258,8 @@ namespace Player
         {
             float vy = _motor.GetVelocity().y;
 
-            // floor Jump [Jump] state: during the takeoff ChronosWait only, behind input → BackFlip.
-            // Strictly the takeoff window (not the whole rise) so it can't fire mid-air.
+            // floor Jump [Jump] 状态：仅在起跳 ChronosWait 窗口内，身后输入 → BackFlip。
+            // 严格限定起跳窗口（非整段上升），避免空中误触发。
             if (!suppressAnim && _takeoffLock > 0f && IsMoveBehind(intent.Move) && !IsJumpAttackAnim())
             {
                 ConvertRisingToBackFlip();
@@ -276,7 +276,7 @@ namespace Player
                 _state = PlayerAirState.Falling;
             }
 
-            if (!suppressAnim)//如果没有被禁止播放动画，那么就执行下面的代码
+            if (!suppressAnim)//若未被禁止播放动画，则执行下面的代码
             {
                 UpdateAirFloat(intent.Move);
 
@@ -290,7 +290,7 @@ namespace Player
             {
                 if (suppressAnim)
                 {
-                    // Magic (etc.) already owns the base layer — clear air without Landing*.
+                    // Magic（等）已持有 Base Layer — 清空空中状态，不播 Landing*。
                     ClearAirOnOwnedLand();
                 }
                 else
@@ -300,7 +300,7 @@ namespace Player
             }
         }
 
-        /// <summary>Touchdown while another system owns anim (magic channel): exit air, no land clip.</summary>
+        /// <summary>落地时另一系统持有动画（魔法吟唱）：退出空中，不播落地片段。</summary>
         private void ClearAirOnOwnedLand()
         {
             _jumpConsumed = false;
@@ -347,8 +347,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Magic (etc.) interrupted air ownership — leave BackFlip without replaying Jump_BackFlip.
-        /// Keeps velocity; subsequent frames use Rising/Falling + suppressAnim.
+        /// Magic（等）打断空中所有权 — 离开 BackFlip，不重播 Jump_BackFlip。
+        /// 保留速度；后续帧走 Rising/Falling + suppressAnim。
         /// </summary>
         public void YieldAirAnimToAction()
         {
@@ -375,7 +375,7 @@ namespace Player
             _state = vy > 0.5f ? PlayerAirState.Rising : PlayerAirState.Falling;
         }
 
-        /// <summary>No per-frame rewrite — preserves State 7 one-shot velocity while blocking loco ramp.</summary>
+        /// <summary>不按帧重写 — 在阻塞 loco 加速的同时保留 State 7 的一次性速度。</summary>
         public void ApplyFixedVelocity()
         {
         }
@@ -408,20 +408,20 @@ namespace Player
                 || _anim.IsPlaying(PlayerAnimDriver.States.JumpAttackDown);
         }
 
-        /// <param name="moveAxis">Airfloat lean only — mesh facing stays locked in air.</param>
+        /// <param name="moveAxis">仅用于 airfloat 倾侧 — 空中网格朝向保持锁定。</param>
         public void DoJump(float moveAxis)
         {
             _jumpBuffer = 0f;
             _jumpConsumed = true;
             _state = PlayerAirState.Rising;
             _takeoffLock = _settings.jumpTakeoffLock;
-            // floor Jump: SetVelocity(0,0) → AddForce Impulse (0, JumpForce=40)
+            // floor Jump：SetVelocity(0,0) → AddForce Impulse (0, JumpForce=40)
             _motor.SetVelocity(Vector2.zero);
             _motor.AddForce(new Vector2(0f, _settings.jumpForce), ForceMode2D.Impulse);
             _anim.ForcePlay(PlayerAnimDriver.States.Jump);
             UpdateAirFloat(moveAxis);
             _audio?.PlayJump();
-            // floor Jump CreateObject → JumpEffect at PLAYER root (one-shot takeoff smoke).
+            // floor Jump CreateObject → JumpEffect，在 PLAYER 根节点（一次性起跳烟雾）。
             PlayerVfx.SpawnOneShot(jumpSmokePrefab, transform, jumpSmokeOffset, _motor.Facing,
                 true, jumpSmokeLifetime);
         }
@@ -447,7 +447,7 @@ namespace Player
             bool wantRun = Mathf.Abs(intent.Move) > 0.1f;
             if (wantRun)
             {
-                // Movement LRAnim: flip to GAME_MOVE; same facing → Forward, else Landing_to_Run.
+                // Movement LRAnim：翻转到 GAME_MOVE；同朝向 → Forward，否则 Landing_to_Run。
                 int moveDir = intent.Move > 0f ? 1 : -1;
                 bool sameFacing = moveDir == _motor.Facing;
                 _motor.ForceFacing(moveDir);
@@ -473,7 +473,7 @@ namespace Player
         }
 
         /// <summary>
-        /// W + behind A/D → Jump State 7: SetVelocity(0,0) → AddForce Impulse (-30*facing, 30).
+        /// W + 身后 A/D → Jump State 7：SetVelocity(0,0) → AddForce Impulse (-30*facing, 30)。
         /// </summary>
         public bool TryStartBackFlip()
         {
@@ -489,7 +489,7 @@ namespace Player
             return true;
         }
 
-        /// <summary>floor Jump [Jump]→State 7: redirect the takeoff into BackFlip (facing stays put).</summary>
+        /// <summary>floor Jump [Jump]→State 7：把起跳改道为 BackFlip（朝向不变）。</summary>
         private void ConvertRisingToBackFlip()
         {
             BeginBackFlip();
@@ -504,7 +504,7 @@ namespace Player
             _landLock = 0f;
             _takeoffLock = _settings.backFlipMinAir;
 
-            // floor State 7: SetVelocity(0,0) → BackStepForce=-30*facing → AddForce (fx, 30)
+            // floor State 7：SetVelocity(0,0) → BackStepForce=-30*facing → AddForce (fx, 30)
             float fx = -_settings.backFlipForce * _motor.Facing;
             _motor.SetVelocity(Vector2.zero);
             _motor.AddForce(new Vector2(fx, _settings.backFlipJumpForce), ForceMode2D.Impulse);

@@ -3,8 +3,8 @@ using System;
 namespace Player
 {
     /// <summary>
-    /// Shared per-frame context: services + layer snapshot + capabilities.
-    /// Modules read this instead of holding sibling references.
+    /// 每帧共享上下文：服务引用 + 层级快照 + 能力集。
+    /// 各模块读取此对象，而不再持有兄弟模块引用。
     /// </summary>
     public class PlayerContext
     {
@@ -16,7 +16,7 @@ namespace Player
         public PlayerCapabilities Caps;
         public PlayerLayerSnapshot Layers;
 
-        /// <summary>Wired by controller to <see cref="PlayerJump.NotifyJumpAttack"/>.</summary>
+        /// <summary>由控制器接线到 <see cref="PlayerJump.NotifyJumpAttack"/>。</summary>
         public Action NotifyJumpAttack;
 
         public float DeltaTime => Motor != null ? Motor.DeltaTime : 0f;
@@ -37,7 +37,6 @@ namespace Player
             settings = Settings;
         }
     }
-
 
 
 

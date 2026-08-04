@@ -3,69 +3,69 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// One-shot SE player. Clips can be assigned in the inspector; missing clips are skipped.
+    /// 一次性音效播放器。可在 Inspector 中指定片段；缺失的片段会被跳过。
     /// </summary>
     public class PlayerAudio : MonoBehaviour
     {
         [SerializeField]
         private AudioSource seSource;
 
-        [Header("Locomotion")]
-        [Tooltip("Ground-push step on takeoff (Jump FSM AudioPlay = STEPS Dirt_ Run 03).")]
+        [Header("移动")]
+        [Tooltip("起跳时的蹬地脚步声（Jump FSM AudioPlay = STEPS Dirt_ Run 03）。")]
         public AudioClip jump;
-        [Tooltip("Jump.ogg — takeoff whoosh, layered on top of the step.")]
+        [Tooltip("Jump.ogg — 起跳呼啸，叠在脚步声之上。")]
         public AudioClip jumpTakeoff;
         public AudioClip landing;
-        [Tooltip("Jump_BackFlip — State 7 takeoff.")]
+        [Tooltip("Jump_BackFlip — State 7 起跳。")]
         public AudioClip backFlip;
-        [Tooltip("Jump_BackFlip_Land — backflip touchdown.")]
+        [Tooltip("Jump_BackFlip_Land — 后空翻落地。")]
         public AudioClip backFlipLand;
-        [Tooltip("EventLand / Shirimochi_Land — hard (too-high) landing.")]
+        [Tooltip("EventLand / Shirimochi_Land — 硬落地（过高）。")]
         public AudioClip hardLanding;
         public AudioClip run1;
         public AudioClip run2;
         public AudioClip backStep;
         public AudioClip slide;
 
-        [Header("Melee")]
+        [Header("近战")]
         public AudioClip swordSwing;
         public AudioClip melee2;
         public AudioClip melee3;
         public AudioClip meleePlus;
-        [Tooltip("E_Katana1 swing (Attack) — combo 1.")]
+        [Tooltip("E_Katana1 挥砍（Attack）— 连招 1。")]
         public AudioClip attack1;
-        [Tooltip("E_Katana2 swing (Attack2) — combo 2 primary.")]
+        [Tooltip("E_Katana2 挥砍（Attack2）— 连招 2 主刀。")]
         public AudioClip attack2;
-        [Tooltip("E_Katana3 swing (Attack3) — combo 2 secondary.")]
+        [Tooltip("E_Katana3 挥砍（Attack3）— 连招 2 副刀。")]
         public AudioClip attack3;
-        [Tooltip("Melee4_2 — E_Katana4 (Attack4 / Melee4 swing).")]
+        [Tooltip("Melee4_2 — E_Katana4（Attack4 / Melee4 挥砍）。")]
         public AudioClip melee4;
-        [Tooltip("Melee4Afterwind — E_Katana4 afterwind SE (plays with the swing).")]
+        [Tooltip("Melee4Afterwind — E_Katana4 收招风声 SE（与挥砍同时播放）。")]
         public AudioClip melee4Afterwind;
-        [Tooltip("Melee4After — delayed afterslash SE from _Melee4AfterSlash FSM (also played here as backup).")]
+        [Tooltip("Melee4After — 来自 _Melee4AfterSlash FSM 的延迟余斩 SE（此处亦作备用播放）。")]
         public AudioClip melee4After;
-        [Tooltip("SwordSheathe1 — SE_Noutou animation event.")]
+        [Tooltip("SwordSheathe1 — SE_Noutou 动画事件。")]
         public AudioClip swordSheathe1;
-        [Tooltip("SwordSheathe — SE_Noutou2 animation event.")]
+        [Tooltip("SwordSheathe — SE_Noutou2 动画事件。")]
         public AudioClip swordSheathe;
-        [Tooltip("Melee4Sheathe — SE_NoutouFast animation event (Attack4 / Melee4).")]
+        [Tooltip("Melee4Sheathe — SE_NoutouFast 动画事件（Attack4 / Melee4）。")]
         public AudioClip melee4Sheathe;
         public AudioClip jumpAttackDown;
 
-        [Header("Gun")]
+        [Header("枪械")]
         public AudioClip aiming;
         public AudioClip gunFire;
-        [Tooltip("Fallback single reload clip if the magazine sequence is unassigned.")]
+        [Tooltip("弹匣序列未指定时的备用单段换弹片段。")]
         public AudioClip reload;
-        [Tooltip("RemoveMagazine — SE_OffMagazine at reload start.")]
+        [Tooltip("RemoveMagazine — 换弹开始时的 SE_OffMagazine。")]
         public AudioClip removeMagazine;
-        [Tooltip("SetMagazine — SE_SetMagazine at reload finish.")]
+        [Tooltip("SetMagazine — 换弹完成时的 SE_SetMagazine。")]
         public AudioClip setMagazine;
-        [Tooltip("Cocking — SE_Cocking after the magazine is set.")]
+        [Tooltip("Cocking — 装上弹匣后的 SE_Cocking。")]
         public AudioClip cocking;
 
-        [Header("Magic")]
-        [Tooltip("WindMagic.ogg — Magic2 FrontCast / WindMagic prefab AudioPlay.")]
+        [Header("魔法")]
+        [Tooltip("WindMagic.ogg — Magic2 FrontCast / WindMagic 预制体 AudioPlay。")]
         public AudioClip windMagic;
 
         private float _nextFootstep;
@@ -86,8 +86,8 @@ namespace Player
             }
 
 #if UNITY_EDITOR
-			// PlayerController composes modules at runtime (no serialized clip refs in the scene),
-			// so pull the SE clips from the project by name when playing in the editor.
+			// PlayerController 在运行时组合模块（场景中无序列化片段引用），
+			// 因此在编辑器中播放时按名称从工程拉取 SE 片段。
 			EditorAssignClips(onlyMissing: true);
 #endif
         }
@@ -104,7 +104,7 @@ namespace Player
 
         public void PlayJump()
         {
-            // Step (STEPS Dirt_ Run 03) + Jump.ogg whoosh, played together.
+            // 脚步（STEPS Dirt_ Run 03）+ Jump.ogg 呼啸，一起播放。
             Play(jump);
             Play(jumpTakeoff);
         }
@@ -118,8 +118,8 @@ namespace Player
         public void PlaySlide() => Play(slide != null ? slide : backStep);
 
         /// <summary>
-        /// Animation-event receiver for SendEvent(...) baked into clips (via PlayerController bridge).
-        /// Gun reload / fold SEs must be handled here — Effects FSM used to play them on these events.
+        /// 片段内烘焙的 SendEvent(...) 动画事件接收器（经 PlayerController 桥接）。
+        /// 枪械换弹 / 收枪 SE 必须在此处理 — Effects FSM 过去在这些事件上播放它们。
         /// </summary>
         public void SendEvent(string eventName)
         {
@@ -141,26 +141,26 @@ namespace Player
                     PlaySetMagazine();
                     break;
                 case "SE_Cocking":
-                    // Reload bolt / 退膛·上膛 — Aim_*_SMG_Reload @ 0.8667
+                    // 换弹拉栓 / 退膛·上膛 — Aim_*_SMG_Reload @ 0.8667
                     PlayCocking();
                     break;
                 case "SE_foldSMG":
-                    // Holster fold uses the same Cocking.ogg in floor Effects State 11.
+                    // 收枪折叠在 floor Effects State 11 使用同一段 Cocking.ogg。
                     PlayCocking();
                     break;
             }
         }
         public void PlayAiming() => Play(aiming);
         public void PlayGunFire() => Play(gunFire);
-        /// <summary>SE_OffMagazine at reload start.</summary>
+        /// <summary>换弹开始时的 SE_OffMagazine。</summary>
         public void PlayMagazineOut() => Play(removeMagazine != null ? removeMagazine : reload);
-        /// <summary>SE_SetMagazine mid-reload.</summary>
+        /// <summary>换弹中途的 SE_SetMagazine。</summary>
         public void PlaySetMagazine() => Play(setMagazine != null ? setMagazine : reload);
-        /// <summary>SE_Cocking / SE_foldSMG — Cocking.ogg.</summary>
+        /// <summary>SE_Cocking / SE_foldSMG — Cocking.ogg。</summary>
         public void PlayCocking() => Play(cocking != null ? cocking : reload);
         /// <summary>
-        /// Fallback when anim events did not fire: SetMagazine + Cocking.
-        /// Prefer timed SendEvent(SE_*) from the reload clip when the Animator bridge is live.
+        /// 动画事件未触发时的回退：SetMagazine + Cocking。
+        /// Animator 桥接可用时，优先使用换弹片段中定时的 SendEvent(SE_*)。
         /// </summary>
         public void PlayReload()
         {
@@ -177,9 +177,9 @@ namespace Player
         public void PlayWindMagic() => Play(windMagic);
 
         /// <summary>
-        /// Ground-combo swing SEs keyed by the clip's E_Katana index. The base swing
-        /// (SwordSwing / Melee2 / Melee3) is kept and the per-attack overlay the reference
-        /// layers on top (Attack / Attack2 / Attack3) is played simultaneously, + Meleeplus.
+        /// 地面连招挥砍 SE，按片段的 E_Katana 索引。保留基础挥砍
+        ///（SwordSwing / Melee2 / Melee3），并同时播放参考工程叠在上面的
+        /// 各攻击覆盖音（Attack / Attack2 / Attack3），外加 Meleeplus。
         /// </summary>
         public void PlayKatana(int katanaIndex)
         {
@@ -206,7 +206,7 @@ namespace Player
             }
         }
 
-        /// <summary>Non-combo swing (slide / jump-attack-up): SwordSwing + Meleeplus.</summary>
+        /// <summary>非连招挥砍（滑铲 / 跳攻向上）：SwordSwing + Meleeplus。</summary>
         public void PlayMeleeSwing(int comboIndex)
         {
             switch (comboIndex)
@@ -228,7 +228,7 @@ namespace Player
             }
         }
 
-        /// <summary>E_Katana4 (Effects State 15): Melee4_2 + Meleeplus + Melee4Afterwind.</summary>
+        /// <summary>E_Katana4（Effects State 15）：Melee4_2 + Meleeplus + Melee4Afterwind。</summary>
         public void PlayMelee4()
         {
             Play(melee4 != null ? melee4 : swordSwing);
@@ -237,14 +237,14 @@ namespace Player
                 Play(meleePlus, 0.7f);
             }
 
-            // floor third AudioPlay on E_Katana4 — immediate afterwind whoosh.
+            // floor 在 E_Katana4 上的第三个 AudioPlay — 立即播放收招呼啸。
             Play(melee4Afterwind != null ? melee4Afterwind : melee4After);
         }
 
         /// <summary>
-        /// Delayed afterslash SE (_Melee4AfterSlash State 6 AudioPlay → Melee4After.ogg).
-        /// Driven from PlayerMelee because the prefab's ChronosWait never finishes without a
-        /// Chronos Clock, and its AudioPlay targets a possibly-null global AudioMaster.
+        /// 延迟余斩 SE（_Melee4AfterSlash State 6 AudioPlay → Melee4After.ogg）。
+        /// 由 PlayerMelee 驱动，因为预制体的 ChronosWait 在没有 Chronos Clock 时永不结束，
+        /// 且其 AudioPlay 可能指向空的全局 AudioMaster。
         /// </summary>
         public void PlayMelee4After()
         {
@@ -265,8 +265,8 @@ namespace Player
 
 #if UNITY_EDITOR
 		/// <summary>
-		/// Wire SE clips from Assets/AudioClip by floor.unity filename. Shared by the auto-assign
-		/// on Awake (onlyMissing) and the Tools menu assigner (force). Editor-only.
+		/// 按 floor.unity 文件名从 Assets/AudioClip 绑定 SE 片段。供 Awake 自动赋值
+		///（onlyMissing）与 Tools 菜单赋值器（force）共用。仅编辑器。
 		/// </summary>
 		public void EditorAssignClips(bool onlyMissing)
 		{

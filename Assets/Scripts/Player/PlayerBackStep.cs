@@ -3,15 +3,15 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// floor Movement BackStep:
-    /// Impulse ±50, coast until anim Movable @ 0.3s (then velocity → 0).
-    /// After Movable the remaining clip is soft — move / jump / attack may interrupt.
+    /// floor Movement BackStep：
+    /// 冲量 ±50，滑行直到动画 Movable @ 0.3s（然后速度 → 0）。
+    /// Movable 之后剩余片段为软保持 — 移动 / 跳跃 / 攻击可打断。
     /// </summary>
     public class PlayerBackStep : MonoBehaviour
     {
-        [Header("Step smoke VFX (floor Movement BackStep CreateObject → Step_Smoke)")]
+        [Header("后撤烟雾 VFX（floor Movement BackStep CreateObject → Step_Smoke）")]
         [SerializeField] private GameObject stepSmokePrefab;
-        [Tooltip("Offset from the _Heroine root; x mirrored by facing (floor GetScale → SetScale).")]
+        [Tooltip("相对 _Heroine 根节点的偏移；x 随朝向镜像（floor GetScale → SetScale）。")]
         [SerializeField] private Vector2 stepSmokeOffset = Vector2.zero;
         [SerializeField] private float stepSmokeLifetime = 1.2f;
 
@@ -26,9 +26,9 @@ namespace Player
         private float _animTimer;
         private float _coastVx;
 
-        /// <summary>Until Movable (0.3s) — hard velocity / move / jump lock.</summary>
+        /// <summary>直到 Movable（0.3s）— 硬锁定速度 / 移动 / 跳跃。</summary>
         public bool IsActive => _moveLocked;
-        /// <summary>True while backstep is active (hard coast or soft recovery anim).</summary>
+        /// <summary>后撤进行中为真（硬滑行或软恢复动画）。</summary>
         public bool IsBusy => _moveLocked || _animHold;
         public bool HasVelocityOverride => _moveLocked;
 
@@ -41,7 +41,7 @@ namespace Player
         private void ResolveVfx()
         {
 #if UNITY_EDITOR
-			// Modules are composed at runtime with no serialized refs; pull the prefab by path.
+			// 模块在运行时组合且无序列化引用；按路径拉取预制体。
 			if (stepSmokePrefab == null)
 			{
 				stepSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
@@ -73,13 +73,13 @@ namespace Player
 
             _anim.ForcePlay(PlayerAnimDriver.States.BackStep);
             _audio?.PlayBackStep();
-            // floor BackStep CreateObject: one-shot Step_Smoke at the _Heroine root, facing-mirrored.
+            // floor BackStep CreateObject：在 _Heroine 根节点生成一次性 Step_Smoke，随朝向镜像。
             PlayerVfx.SpawnOneShot(stepSmokePrefab, transform, stepSmokeOffset, _motor.Facing,
                 true, stepSmokeLifetime);
             return true;
         }
 
-        /// <summary>After Movable — cut soft recovery when another action takes over.</summary>
+        /// <summary>Movable 之后 — 当其他动作接管时切断软恢复。</summary>
         public void Interrupt()
         {
             if (_moveLocked)
@@ -113,7 +113,7 @@ namespace Player
             }
             else if (_animHold)
             {
-                // Soft recovery: do not force-own anim — loco / melee may interrupt.
+                // 软恢复：不强行独占动画 — loco / 近战可打断。
                 _animTimer -= dt;
                 if (!_anim.IsPlaying(PlayerAnimDriver.States.BackStep)
                     || _anim.BaseFinished

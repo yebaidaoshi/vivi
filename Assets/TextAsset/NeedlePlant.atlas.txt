@@ -1,0 +1,27 @@
+
+NeedlePlant.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Body
+  rotate: false
+  xy: 2, 125
+  size: 225, 282
+  orig: 225, 282
+  offset: 0, 0
+  index: -1
+Leg
+  rotate: false
+  xy: 229, 71
+  size: 163, 336
+  orig: 163, 336
+  offset: 0, 0
+  index: -1
+Pump
+  rotate: false
+  xy: 2, 2
+  size: 127, 121
+  orig: 127, 121
+  offset: 0, 0
+  index: -1

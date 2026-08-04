@@ -3,8 +3,8 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// Lightweight replacement for the _Bullet PlayMaker fly/hit loop.
-    /// floor.unity SetVelocity uses speed 75 along the spawn facing.
+    /// _Bullet PlayMaker 飞行/命中循环的轻量替代。
+    /// floor.unity SetVelocity 沿生成朝向使用速度 75。
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerBulletMover : MonoBehaviour
@@ -12,26 +12,70 @@ namespace Player
         [SerializeField] private float speed = 75f;
         [SerializeField] private float lifetime = 2.5f;
         [SerializeField] private LayerMask hitMask = ~0;
+        [SerializeField] private GameObject hitFxPrefab;
+        [SerializeField] private float hitFxLifetime = 1.5f;
+
+        [Tooltip("_Bullet 预制体根制作时欧拉角 z=90。在 Atan2（+X）之上保留该偏移。")]
+        [SerializeField] private float spriteAngleOffset = 90f;
 
         private Rigidbody2D _rb;
         private float _life;
         private int _facing = 1;
         private bool _launched;
+        private bool _spent;
+        private Transform _owner;
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
-            DisablePlayMaker();
+            DisableLegacyDrivers();
+#if UNITY_EDITOR
+            if (hitFxPrefab == null)
+            {
+                hitFxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/GameObject/Bullet_GoldFire_Medium_Impact.prefab");
+            }
+#endif
+        }
+
+        /// <summary>
+        /// 忽略射击者碰撞体，以免枪口生成与女主重叠
+        ///（瞄准姿势落定前的首发很常见）而立刻消耗。
+        /// </summary>
+        public void SetOwner(Transform owner)
+        {
+            _owner = owner;
+            var myCols = GetComponentsInChildren<Collider2D>(true);
+            if (owner == null || myCols == null || myCols.Length == 0)
+            {
+                return;
+            }
+
+            var ownerCols = owner.GetComponentsInChildren<Collider2D>(true);
+            for (int i = 0; i < myCols.Length; i++)
+            {
+                if (myCols[i] == null)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < ownerCols.Length; j++)
+                {
+                    if (ownerCols[j] == null)
+                    {
+                        continue;
+                    }
+
+                    Physics2D.IgnoreCollision(myCols[i], ownerCols[j], true);
+                }
+            }
         }
 
         public void Launch(int facing, float bulletSpeed = -1f)
         {
             Launch(new Vector2(facing >= 0 ? 1f : -1f, 0f), bulletSpeed);
         }
-
-        [Tooltip("_Bullet prefab root is authored at euler z=90. Keep that offset on top of Atan2 (+X).")]
-        [SerializeField] private float spriteAngleOffset = 90f;
 
         public void Launch(Vector2 direction, float bulletSpeed = -1f)
         {
@@ -51,11 +95,11 @@ namespace Player
             _launched = true;
             _rb.velocity = direction * speed;
 
-            // Prefab default euler z=90; CreateObject used aim ZAngle on top of that orientation.
+            // 预制体默认欧拉角 z=90；CreateObject 在该朝向上叠加瞄准 ZAngle。
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, angle + spriteAngleOffset);
 
-            // Rotation alone aims the sprite; keep uniform scale (no X-flip mirror).
+            // 仅靠旋转瞄准精灵；保持均匀缩放（无 X 翻转镜像）。
             var s = transform.localScale;
             s.x = Mathf.Abs(s.x);
             s.y = Mathf.Abs(s.y);
@@ -78,7 +122,7 @@ namespace Player
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!_launched || other == null)
+            if (!_launched || other == null || ShouldIgnore(other.transform, other.gameObject))
             {
                 return;
             }
@@ -88,37 +132,82 @@ namespace Player
                 return;
             }
 
-            // Ignore self / ally projectiles / triggers on the shooter.
-            if (other.CompareTag("AllyProjectile") || other.CompareTag("PlayerPresence")
-                || other.CompareTag("FX"))
-            {
-                return;
-            }
-
-            Destroy(gameObject);
+            Spend(transform.position);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (!_launched)
+            if (!_launched || collision == null || collision.collider == null)
             {
                 return;
+            }
+
+            if (ShouldIgnore(collision.transform, collision.gameObject))
+            {
+                return;
+            }
+
+            Vector3 pos = collision.contactCount > 0
+                ? (Vector3)collision.GetContact(0).point
+                : transform.position;
+            Spend(pos);
+        }
+
+        private bool ShouldIgnore(Transform otherT, GameObject otherGo)
+        {
+            if (otherGo == null)
+            {
+                return true;
+            }
+
+            // 忽略自身 / 友方投射物 / 特效 / 玩家存在。
+            if (otherGo.CompareTag("AllyProjectile") || otherGo.CompareTag("PlayerPresence")
+                || otherGo.CompareTag("FX"))
+            {
+                return true;
+            }
+
+            if (_owner != null && otherT != null
+                && (otherT == _owner || otherT.IsChildOf(_owner)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void Spend(Vector3 hitPos)
+        {
+            if (_spent)
+            {
+                return;
+            }
+
+            _spent = true;
+            if (hitFxPrefab != null)
+            {
+                var fx = Instantiate(hitFxPrefab, hitPos, Quaternion.identity);
+                if (hitFxLifetime > 0f)
+                {
+                    Destroy(fx, hitFxLifetime);
+                }
             }
 
             Destroy(gameObject);
         }
 
-        private void DisablePlayMaker()
+        private void DisableLegacyDrivers()
         {
             foreach (var mb in GetComponentsInChildren<MonoBehaviour>(true))
             {
-                if (mb == null)
+                if (mb == null || mb == this)
                 {
                     continue;
                 }
 
                 string tn = mb.GetType().FullName ?? "";
-                if (tn.Contains("PlayMaker"))
+                // 撕取预制体上的 PlayMaker FSM（缺失 DLL）与 3D ExplodingProjectile。
+                if (tn.Contains("PlayMaker") || tn.Contains("ExplodingProjectile"))
                 {
                     mb.enabled = false;
                 }

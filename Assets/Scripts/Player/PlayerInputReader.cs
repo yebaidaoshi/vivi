@@ -3,21 +3,21 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// Classic UnityEngine.Input reader (keyboard + mouse), producing a <see cref="PlayerIntent"/>.
-    /// Keeps the original keyboard layout (A/D, W, S, Space, R, LMB/RMB, ...) but has no
-    /// InControl / InControlManager dependency, so it works in a bare scene.
-    /// Runs before PlayerController (execution order) so intent is fresh each frame.
+    /// 经典 UnityEngine.Input 读取器（键盘 + 鼠标），产出 <see cref="PlayerIntent"/>。
+    /// 保留原键位布局（A/D、W、S、Space、R、LMB/RMB 等），但不依赖
+    /// InControl / InControlManager，因此可在裸场景中使用。
+    /// 执行顺序早于 PlayerController，确保每帧意图为最新。
     /// </summary>
     [DefaultExecutionOrder(-200)]
     public class PlayerInputReader : MonoBehaviour
     {
-        [Header("Move keys")]
+        [Header("移动键")]
         [SerializeField] private KeyCode left = KeyCode.A;
         [SerializeField] private KeyCode right = KeyCode.D;
         [SerializeField] private KeyCode up = KeyCode.W;
         [SerializeField] private KeyCode down = KeyCode.S;
 
-        [Header("Action keys")]
+        [Header("动作键")]
         [SerializeField] private KeyCode jump = KeyCode.W;
         [SerializeField] private KeyCode evade = KeyCode.Space;
         [SerializeField] private KeyCode reload = KeyCode.R;
@@ -29,8 +29,8 @@ namespace Player
         [SerializeField] private KeyCode keyAds = KeyCode.M;
         [SerializeField] private KeyCode slashKey = KeyCode.J;
 
-        [Header("Options")]
-        [Tooltip("Also read arrow keys for horizontal move.")]
+        [Header("选项")]
+        [Tooltip("同时用方向键读取水平移动。")]
         [SerializeField] private bool useArrowKeys = true;
 
         private PlayerIntent _intent;
@@ -59,7 +59,7 @@ namespace Player
             if (cam != null)
             {
                 Vector3 screen = Input.mousePosition;
-                // Orthographic 2D: ScreenToWorldPoint keeps z from the camera plane.
+                // 正交 2D：ScreenToWorldPoint 保留来自相机平面的 z。
                 screen.z = Mathf.Abs(cam.transform.position.z);
                 Vector3 world = cam.ScreenToWorldPoint(screen);
                 i.AimPoint = new Vector2(world.x, world.y);
@@ -88,8 +88,8 @@ namespace Player
             i.Ads = ads;
             i.StickAds = false;
 
-            // Melee triggers off the dedicated slash key, or off Fire when not aiming
-            // (mirrors the original FIRE -> GAME_SLASH2 routing).
+            // 近战由专用斩击键触发，或在未瞄准时由 Fire 触发
+            //（镜像原 FIRE -> GAME_SLASH2 路由）。
             bool slashHeld = Held(slashKey) || (fire && !ads);
             bool slashDown = Down(slashKey) || (firePressed && !ads);
             i.Slash = slashHeld;

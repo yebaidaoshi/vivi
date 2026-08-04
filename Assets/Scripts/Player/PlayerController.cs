@@ -7,7 +7,7 @@ namespace Player
     [RequireComponent(typeof(Animator))]//确保游戏对象上有 Animator 组件，如果没有则自动添加
     public class PlayerController : MonoBehaviour
     {
-        [Header("Modules")]
+        [Header("模块")]
         [SerializeField] private PlayerInputReader inputReader;//输入读取组件
         [SerializeField] private PlayerMotor motor;//移动组件
         [SerializeField] private PlayerJump jump;//跳跃组件
@@ -19,7 +19,7 @@ namespace Player
         [SerializeField] private PlayerAnimDriver anim;//动画驱动组件
         [SerializeField] private PlayerAudio audioPlayer;//音频播放器组件
 
-        [Header("Options")]
+        [Header("选项")]
         [SerializeField] private bool controlLocomotion = true;//是否控制移动
         [SerializeField] private bool locked;//是否锁定玩家控制
 
@@ -28,8 +28,8 @@ namespace Player
         private PlayerLocomotion _loco;
         private PlayerCapabilities _caps;
 
-        public PlayerIntent Intent => inputReader != null ? inputReader.Intent : default;//判断inputReader是否不等与null，如果不等于null就返回inputReader.Intent，否则返回(;后面的内容)defaul（默认值）
-        public PlayerMotor Motor => motor;//封装的好处 外部可读取但不能修改
+        public PlayerIntent Intent => inputReader != null ? inputReader.Intent : default;//判断 inputReader 是否不等于 null，不等于则返回 inputReader.Intent，否则返回 default（默认值）
+        public PlayerMotor Motor => motor;//封装的好处：外部可读取但不能修改
         public PlayerCapabilities Caps => _caps;
         public PlayerContext Context => _ctx;
         public bool Locked
@@ -58,7 +58,7 @@ namespace Player
             backStep = backStep ?? GetComponent<PlayerBackStep>() ?? gameObject.AddComponent<PlayerBackStep>();
             magic = magic ?? GetComponent<PlayerMagic>() ?? gameObject.AddComponent<PlayerMagic>();
         }
-        //?? (空合并运算符) 逻辑： 如果左边不是 null，就用左边；如果左边是 null，就用右边
+        //??（空合并运算符）逻辑：如果左边不是 null，就用左边；如果左边是 null，就用右边
         private PlayerAudio ResolveAudioModule()//确保音频模块存在，如果不存在则添加
         {
             Transform audioRoot = transform.Find("Audio");
@@ -76,7 +76,7 @@ namespace Player
                 return onAudio;
             }
 
-            // Legacy: previously lived on the Heroine root — migrate if present.
+            // 旧版：原先挂在 Heroine 根节点上——若仍存在则迁移复用。
             var onRoot = GetComponent<PlayerAudio>();
             if (onRoot != null)
             {
@@ -88,7 +88,7 @@ namespace Player
         public void SendEvent(string eventName)//发送事件给音频播放器
         {
             audioPlayer?.SendEvent(eventName);
-        }//?表示如果audioPlayer不等于null就调用SendEvent方法，否则不做任何操作
+        }//? 表示若 audioPlayer 不等于 null 则调用 SendEvent，否则不做任何操作
 
         private void WireModules()//连接模块
         {
@@ -120,10 +120,10 @@ namespace Player
 
             ResolveCaps(setAnimGate: true);
 
-            // IsAds: crouch↔stand aim BlendTree. OwnsCrouchBaseAnim: also covers Aim_SMG_Release
-            // so crouch does not PlayBase Crouching over crouch-ADS fold-out (jitter).
-            // yieldBaseAnim: crouch must not overwrite Attack* while melee owns the swing.                             
-            crouch.Tick(intent/*这一帧的输入*/, jump.OnAir/*当前是否在空中*/, _caps.CanCrouch/*能蹲吗*/,//传入玩家意图、是否在空中、是否可以蹲下便于处理蹲下脚本具体逻辑
+            // IsAds：蹲↔站瞄准 BlendTree。OwnsCrouchBaseAnim：也覆盖 Aim_SMG_Release，
+            // 避免蹲下时用 PlayBase Crouching 盖过蹲下-ADS 收枪动画（产生抖动）。
+            // yieldBaseAnim：近战占用挥砍动画时，蹲下不得覆盖 Attack*。
+            crouch.Tick(intent/*这一帧的输入*/, jump.OnAir/*当前是否在空中*/, _caps.CanCrouch/*能蹲吗*/,//传入玩家意图、是否在空中、是否可以蹲下，便于蹲下脚本处理具体逻辑
                 adsActive: gun.IsAds/*枪械正在瞄准吗*/, gunOwnsBaseAnim: gun.OwnsCrouchBaseAnim/*枪械占用了基础动画层吗*/,
                 yieldBaseAnim: melee.IsAttacking || magic.IsBusy)/*近战或魔法正在播放动画吗*/;
             ResolveCaps();
@@ -131,23 +131,23 @@ namespace Player
             melee.Tick(intent, _caps.CanMelee);
             ResolveCaps();
 
-            // floor Magic / GAME_SKILL (LeftShift): channel ManaFlow, release WindMagic.
+            // 地面 Magic / GAME_SKILL（LeftShift）：蓄力 ManaFlow，释放 WindMagic。
             bool magicWasBusy = magic.IsBusy;
             magic.Tick(intent, _caps.CanMagic);
             if (magic.IsBusy && !magicWasBusy)
             {
                 melee.Cancel();
                 crouch.ForceStand();
-                // BackFlip ForcePlay would otherwise overwrite Magic_Channel*_OnAir every frame.
+                // 否则 BackFlip 的 ForcePlay 会每帧覆盖 Magic_Channel*_OnAir。
                 jump.YieldAirAnimToAction();
             }
             ResolveCaps();
 
-            // After melee Cancelable: behind A/D → backstep / W+behind → backflip.
+            // 近战进入 Cancelable 之后：背后 A/D → 后撤步 / W+背后 → 后空翻。
             HandleMeleeBackStepable(intent);
             ResolveCaps(setAnimGate: true);
 
-            // W + behind → backflip (cancel melee/crouch before Jump consumes press).
+            // W + 背后 → 后空翻（在 Jump 消耗按键前取消近战/蹲下）。
             if (!_caps.JumpLocked && intent.Jump
                 && PlayerJump.IsMoveBehind(intent.Move, motor.Facing)
                 && jump.CanBackFlip)
@@ -158,17 +158,17 @@ namespace Player
             jump.Tick(intent, _caps.JumpLocked, actionOwnsAnim: magic.IsBusy);
             ResolveCaps();
 
-            // floor Movement State 4 (ADS_RELOAD) BackSteppable: behind A/D during reload → BackStep.
-            // Start it before actionInterrupt so gun.Tick cancels the reload this frame.
+            // 地面 Movement State 4（ADS_RELOAD）BackSteppable：换弹时背后 A/D → BackStep。
+            // 须在 actionInterrupt 之前启动，以便本帧 gun.Tick 取消换弹。
             HandleReloadBackStep(intent);
             ResolveCaps(setAnimGate: true);
 
-            // Crouch stacks with ADS (Aim BlendTree `crouching`); only slide hard-cancels aim.
+            // 蹲下可与 ADS 叠加（Aim BlendTree 的 `crouching`）；仅滑铲会硬取消瞄准。
             bool actionInterrupt = melee.LocksActions || backStep.IsActive || jump.OnAir
                 || magic.LocksActions;
             bool allowGunFlip = _caps.FacingOwner == PlayerFacingOwner.Gun;
-            // Do not (re)enter ADS while a BackStep is still playing (hard coast or soft recovery) —
-            // re-raising Aim_SMG mid-BackStep fights the clip and jitters between anims.
+            // BackStep 仍在播放时（硬滑行或软恢复）不要（重新）进入 ADS——
+            // 在 BackStep 中途再抬起 Aim_SMG 会与片段冲突，导致动画抖动。
             bool canAds = _caps.CanAds && !backStep.IsBusy;
             gun.Tick(intent, canAds, actionInterrupt, crouch.IsSliding, allowGunFlip,
                 crouched: crouch.IsCrouching);
@@ -177,7 +177,7 @@ namespace Player
 
             _loco.Tick(intent, _ctx, _caps);
 
-            // Soft BackStep recovery after Movable — yield when another system took the anim.
+            // Movable 之后的软 BackStep 恢复——若其他系统已接管动画则让出。
             if (backStep.IsBusy && !backStep.IsActive
                 && _caps.AnimOwner != PlayerAnimOwner.BackStep
                 && !anim.IsPlaying(PlayerAnimDriver.States.BackStep))
@@ -225,7 +225,7 @@ namespace Player
             }
             else
             {
-                // Crouch / crouch-ADS: ignore A/D for velocity and facing steer.
+                // 蹲下 / 蹲下-ADS：忽略 A/D，不参与速度与朝向转向。
                 float axis = crouch.IsCrouching ? 0f : intent.Move;
                 float speed = ComputeLocomotionSpeed(axis);
 
@@ -234,7 +234,7 @@ namespace Player
                     && !PlayerJump.IsHoldingBackForFlip(axis, motor.Facing, intent.Jump);
                 motor.UpdateFacing(axis, allowFlip);
 
-                // floor Input Ch. / ONAIR / FaceCheck: SetVelocity x every frame (no accel ramp).
+                // 地面 Input Ch. / ONAIR / FaceCheck：每帧直接 SetVelocity x（无加速斜坡）。
                 motor.SetImmediateVelocityX(speed);
                 motor.ClampFallSpeed();
             }
@@ -242,11 +242,11 @@ namespace Player
             anim.SetAxis(crouch.IsCrouching ? 0f : intent.Move);
         }
         /// <summary>
-		/// After any ground attack Cancelable: opposite A/D → BackStep; W → BackFlip.
+		/// 任意地面攻击进入 Cancelable 之后：反向 A/D → BackStep；W → BackFlip。
 		/// </summary>
 		private void HandleMeleeBackStepable(PlayerIntent intent)
         {
-            // Cancelable → BackStepable (ActionCancelable / MovableSheath).
+            // Cancelable → BackStepable（ActionCancelable / MovableSheath）。
             if (melee.Phase != PlayerMeleePhase.ActionCancelable
                 && melee.Phase != PlayerMeleePhase.MovableSheath)
             {
@@ -275,15 +275,15 @@ namespace Player
         }
 
         /// <summary>
-        /// floor Movement State 4 (ADS_RELOAD): retreating (behind A/D) cancels the reload into a
-        /// BackStep. Forward A/D keeps the walk-aim reload; this only fires on the behind direction.
+        /// 地面 Movement State 4（ADS_RELOAD）：后退（背后 A/D）取消换弹并转入 BackStep。
+        /// 向前 A/D 仍保持走射换弹；仅在背后方向触发。
         /// </summary>
         private void HandleReloadBackStep(PlayerIntent intent)
         {
-            // Stand reload only. Any non-Standing crouch state (crouch / crouch-aim / slide /
-            // stand-up) would make crouch PlayBase Crouching and FinishRelease(keepCrouch) ForcePlay
-            // Crouching, fighting the BackStep clip (jitter). PlayerCrouch is the crouch authority.
-            // Crouch also can't strafe (floor DontMoveWhileCrouching).
+            // 仅站立换弹。任何非 Standing 的蹲下状态（蹲 / 蹲瞄 / 滑铲 /
+            // 起身）都会让 crouch 的 PlayBase Crouching 与 FinishRelease(keepCrouch) 的 ForcePlay
+            // Crouching 与 BackStep 片段冲突（抖动）。蹲下权威在 PlayerCrouch。
+            // 蹲下也无法平移（地面 DontMoveWhileCrouching）。
             if (!gun.IsReloading || crouch.State != PlayerCrouchState.Standing
                 || !motor.IsGrounded || jump.OnAir || backStep.IsBusy)
             {
@@ -338,7 +338,7 @@ namespace Player
                 return axis * motor.Settings.runSpeed;
             }
 
-            // floor DontMoveWhileCrouching / ADSCrouch: no A/D strafe (incl. crouch-ADS).
+            // 地面 DontMoveWhileCrouching / ADSCrouch：无 A/D 平移（含蹲下-ADS）。
             return 0f;
         }
 

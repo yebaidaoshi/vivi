@@ -1,476 +1,517 @@
-using UnityEngine;
-
-namespace Player
-{
-    public enum PlayerCrouchState
-    {
-        Standing,
-        Entering,
-        Crouching,
-        Sliding,
-        SlideToCrouch,
-        StandingUp
-    }
-
-    /// <summary>
-    /// Crouch / slide — port of Crouching FSM (floor.unity).
-    /// SINGLE SOURCE OF TRUTH for crouch posture, including crouch-aim (ADSCrouch): while gun ADS,
-    /// this FSM still runs (Standing→Entering→Crouching), it just yields the base anim to the gun.
-    /// Other modules must query <see cref="State"/> / <see cref="IsCrouching"/> etc. rather than
-    /// re-deriving crouch from raw input — PlayerGun mirrors this FSM (it does not own crouch state).
-    /// While gun ADS: GAME_PICKUP toggles ADS ↔ ADSCrouch via animator float <c>crouching</c>
-    /// (Aim_SMG* BlendTrees pick Crouch_Crouch_Aim_* clips) without cancelling Aim.
-    /// <c>Crouch_To_Idle</c> / stand-up <c>Slide_To_Idle</c> are soft A_to_B (interruptible anytime).
-    /// Horizontal override velocity is applied in FixedUpdate via <see cref="ApplyFixedVelocity"/>.
-    /// </summary>
-    public class PlayerCrouch : MonoBehaviour
-    {
-        [Header("Slide smoke VFX (floor Crouching Slide CreateObject → SlideEffect)")]
-        [SerializeField] private GameObject slideSmokePrefab;
-        [Tooltip("Offset from the _Heroine root; floor spawns at the owner root (zero).")]
-        [SerializeField] private Vector2 slideSmokeOffset = Vector2.zero;
-
-        private PlayerMotor _motor;
-        private PlayerAnimDriver _anim;
-        private PlayerAudio _audio;
-        private PlayerMotorSettings _settings;
-
-        private GameObject _slideFx;
-
-        private PlayerCrouchState _state = PlayerCrouchState.Standing;
-        private float _slideTimer;
-        private float _phaseTimer;
-        private float _runAccum;
-        private int _slideDir = 1;
-        private float _overrideVx;
-        private bool _hasOverrideVx;
-        private bool _yieldedBaseAnimLastFrame;
-
-        public PlayerCrouchState State => _state;
-        public bool IsCrouching => _state == PlayerCrouchState.Entering
-            || _state == PlayerCrouchState.Crouching
-            || _state == PlayerCrouchState.Sliding
-            || _state == PlayerCrouchState.SlideToCrouch;
-        public bool IsSliding => _state == PlayerCrouchState.Sliding;
-        /// <summary>True while crouched / sliding — not during interruptible stand-up.</summary>
-        public bool IsBusy => IsCrouching;
-        public bool IsStandingUp => _state == PlayerCrouchState.StandingUp;
-        public bool HasVelocityOverride => _hasOverrideVx;
-        /// <summary>True during the crouch-enter clip before its own Attackable event
-        /// (Crouch_Crouch.anim @ 0.3333s) — melee must not cut the transition short before then
-        /// (PlayerArbiter.CanMelee). Other interrupts (release S, magic, backstep/backflip) are
-        /// unaffected — see ForceStand / TickEntering's own !intent.Crouch check.</summary>
-        public bool CrouchEnterLocked => _state == PlayerCrouchState.Entering
-            && PlayerAnimTimings.CrouchEnter.ClipLength + 0.05f - _phaseTimer
-                < PlayerAnimTimings.CrouchEnter.Attackable;
-
-        public void Init(PlayerContext context)
-        {
-            context.Bind(out _motor, out _anim, out _audio, out _settings);
-            ResolveVfx();
-        }
-
-        private void ResolveVfx()
-        {
-#if UNITY_EDITOR
-			// Modules are composed at runtime with no serialized refs; pull the prefab by path.
-			if (slideSmokePrefab == null)
-			{
-				slideSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-					"Assets/GameObject/SlideEffect.prefab");
-			}
-#endif
-        }
-
-        public void Tick(PlayerIntent intent, bool onAir, bool canCrouch,
-            bool adsActive = false, bool gunOwnsBaseAnim = false, bool yieldBaseAnim = false)
-        {
-            _hasOverrideVx = false;
-
-            if (onAir)
-            {
-                if (_state != PlayerCrouchState.Standing)
-                {
-                    ForceStand();
-                }
-
-                _runAccum = 0f;
-                return;
-            }
-
-            // Melee/magic just released the base anim (e.g. a crouch-attack cut at Movable, see
-            // PlayerMelee.TickMovableGroundInterrupt) while we were held in Crouching, or still
-            // mid Entering (a second rapid attack cut the crouch-enter clip before it finished):
-            // (re)play the crouch-enter clip from the top instead of either letting TickCrouching
-            // PlayBase(Crouching) snap straight to the idle pose, or leaving TickEntering stuck —
-            // its own IsPlaying(Crouch)/IsPlaying(Crouching) checks can never pass once the
-            // Animator spent that window showing the attack clip instead.
-            bool yieldFallingEdge = !yieldBaseAnim && _yieldedBaseAnimLastFrame;
-            _yieldedBaseAnimLastFrame = yieldBaseAnim;
-            if (yieldFallingEdge && intent.Crouch
-                && (_state == PlayerCrouchState.Crouching || _state == PlayerCrouchState.Entering))
-            {
-                EnterCrouch(adsActive);
-            }
-
-            switch (_state)
-            {
-                case PlayerCrouchState.Standing:
-                    TickStanding(intent, canCrouch, adsActive);
-                    break;
-                case PlayerCrouchState.Entering:
-                    TickEntering(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
-                    break;
-                case PlayerCrouchState.Crouching:
-                    TickCrouching(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
-                    break;
-                case PlayerCrouchState.Sliding:
-                    TickSliding(intent);
-                    break;
-                case PlayerCrouchState.SlideToCrouch:
-                    TickSlideToCrouch(intent);
-                    break;
-                case PlayerCrouchState.StandingUp:
-                    TickStandingUp(intent);
-                    break;
-            }
-        }
-
-        public void ApplyFixedVelocity()
-        {
-            if (_hasOverrideVx)
-            {
-                _motor.SetImmediateVelocityX(_overrideVx);
-            }
-        }
-
-        /// <summary>Called only from <see cref="TickStanding"/> / <see cref="TickStandingUp"/> —
-        /// the FSM dispatch in <see cref="Tick"/> already guarantees the state.</summary>
-        private void UpdateRunAccum(PlayerIntent intent)
-        {
-            float moveAbs = Mathf.Abs(intent.Move);
-            if (moveAbs > 0.5f && !intent.Crouch && !intent.WantsAds)
-            {
-                _runAccum += _motor.DeltaTime;
-            }
-            else if (moveAbs < 0.1f)
-            {
-                _runAccum = 0f;
-            }
-        }
-
-        private void TickStanding(PlayerIntent intent, bool canCrouch, bool adsActive)
-        {
-            UpdateRunAccum(intent);
-
-            // floor Crouching Idle: BoolTest DoCrouch everyFrame (held, not edge).
-            // Jump→hold S must crouch on land even though press happened in air.
-            if (!intent.Crouch || !canCrouch)
-            {
-                return;
-            }
-
-            float moveAbs = Mathf.Abs(intent.Move);
-            if (!adsActive && _runAccum >= _settings.runTimeToSlide && moveAbs > 0.5f)
-            {
-                int dir = intent.Move > 0f ? 1 : intent.Move < 0f ? -1 : _motor.Facing;
-                StartSlide(dir);
-            }
-            else
-            {
-                EnterCrouch(adsActive);
-            }
-        }
-
-        private void TickEntering(PlayerIntent intent, bool adsActive, bool gunOwnsBaseAnim,
-            bool yieldBaseAnim)
-        {
-            if (!intent.Crouch)
-            {
-                ExitCrouch(adsActive);
-                return;
-            }
-
-            _phaseTimer -= _motor.DeltaTime;
-
-            // ADS hold: skip Crouch enter clip (gun BlendTree). Release: yield base but keep Entering
-            // so stand-ADS-release → crouch can still play Crouch after gun finishes.
-            if (adsActive)
-            {
-                _state = PlayerCrouchState.Crouching;
-                return;
-            }
-
-            if (gunOwnsBaseAnim || yieldBaseAnim)
-            {
-                return;
-            }
-
-            _anim.SetCrouch(true);
-            if (_anim.IsPlaying(PlayerAnimDriver.States.Crouch))
-            {
-                _anim.SyncCurrent(PlayerAnimDriver.States.Crouch);
-                if (_anim.BaseFinished || _phaseTimer <= 0f)
-                {
-                    _state = PlayerCrouchState.Crouching;
-                    _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
-                }
-            }
-            else if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching) || _phaseTimer <= 0f)
-            {
-                _state = PlayerCrouchState.Crouching;
-                _anim.SyncCurrent(PlayerAnimDriver.States.Crouching);
-            }
-        }
-
-        private void TickCrouching(PlayerIntent intent, bool adsActive, bool gunOwnsBaseAnim,
-            bool yieldBaseAnim)
-        {
-            if (!intent.Crouch)
-            {
-                // adsActive only (not release): gun owns crouch↔stand aim; release yields to BeginStandUp.
-                ExitCrouch(adsActive);
-                return;
-            }
-
-            // ADS / release fold-out / melee: do not PlayBase Crouching over their clips.
-            if (adsActive || gunOwnsBaseAnim || yieldBaseAnim)
-            {
-                return;
-            }
-
-            _anim.SetCrouch(true);
-            if (!_anim.IsPlaying(PlayerAnimDriver.States.Crouching)
-                && !_anim.IsPlaying(PlayerAnimDriver.States.Crouch))
-            {
-                _anim.PlayBase(PlayerAnimDriver.States.Crouching);
-            }
-        }
-
-        /// <summary>
-        /// floor ADSCrouch → ADS on GAME_PICKUP release: leave crouch state; gun plays
-        /// Crouch_Crouch_Aim_to_Stand_Aim then clears crouching.
-        /// Without ADS: normal Crouch_To_Idle stand-up.
-        /// </summary>
-        private void ExitCrouch(bool adsActive)
-        {
-            if (adsActive)
-            {
-                _state = PlayerCrouchState.Standing;
-                _phaseTimer = 0f;
-                return;
-            }
-
-            BeginStandUp();
-        }
-
-        private void TickSliding(PlayerIntent intent)
-        {
-            if (Mathf.Abs(intent.Move) > 0.1f)
-            {
-                int desired = intent.Move > 0f ? 1 : -1;
-                if (desired != _slideDir)
-                {
-                    CancelSlideToRun(desired);
-                    return;
-                }
-            }
-
-            _slideTimer -= _motor.DeltaTime;
-            float fade = Mathf.Clamp01(_slideTimer / _settings.slideDuration);
-            SetOverride(_slideDir * _settings.slideForce * Mathf.Lerp(0.35f, 1f, fade));
-
-            if (!_anim.IsPlaying(PlayerAnimDriver.States.Slide)
-                && !_anim.IsPlaying(PlayerAnimDriver.States.Sliding))
-            {
-                _anim.PlayBase(PlayerAnimDriver.States.Sliding);
-            }
-            else if (_anim.IsPlaying(PlayerAnimDriver.States.Sliding))
-            {
-                _anim.SyncCurrent(PlayerAnimDriver.States.Sliding);
-            }
-
-            if (_slideTimer > 0f)
-            {
-                return;
-            }
-
-            if (intent.Crouch)
-            {
-                EnterSlideToCrouch();
-            }
-            else
-            {
-                BeginStandUpFromSlide();
-            }
-        }
-
-        private void TickSlideToCrouch(PlayerIntent intent)
-        {
-            if (!intent.Crouch)
-            {
-                BeginStandUpFromSlide();
-                return;
-            }
-
-            // ADS while settling into crouch → stay crouched (crouch-aim), do not ForceStand.
-            if (intent.WantsAds)
-            {
-                _state = PlayerCrouchState.Crouching;
-                _anim.SetCrouch(true);
-                return;
-            }
-
-            if (intent.JumpPressed || intent.Jump || intent.SlashPressed
-                || intent.EvadePressed || intent.ReloadPressed)
-            {
-                ForceStand();
-                return;
-            }
-
-            _phaseTimer -= _motor.DeltaTime;
-            if (_anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle))
-            {
-                _anim.SyncCurrent(PlayerAnimDriver.States.SlideToIdle);
-                if (_anim.BaseFinished || _phaseTimer <= 0f)
-                {
-                    _state = PlayerCrouchState.Crouching;
-                    _anim.SetCrouch(true);
-                    _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
-                }
-            }
-            else if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching) || _phaseTimer <= 0f)
-            {
-                _state = PlayerCrouchState.Crouching;
-                _anim.SetCrouch(true);
-                _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
-            }
-        }
-
-        private void TickStandingUp(PlayerIntent intent)
-        {
-            UpdateRunAccum(intent);
-
-            // Soft A_to_B: any action cuts immediately; loco soft-holds Crouch_To_Idle otherwise.
-            if (intent.WantsSoftActionInterrupt)
-            {
-                ForceStand();
-                return;
-            }
-
-            _phaseTimer -= _motor.DeltaTime;
-            bool onStandClip = _anim.IsPlaying(PlayerAnimDriver.States.CrouchToIdle)
-                || _anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle);
-            if (!onStandClip || _anim.BaseFinished || _phaseTimer <= 0f)
-            {
-                ForceStand();
-            }
-        }
-
-        private void SetOverride(float vx)
-        {
-            _overrideVx = vx;
-            _hasOverrideVx = true;
-        }
-
-        private void EnterCrouch(bool adsActive = false)
-        {
-            _state = PlayerCrouchState.Entering;
-            _phaseTimer = PlayerAnimTimings.CrouchEnter.ClipLength + 0.05f;
-            _runAccum = 0f;
-            // During ADS, PlayerGun plays Aim_Aim_SMG_Hold_to_Crouch_Aim — do not snap crouching.
-            // Stand-ADS release: still play Crouch (gun yields on intent.Crouch the same frame).
-            if (adsActive)
-            {
-                return;
-            }
-
-            _anim.SetCrouch(true);
-            _anim.ForcePlay(PlayerAnimDriver.States.Crouch);
-        }
-
-        private void StartSlide(int dir)
-        {
-            _state = PlayerCrouchState.Sliding;
-            _slideDir = dir >= 0 ? 1 : -1;
-            _slideTimer = _settings.slideDuration;
-            _runAccum = 0f;
-            _motor.ForceFacing(_slideDir);
-            SetOverride(_slideDir * _settings.slideForce);
-            _motor.SetImmediateVelocityX(_overrideVx);
-            _motor.AddForce(new Vector2(_slideDir * 10f, -5f));
-            _anim.SetCrouch(true);
-            _anim.ForcePlay(PlayerAnimDriver.States.Slide);
-            _audio?.PlaySlide();
-            // floor Slide CreateObject: looping SlideEffect at the owner (_Heroine) root; it trails
-            // for the whole slide and is stopped when the slide ends (StopSlideFx).
-            StopSlideFx();
-            _slideFx = PlayerVfx.SpawnOneShot(slideSmokePrefab, transform, slideSmokeOffset,
-                _slideDir, false, 0f);
-        }
-
-        private void StopSlideFx()
-        {
-            PlayerVfx.StopAndDestroy(_slideFx);
-            _slideFx = null;
-        }
-
-        private void EnterSlideToCrouch()
-        {
-            StopSlideFx();
-            _state = PlayerCrouchState.SlideToCrouch;
-            // Controller has Slide_To_Idle (0.53); Spine also has Slide_to_Crouch (0.6).
-            _phaseTimer = PlayerAnimTimings.SlideToIdle.ClipLength + 0.05f;
-            _anim.ForcePlay(PlayerAnimDriver.States.SlideToIdle);
-            _anim.SetCrouch(true);
-        }
-
-        private void BeginStandUp()
-        {
-            _state = PlayerCrouchState.StandingUp;
-            _phaseTimer = PlayerAnimTimings.CrouchToIdle.ClipLength + 0.05f;
-            _anim.SetCrouch(false);
-            _anim.ForcePlay(PlayerAnimDriver.States.CrouchToIdle);
-        }
-
-        private void BeginStandUpFromSlide()
-        {
-            StopSlideFx();
-            _state = PlayerCrouchState.StandingUp;
-            _phaseTimer = PlayerAnimTimings.SlideToIdle.ClipLength + 0.05f;
-            _anim.SetCrouch(false);
-            _anim.ForcePlay(PlayerAnimDriver.States.SlideToIdle);
-        }
-
-        private void CancelSlideToRun(int facing)
-        {
-            StopSlideFx();
-            _state = PlayerCrouchState.Standing;
-            _slideTimer = 0f;
-            _phaseTimer = 0f;
-            _runAccum = 0f;
-            _anim.SetCrouch(false);
-            _motor.ForceFacing(facing);
-            SetOverride(facing * _settings.runSpeed);
-            _motor.SetImmediateVelocityX(_overrideVx);
-            _anim.ForcePlay(PlayerAnimDriver.States.Run);
-        }
-
-        public void ForceStand()
-        {
-            StopSlideFx();
-            _state = PlayerCrouchState.Standing;
-            _slideTimer = 0f;
-            _phaseTimer = 0f;
-            _runAccum = 0f;
-            _hasOverrideVx = false;
-            _anim.SetCrouch(false);
-        }
-
-        private void OnDisable()
-        {
-            // Never leave a looping slide trail orphaned if the player is torn down mid-slide.
-            StopSlideFx();
-        }
-    }
-}
+using UnityEngine;
+
+namespace Player
+{
+    public enum PlayerCrouchState
+    {
+        Standing,
+        Entering,
+        Crouching,
+        Sliding,
+        SlideToCrouch,
+        StandingUp
+    }
+
+    /// <summary>
+    /// 蹲下 / 滑铲 — Crouching FSM（floor.unity）的移植。
+    /// 蹲姿的唯一真相来源，含蹲瞄（ADSCrouch）：枪械 ADS 期间，
+    /// 本 FSM 仍在运行（Standing→Entering→Crouching），只是把 Base 动画让给枪。
+    /// 其他模块必须查询 <see cref="State"/> / <see cref="IsCrouching"/> 等，
+    /// 不要从原始输入再推导蹲姿 — PlayerGun 镜像本 FSM（并不持有蹲姿状态）。
+    /// 枪械 ADS 时：GAME_PICKUP 通过 Animator float <c>crouching</c> 在 ADS ↔ ADSCrouch 间切换
+    ///（Aim_SMG* BlendTree 选取 Crouch_Crouch_Aim_* 片段），不取消 Aim。
+    /// <c>Crouch_To_Idle</c> / 起身 <c>Slide_To_Idle</c> 为软 A_to_B（随时可打断）。
+    /// 水平覆盖速度在 FixedUpdate 经 <see cref="ApplyFixedVelocity"/> 应用。
+    /// </summary>
+    public class PlayerCrouch : MonoBehaviour
+    {
+        [Header("滑铲烟雾 VFX（floor Crouching State3 CreateObject → SlideEffect）")]
+        [SerializeField] private GameObject slideSmokePrefab;
+        [Tooltip("相对 _Heroine 根节点的偏移；floor 在所有者根节点生成（零偏移）。")]
+        [SerializeField] private Vector2 slideSmokeOffset = Vector2.zero;
+        [Tooltip("floor State 2 ChronosWait，每次 CreateObject 前的间隔（路径拖尾间距）。")]
+        [SerializeField] private float slideSmokeInterval = 0.02f;
+
+        private PlayerMotor _motor;
+        private PlayerAnimDriver _anim;
+        private PlayerAudio _audio;
+        private PlayerMotorSettings _settings;
+
+        private float _slideSmokeCooldown;
+
+        private PlayerCrouchState _state = PlayerCrouchState.Standing;
+        private float _slideTimer;
+        private float _phaseTimer;
+        private float _runAccum;
+        private int _slideDir = 1;
+        private float _overrideVx;
+        private bool _hasOverrideVx;
+        private bool _yieldedBaseAnimLastFrame;
+
+        public PlayerCrouchState State => _state;
+        public bool IsCrouching => _state == PlayerCrouchState.Entering
+            || _state == PlayerCrouchState.Crouching
+            || _state == PlayerCrouchState.Sliding
+            || _state == PlayerCrouchState.SlideToCrouch;
+        public bool IsSliding => _state == PlayerCrouchState.Sliding;
+        /// <summary>蹲着 / 滑铲时为真 — 可打断的起身过程中不为真。</summary>
+        public bool IsBusy => IsCrouching;
+        public bool IsStandingUp => _state == PlayerCrouchState.StandingUp;
+        public bool HasVelocityOverride => _hasOverrideVx;
+        /// <summary>蹲下进入片段在自身 Attackable 事件之前为真
+        ///（Crouch_Crouch.anim @ 0.3333s）— 在此之前近战不得打断该过渡
+        ///（PlayerArbiter.CanMelee）。其他打断（松开 S、魔法、后撤/后空翻）不受影响 —
+        /// 见 ForceStand / TickEntering 自身的 !intent.Crouch 检查。</summary>
+        public bool CrouchEnterLocked => _state == PlayerCrouchState.Entering
+            && PlayerAnimTimings.CrouchEnter.ClipLength + 0.05f - _phaseTimer
+                < PlayerAnimTimings.CrouchEnter.Attackable;
+
+        public void Init(PlayerContext context)
+        {
+            context.Bind(out _motor, out _anim, out _audio, out _settings);
+            ResolveVfx();
+        }
+
+        private void ResolveVfx()
+        {
+#if UNITY_EDITOR
+			// 模块在运行时组合且无序列化引用；按路径拉取预制体。
+			if (slideSmokePrefab == null)
+			{
+				slideSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+					"Assets/GameObject/SlideEffect.prefab");
+			}
+#endif
+        }
+
+        public void Tick(PlayerIntent intent, bool onAir, bool canCrouch,
+            bool adsActive = false, bool gunOwnsBaseAnim = false, bool yieldBaseAnim = false)
+        {
+            _hasOverrideVx = false;
+
+            if (onAir)
+            {
+                if (_state != PlayerCrouchState.Standing)
+                {
+                    ForceStand();
+                }
+
+                _runAccum = 0f;
+                return;
+            }
+
+            // 近战/魔法刚释放 Base 动画（例如蹲攻在 Movable 被切断，见
+            // PlayerMelee.TickMovableGroundInterrupt），而我们仍停在 Crouching，或仍在
+            // Entering 中途（第二次快速攻击在蹲下进入片段播完前就切断了）：
+            // 从开头（重新）播放蹲下进入片段，既避免 TickCrouching 直接
+            // PlayBase(Crouching) 弹到 idle 姿势，也避免 TickEntering 卡住 —
+            // 一旦 Animator 在那段窗口播的是攻击片段，其自身的 IsPlaying(Crouch)/IsPlaying(Crouching)
+            // 检查就永远无法通过。
+            bool yieldFallingEdge = !yieldBaseAnim && _yieldedBaseAnimLastFrame;
+            _yieldedBaseAnimLastFrame = yieldBaseAnim;
+            if (yieldFallingEdge && intent.Crouch
+                && (_state == PlayerCrouchState.Crouching || _state == PlayerCrouchState.Entering))
+            {
+                EnterCrouch(adsActive);
+            }
+
+            switch (_state)
+            {
+                case PlayerCrouchState.Standing:
+                    TickStanding(intent, canCrouch, adsActive);
+                    break;
+                case PlayerCrouchState.Entering:
+                    TickEntering(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
+                    break;
+                case PlayerCrouchState.Crouching:
+                    TickCrouching(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
+                    break;
+                case PlayerCrouchState.Sliding:
+                    TickSliding(intent);
+                    break;
+                case PlayerCrouchState.SlideToCrouch:
+                    TickSlideToCrouch(intent);
+                    break;
+                case PlayerCrouchState.StandingUp:
+                    TickStandingUp(intent);
+                    break;
+            }
+        }
+
+        public void ApplyFixedVelocity()
+        {
+            if (_hasOverrideVx)
+            {
+                _motor.SetImmediateVelocityX(_overrideVx);
+            }
+        }
+
+        /// <summary>仅由 <see cref="TickStanding"/> / <see cref="TickStandingUp"/> 调用 —
+        /// <see cref="Tick"/> 中的 FSM 分发已保证状态正确。</summary>
+        private void UpdateRunAccum(PlayerIntent intent)
+        {
+            float moveAbs = Mathf.Abs(intent.Move);
+            if (moveAbs > 0.5f && !intent.Crouch && !intent.WantsAds)
+            {
+                _runAccum += _motor.DeltaTime;
+            }
+            else if (moveAbs < 0.1f)
+            {
+                _runAccum = 0f;
+            }
+        }
+
+        private void TickStanding(PlayerIntent intent, bool canCrouch, bool adsActive)
+        {
+            UpdateRunAccum(intent);
+
+            // floor Crouching Idle：BoolTest DoCrouch everyFrame（按住，非边沿）。
+            // Jump→按住 S 必须在落地时蹲下，即使按下发生在空中。
+            if (!intent.Crouch || !canCrouch)
+            {
+                return;
+            }
+
+            float moveAbs = Mathf.Abs(intent.Move);
+            if (!adsActive && _runAccum >= _settings.runTimeToSlide && moveAbs > 0.5f)
+            {
+                int dir = intent.Move > 0f ? 1 : intent.Move < 0f ? -1 : _motor.Facing;
+                StartSlide(dir);
+            }
+            else
+            {
+                EnterCrouch(adsActive);
+            }
+        }
+
+        private void TickEntering(PlayerIntent intent, bool adsActive, bool gunOwnsBaseAnim,
+            bool yieldBaseAnim)
+        {
+            if (!intent.Crouch)
+            {
+                ExitCrouch(adsActive);
+                return;
+            }
+
+            _phaseTimer -= _motor.DeltaTime;
+
+            // ADS 按住：跳过 Crouch 进入片段（枪 BlendTree）。松开：让出 Base 但仍保持 Entering，
+            // 以便站立 ADS 松开 → 蹲下时，枪播完后仍能播 Crouch。
+            if (adsActive)
+            {
+                _state = PlayerCrouchState.Crouching;
+                return;
+            }
+
+            if (gunOwnsBaseAnim || yieldBaseAnim)
+            {
+                return;
+            }
+
+            _anim.SetCrouch(true);
+            if (_anim.IsPlaying(PlayerAnimDriver.States.Crouch))
+            {
+                _anim.SyncCurrent(PlayerAnimDriver.States.Crouch);
+                if (_anim.BaseFinished || _phaseTimer <= 0f)
+                {
+                    _state = PlayerCrouchState.Crouching;
+                    _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+                }
+            }
+            else if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching) || _phaseTimer <= 0f)
+            {
+                _state = PlayerCrouchState.Crouching;
+                _anim.SyncCurrent(PlayerAnimDriver.States.Crouching);
+            }
+        }
+
+        private void TickCrouching(PlayerIntent intent, bool adsActive, bool gunOwnsBaseAnim,
+            bool yieldBaseAnim)
+        {
+            if (!intent.Crouch)
+            {
+                // 仅 adsActive（非松开）：枪持有蹲↔站瞄准；松开则让给 BeginStandUp。
+                ExitCrouch(adsActive);
+                return;
+            }
+
+            // ADS / 松开收枪 / 近战：不要用 PlayBase Crouching 盖住它们的片段。
+            if (adsActive || gunOwnsBaseAnim || yieldBaseAnim)
+            {
+                return;
+            }
+
+            _anim.SetCrouch(true);
+            if (!_anim.IsPlaying(PlayerAnimDriver.States.Crouching)
+                && !_anim.IsPlaying(PlayerAnimDriver.States.Crouch))
+            {
+                _anim.PlayBase(PlayerAnimDriver.States.Crouching);
+            }
+        }
+
+        /// <summary>
+        /// floor ADSCrouch → ADS（松开 GAME_PICKUP）：离开蹲姿状态；枪播放
+        /// Crouch_Crouch_Aim_to_Stand_Aim，然后清除 crouching。
+        /// 无 ADS 时：正常 Crouch_To_Idle 起身。
+        /// </summary>
+        private void ExitCrouch(bool adsActive)
+        {
+            if (adsActive)
+            {
+                _state = PlayerCrouchState.Standing;
+                _phaseTimer = 0f;
+                return;
+            }
+
+            BeginStandUp();
+        }
+
+        private void TickSliding(PlayerIntent intent)
+        {
+            if (Mathf.Abs(intent.Move) > 0.1f)
+            {
+                int desired = intent.Move > 0f ? 1 : -1;
+                if (desired != _slideDir)
+                {
+                    CancelSlideToRun(desired);
+                    return;
+                }
+            }
+
+            _slideTimer -= _motor.DeltaTime;
+            float fade = Mathf.Clamp01(_slideTimer / _settings.slideDuration);
+            SetOverride(_slideDir * _settings.slideForce * Mathf.Lerp(0.35f, 1f, fade));
+
+            // floor Crouching State2→State3：每 ChronosWait(0.02) CreateObject(SlideEffect)
+            // 在所有者世界坐标（不挂父）— 沿滑铲路径留下烟雾拖尾。
+            TickSlideSmokeTrail();
+
+            if (!_anim.IsPlaying(PlayerAnimDriver.States.Slide)
+                && !_anim.IsPlaying(PlayerAnimDriver.States.Sliding))
+            {
+                _anim.PlayBase(PlayerAnimDriver.States.Sliding);
+            }
+            else if (_anim.IsPlaying(PlayerAnimDriver.States.Sliding))
+            {
+                _anim.SyncCurrent(PlayerAnimDriver.States.Sliding);
+            }
+
+            if (_slideTimer > 0f)
+            {
+                return;
+            }
+
+            if (intent.Crouch)
+            {
+                EnterSlideToCrouch();
+            }
+            else
+            {
+                BeginStandUpFromSlide();
+            }
+        }
+
+        private void TickSlideToCrouch(PlayerIntent intent)
+        {
+            if (!intent.Crouch)
+            {
+                BeginStandUpFromSlide();
+                return;
+            }
+
+            // 滑铲收进蹲姿时按 ADS → 保持蹲姿（蹲瞄），不要 ForceStand。
+            if (intent.WantsAds)
+            {
+                _state = PlayerCrouchState.Crouching;
+                _anim.SetCrouch(true);
+                return;
+            }
+
+            if (intent.JumpPressed || intent.Jump || intent.SlashPressed
+                || intent.EvadePressed || intent.ReloadPressed)
+            {
+                ForceStand();
+                return;
+            }
+
+            _phaseTimer -= _motor.DeltaTime;
+            if (_anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle))
+            {
+                _anim.SyncCurrent(PlayerAnimDriver.States.SlideToIdle);
+                if (_anim.BaseFinished || _phaseTimer <= 0f)
+                {
+                    _state = PlayerCrouchState.Crouching;
+                    _anim.SetCrouch(true);
+                    _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+                }
+            }
+            else if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching) || _phaseTimer <= 0f)
+            {
+                _state = PlayerCrouchState.Crouching;
+                _anim.SetCrouch(true);
+                _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+            }
+        }
+
+        private void TickStandingUp(PlayerIntent intent)
+        {
+            UpdateRunAccum(intent);
+
+            // 软 A_to_B：任何动作立即切断；否则由 loco 软保持 Crouch_To_Idle。
+            if (intent.WantsSoftActionInterrupt)
+            {
+                ForceStand();
+                return;
+            }
+
+            _phaseTimer -= _motor.DeltaTime;
+            bool onStandClip = _anim.IsPlaying(PlayerAnimDriver.States.CrouchToIdle)
+                || _anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle);
+            if (!onStandClip || _anim.BaseFinished || _phaseTimer <= 0f)
+            {
+                ForceStand();
+            }
+        }
+
+        private void SetOverride(float vx)
+        {
+            _overrideVx = vx;
+            _hasOverrideVx = true;
+        }
+
+        private void EnterCrouch(bool adsActive = false)
+        {
+            _state = PlayerCrouchState.Entering;
+            _phaseTimer = PlayerAnimTimings.CrouchEnter.ClipLength + 0.05f;
+            _runAccum = 0f;
+            // ADS 期间 PlayerGun 播放 Aim_Aim_SMG_Hold_to_Crouch_Aim — 不要突然改 crouching。
+            // 站立 ADS 松开：仍播 Crouch（枪在同帧因 intent.Crouch 让出）。
+            if (adsActive)
+            {
+                return;
+            }
+
+            _anim.SetCrouch(true);
+            _anim.ForcePlay(PlayerAnimDriver.States.Crouch);
+        }
+
+        private void StartSlide(int dir)
+        {
+            _state = PlayerCrouchState.Sliding;
+            _slideDir = dir >= 0 ? 1 : -1;
+            _slideTimer = _settings.slideDuration;
+            _runAccum = 0f;
+            _motor.ForceFacing(_slideDir);
+            SetOverride(_slideDir * _settings.slideForce);
+            _motor.SetImmediateVelocityX(_overrideVx);
+            _motor.AddForce(new Vector2(_slideDir * 10f, -5f));
+            _anim.SetCrouch(true);
+            _anim.ForcePlay(PlayerAnimDriver.States.Slide);
+            _audio?.PlaySlide();
+            // floor：Sliding → State3 CreateObject(SlideEffect) 在所有者处，然后 State2 等待
+            // 0.02s 并循环 State3 — 沿路径的未挂父烟雾团（不挂到女主上）。
+            SpawnSlideSmokePuff();
+            _slideSmokeCooldown = slideSmokeInterval;
+        }
+
+        /// <summary>
+        /// floor State2 ChronosWait(0.02) → State3 CreateObject。每个烟雾团未挂父，
+        /// 经 destroyMe（deathtimer=2）自销毁。
+        /// </summary>
+        private void TickSlideSmokeTrail()
+        {
+            if (slideSmokePrefab == null)
+            {
+                return;
+            }
+
+            float dt = _motor != null ? _motor.DeltaTime : Time.deltaTime;
+            _slideSmokeCooldown -= dt;
+            if (_slideSmokeCooldown > 0f)
+            {
+                return;
+            }
+
+            _slideSmokeCooldown = slideSmokeInterval;
+            SpawnSlideSmokePuff();
+        }
+
+        private void SpawnSlideSmokePuff()
+        {
+            if (slideSmokePrefab == null)
+            {
+                return;
+            }
+
+            int sign = _slideDir >= 0 ? 1 : -1;
+            var fx = Instantiate(slideSmokePrefab);
+            // 路径拖尾：当前女主世界坐标；保留预制体自带的 −90° 粒子旋转。
+            fx.transform.position = transform.position
+                + new Vector3(slideSmokeOffset.x * sign, slideSmokeOffset.y, 0f);
+        }
+
+        private void StopSlideSmokeTrail()
+        {
+            // 留下已有烟雾团在地上；只停止生成新的。
+            _slideSmokeCooldown = 0f;
+        }
+
+        private void EnterSlideToCrouch()
+        {
+            StopSlideSmokeTrail();
+            _state = PlayerCrouchState.SlideToCrouch;
+            // 控制器有 Slide_To_Idle（0.53）；Spine 还有 Slide_to_Crouch（0.6）。
+            _phaseTimer = PlayerAnimTimings.SlideToIdle.ClipLength + 0.05f;
+            _anim.ForcePlay(PlayerAnimDriver.States.SlideToIdle);
+            _anim.SetCrouch(true);
+        }
+
+        private void BeginStandUp()
+        {
+            _state = PlayerCrouchState.StandingUp;
+            _phaseTimer = PlayerAnimTimings.CrouchToIdle.ClipLength + 0.05f;
+            _anim.SetCrouch(false);
+            _anim.ForcePlay(PlayerAnimDriver.States.CrouchToIdle);
+        }
+
+        private void BeginStandUpFromSlide()
+        {
+            StopSlideSmokeTrail();
+            _state = PlayerCrouchState.StandingUp;
+            _phaseTimer = PlayerAnimTimings.SlideToIdle.ClipLength + 0.05f;
+            _anim.SetCrouch(false);
+            _anim.ForcePlay(PlayerAnimDriver.States.SlideToIdle);
+        }
+
+        private void CancelSlideToRun(int facing)
+        {
+            StopSlideSmokeTrail();
+            _state = PlayerCrouchState.Standing;
+            _slideTimer = 0f;
+            _phaseTimer = 0f;
+            _runAccum = 0f;
+            _anim.SetCrouch(false);
+            _motor.ForceFacing(facing);
+            SetOverride(facing * _settings.runSpeed);
+            _motor.SetImmediateVelocityX(_overrideVx);
+            _anim.ForcePlay(PlayerAnimDriver.States.Run);
+        }
+
+        public void ForceStand()
+        {
+            StopSlideSmokeTrail();
+            _state = PlayerCrouchState.Standing;
+            _slideTimer = 0f;
+            _phaseTimer = 0f;
+            _runAccum = 0f;
+            _hasOverrideVx = false;
+            _anim.SetCrouch(false);
+        }
+
+        private void OnDisable()
+        {
+            // 玩家在滑铲中途被销毁时，切勿留下循环烟雾拖尾成孤儿。
+            StopSlideSmokeTrail();
+        }
+    }
+}

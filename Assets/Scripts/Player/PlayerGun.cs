@@ -6,11 +6,11 @@ using UnityEditor;
 namespace Player
 {
     /// <summary>
-    /// ADS / fire / reload — port of GunFire FSM + Gun OnADS aim (floor.unity).
-    /// Firing: CreateObject _Bullet + MuzzleFlashLight at Gun, SMG_Cartridge at ejection.
-    /// Aim: FollowMouse2D(Aim_Target) + SmoothLookAt2d(AimPivot) + face-flip when mouse crosses.
-    /// Locomotion overlay: Movement ADS sets aimDir = abs(facingScale - GAME_MOVE)
-    ///   (0 walk / 1 stand / 2 walk-back) for Aim layer Aim_Standing blend tree.
+    /// ADS / 开火 / 换弹 — 移植自 GunFire FSM + Gun OnADS 瞄准（floor.unity）。
+    /// 开火：在 Gun 处 CreateObject _Bullet + MuzzleFlashLight，在抛壳口创建Object SMG_Cartridge。
+    /// 瞄准：FollowMouse2D(Aim_Target) + SmoothLookAt2d(AimPivot) + 鼠标越过时翻转朝向。
+    /// 移动叠加：Movement ADS 设置 aimDir = abs(facingScale - GAME_MOVE)
+    ///   （0 走路 / 1 站立 / 2 后退走），供 Aim 层 Aim_Standing 混合树使用。
     /// </summary>
     public class PlayerGun : MonoBehaviour
     {
@@ -21,35 +21,35 @@ namespace Player
             Holding,
             Releasing,
             Reloading,
-            // Stand-aim ↔ crouch-aim posture swap (Crouch_Aim_to_Stand_Aim BlendTree).
-            // A first-class sub-phase of aiming; entered from Holding, exits back to Holding.
+            // 站立瞄准 ↔ 蹲姿瞄准姿势切换（Crouch_Aim_to_Stand_Aim BlendTree）。
+            // 瞄准的一等公民子阶段；从 Holding 进入，结束后回到 Holding。
             CrouchAimTransition
         }
 
-        [Header("Prefabs (GunFire Firing CreateObject)")]
+        [Header("预制体（GunFire Firing CreateObject）")]
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private GameObject muzzleFlashPrefab;
         [SerializeField] private GameObject cartridgePrefab;
 
-        [Header("Spawn points (heroine children)")]
+        [Header("生成点（女主子物体）")]
         [SerializeField] private Transform gunMuzzle;
         [SerializeField] private Transform ejectionPort;
 
-        [Header("Mouse aim (Gun FSM OnADS)")]
+        [Header("鼠标瞄准（Gun FSM OnADS）")]
         [SerializeField] private Transform aimTarget;
         [SerializeField] private Transform aimPivot;
         [SerializeField] private float aimLookSpeed = 12f;
         [SerializeField] private float aimTargetSmoothing = 0.35f;
-        [Tooltip("World-X slack before flipping to face the mouse (Gun OnADS FloatCompare).")]
+        [Tooltip("面向鼠标翻转前的世界 X 容差（Gun OnADS FloatCompare）。")]
         [SerializeField] private float faceFlipSlop = 0.15f;
 
-        [Header("Aim laser (GunSight)")]
-        [Tooltip("Draw the red aiming ray while the gun is raised (GunSight in floor.unity).")]
+        [Header("瞄准激光（GunSight）")]
+        [Tooltip("举枪时绘制红色瞄准射线（floor.unity 中的 GunSight）。")]
         [SerializeField] private bool showAimLaser = true;
         [SerializeField] private Color laserColor = new Color(1f, 0.12f, 0.12f, 0.85f);
         [SerializeField] private float laserWidth = 0.04f;
         [SerializeField] private float laserMaxLength = 30f;
-        [Tooltip("Obstacles that stop the ray. Nothing = draw full length.")]
+        [Tooltip("阻挡射线的障碍层。为空则绘制全长。")]
         [SerializeField] private LayerMask laserBlockMask;
 
         private PlayerMotor _motor;
@@ -67,38 +67,38 @@ namespace Player
         private Quaternion _aimPivotRestLocal = Quaternion.identity;
         private bool _aimPivotRestStored;
         private Vector2 _aimDir = Vector2.right;
-        /// <summary>While releasing, true only if nothing is interrupting — allows Idle/Run/melee to cut fold.</summary>
+        /// <summary>收枪过程中，仅当没有打断时为 true — 允许 Idle/Run/近战切断收枪。</summary>
         private bool _releaseHoldsAnim;
         private LineRenderer _laser;
         private Transform _aimingRoot;
 
-        // Aim_*_SMG states use BlendTrees — Unity does not fire clip SendEvents reliably.
-        // Drive reload / fold SEs from elapsed time matching the baked event times.
+        // Aim_*_SMG 状态使用 BlendTree — Unity 不会可靠触发片段 SendEvent。
+        // 按与烘焙事件时间匹配的已用时间驱动换弹 / 收枪音效。
         private float _reloadElapsed;
         private bool _reloadSeOffMagazine;
         private bool _reloadSeSetMagazine;
         private bool _reloadSeCocking;
         /// <summary>
-        /// Do not treat leftover Aim_SMG_Hold as reload-done (move-ADS → reload used to
-        /// EnterHold on the first frame and skip Aim_SMG_Reload).
+        /// 不要把残留的 Aim_SMG_Hold 当成换弹完成（移动 ADS → 换弹曾在首帧
+        /// EnterHold，从而跳过 Aim_SMG_Reload）。
         /// </summary>
         private bool _reloadClipSeen;
         private float _releaseElapsed;
         private bool _releaseSeFoldSmg;
         /// <summary>
-        /// Mecanim Aim_SMG_Release → Crouching (crouching&gt;0.9, exitTime 1). Once the release
-        /// state has been seen, do not ForcePlay it again — that one-frame restart is the crouch-ADS cancel jitter.
+        /// Mecanim Aim_SMG_Release → Crouching（crouching&gt;0.9，exitTime 1）。一旦已见过
+        /// Release 状态，就不要再 ForcePlay — 那一帧的重开就是蹲姿 ADS 取消时的抖动。
         /// </summary>
         private bool _releaseClipSeen;
 
         /// <summary>
-        /// Committed Aim BlendTree crouching (0 stand / 1 crouch). Mirrors the PlayerCrouch FSM
-        /// (passed in as <c>crouched</c>) for enter/hold/reload; latched at release start so the
-        /// crouch fold-out clip is chosen correctly even if the crouch key is let go mid-release.
-        /// PlayerGun does NOT own crouch state — PlayerCrouch is the authority.
+        /// 已提交的 Aim BlendTree 蹲姿（0 站立 / 1 蹲下）。镜像 PlayerCrouch FSM
+        /// （作为 <c>crouched</c> 传入）用于进入/持枪/换弹；在收枪开始时锁存，以便即使收枪中途松开蹲键
+        /// 也能正确选择蹲姿收枪片段。
+        /// PlayerGun 不拥有蹲姿状态 — PlayerCrouch 才是权威。
         /// </summary>
         private bool _aimCrouch;
-        /// <summary>PlayerCrouch.IsCrouching mirror for this frame (set at the top of Tick).</summary>
+        /// <summary>本帧的 PlayerCrouch.IsCrouching 镜像（在 Tick 顶部设置）。</summary>
         private bool _crouched;
         private bool _crouchAimTransitionTarget;
         private float _crouchAimTransitionTimer;
@@ -110,12 +110,12 @@ namespace Player
             || _phase == AdsPhase.CrouchAimTransition;
         public bool IsReloading => _phase == AdsPhase.Reloading;
         /// <summary>
-        /// Base-layer Aim_SMG* (incl. release) — crouch must not PlayBase Crouching over it.
-        /// Unlike IsAds, this stays true while Releasing so crouch-ADS → crouch idle does not jitter.
+        /// 基础层 Aim_SMG*（含收枪）— 蹲姿不得用 PlayBase Crouching 覆盖它。
+        /// 与 IsAds 不同，Releasing 时仍为 true，避免蹲姿 ADS → 蹲姿待机抖动。
         /// </summary>
         public bool OwnsCrouchBaseAnim => IsAds
             || (_phase == AdsPhase.Releasing && _releaseHoldsAnim);
-        /// <summary>Blocks locomotion anim. Release is interruptible and does not lock once yielded.</summary>
+        /// <summary>锁定移动动画。收枪可打断，一旦让出则不再锁定。</summary>
         public bool IsBusy => _phase == AdsPhase.Raising || _phase == AdsPhase.Holding
             || _phase == AdsPhase.Reloading
             || _phase == AdsPhase.CrouchAimTransition
@@ -165,7 +165,7 @@ namespace Player
                 _aimingRoot = FindChildTransform("Aiming");
             }
 
-            // Create under Aiming at init so hierarchy matches floor GunSight placement.
+            // 初始化时挂到 Aiming 下，使层级与 floor GunSight 放置一致。
             if (showAimLaser)
             {
                 EnsureLaser();
@@ -203,9 +203,9 @@ namespace Player
         }
 
         /// <param name="actionInterrupt">
-        /// Melee / jump / crouch / backstep already owning the character — abort release anim.
+        /// 近战 / 跳跃 / 蹲下 / 后撤已占用角色 — 中止收枪动画。
         /// </param>
-        /// <param name="crouched">PlayerCrouch.IsCrouching — the crouch authority the gun mirrors.</param>
+        /// <param name="crouched">PlayerCrouch.IsCrouching — 枪械镜像的蹲姿权威。</param>
         public void Tick(PlayerIntent intent, bool canAds, bool actionInterrupt, bool sliding,
             bool allowFaceFlip, bool crouched)
         {
@@ -227,7 +227,7 @@ namespace Player
             }
             else
             {
-                // Enter via canAds; while already aiming, interrupts match former actionInterrupt.
+                // 通过 canAds 进入；已在瞄准时，打断条件与原先的 actionInterrupt 一致。
                 bool wantAds = intent.WantsAds
                     && (IsAds ? !actionInterrupt && !sliding : canAds);
 
@@ -259,21 +259,20 @@ namespace Player
         }
 
         /// <summary>
-        /// Reload ignores RMB release and A/D. Melee / jump / evade / magic / slide / crouch
-        /// cancel ADS and fail the reload (ammo unchanged).
-        /// Moving stand keeps Aim_Standing (walk legs + GunSight, floor ADS_RELOAD); still/crouch
-        /// drop the Aim layer so the Base Aim_SMG_Reload body animation shows.
+        /// 换弹忽略 RMB 松开与 A/D。近战 / 跳跃 / 闪避 / 魔法 / 滑铲 / 蹲下
+        /// 会取消 ADS 并使换弹失败（弹药不变）。
+        /// 移动站立保持 Aim_Standing（走路腿部 + GunSight，floor ADS_RELOAD）；静止/蹲姿
+        /// 关闭 Aim 层，以便显示基础层 Aim_SMG_Reload 身体动画。
         /// </summary>
         private void TickReloading(PlayerIntent intent, bool allowFaceFlip,
             bool actionInterrupt, bool sliding)
         {
-            // Left crouch mid crouch-reload → yield so PlayerCrouch can BeginStandUp, same as
-            // TickRelease's (_aimCrouch && !intent.Crouch) check. Without this, PlayerCrouch
-            // already snapped Standing (ExitCrouch under adsActive, which — like the ADS-Holding
-            // case — defers clearing the animator to the gun) while gun keeps holding the base
-            // layer on Aim_SMG_Reload for several more frames, so a same-frame BackStep
-            // (HandleReloadBackStep) hard-cancels with a stale crouch=true left behind (nothing
-            // else — TickStanding does not — ever clears it once PlayerCrouch is Standing).
+            // 蹲姿换弹中途起身 → 让出，使 PlayerCrouch 能 BeginStandUp，与
+            // TickRelease 的 (_aimCrouch && !intent.Crouch) 检查相同。若无此逻辑，PlayerCrouch
+            // 已在 adsActive 下 ExitCrouch 切到 Standing（与 ADS-Holding 情况一样，
+            // 把清理动画器的工作交给枪），而枪仍把基础层停在 Aim_SMG_Reload 若干帧，
+            // 同帧 BackStep（HandleReloadBackStep）硬取消时会留下过期的 crouch=true
+            //（PlayerCrouch 一旦 Standing，TickStanding 不会再清除它）。
             if (_aimCrouch && !intent.Crouch)
             {
                 CancelReload(keepCrouch: false);
@@ -298,9 +297,9 @@ namespace Player
             _anim.SetCrouch(_aimCrouch);
             UpdateAdsAim(intent, allowFaceFlip);
 
-            // Moving stand: keep Aim_Standing (walking legs + GunSight line). floor Movement
-            // State 4 (ADS_RELOAD) leaves the Aim layer at 1 — reload is audio-only while walking.
-            // Still / crouch: drop to Base Aim_SMG_Reload so the reload body animation shows.
+            // 移动站立：保持 Aim_Standing（走路腿部 + GunSight 线）。floor Movement
+            // State 4（ADS_RELOAD）把 Aim 层留在 1 — 走路换弹仅有音频。
+            // 静止 / 蹲姿：降到基础层 Aim_SMG_Reload 以显示换弹身体动画。
             bool moving = !_aimCrouch && Mathf.Abs(intent.Move) > 0.1f;
             bool onReload;
             if (moving)
@@ -321,13 +320,13 @@ namespace Player
                 }
                 else if (!_reloadClipSeen && _reloadElapsed < 0.12f)
                 {
-                    // Re-assist only briefly. ForcePlay every frame while Mecanim is mid-transition
-                    // restarts the clip at t=0 and looks like "reload never plays".
+                    // 仅短暂再辅助。Mecanim 过渡中每帧 ForcePlay
+                    // 会把片段重置到 t=0，看起来像「换弹从未播放」。
                     _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgReload);
                 }
             }
 
-            // Finish only after Reload has actually played — never on stale Hold from move-ADS.
+            // 仅在 Reload 实际播放后才结束 — 绝不用移动 ADS 残留的 Hold。
             float minPlay = PlayerAnimTimings.AimSmgReload.ClipLength * 0.85f;
             bool finished = _phaseTimer <= 0f
                 || (_reloadClipSeen && onReload && _anim.AimFinished && _reloadElapsed >= minPlay)
@@ -341,7 +340,7 @@ namespace Player
             }
         }
 
-        /// <summary>Abort reload without refilling — leave ADS for the interrupting action.</summary>
+        /// <summary>中止换弹且不装填 — 为打断动作离开 ADS。</summary>
         private void CancelReload(bool keepCrouch)
         {
             _reloadSeOffMagazine = false;
@@ -352,7 +351,7 @@ namespace Player
         }
 
         /// <summary>
-        /// Timed reload SEs matching Aim_*_SMG_Reload events (BlendTree skips anim SendEvent).
+        /// 与 Aim_*_SMG_Reload 事件匹配的定时换弹音效（BlendTree 会跳过动画 SendEvent）。
         /// </summary>
         private void TickReloadSe(bool forceFlush = false)
         {
@@ -403,10 +402,10 @@ namespace Player
 
         private void TickRaising(PlayerIntent intent, bool wantAds, bool allowFaceFlip)
         {
-            // During raise, snap crouch blend (transition clips play from Hold).
+            // 举枪期间，立即对齐蹲姿混合（过渡片段从 Hold 播放）。
             _aimCrouch = _crouched;
             _anim.SetCrouch(_aimCrouch);
-            // Raise uses Base Aim_SMG — keep Aim layer off so Aim_Standing cannot hide it.
+            // 举枪使用基础层 Aim_SMG — 保持 Aim 层关闭，以免 Aim_Standing 盖住它。
             SetAimWeightImmediate(0f);
             UpdateAdsAim(intent, allowFaceFlip);
             _phaseTimer -= _motor.DeltaTime;
@@ -429,8 +428,8 @@ namespace Player
                 return;
             }
 
-            // Stand Hold ↔ crouch Hold: hand off to CrouchAimTransition phase, which plays
-            // Crouch_Aim_to_Stand_Aim and returns to Holding when the clip completes.
+            // 站立 Hold ↔ 蹲姿 Hold：交给 CrouchAimTransition 阶段，播放
+            // Crouch_Aim_to_Stand_Aim，片段完成后回到 Holding。
             bool wantCrouch = _crouched;
             if (wantCrouch != _aimCrouch && _vibrationTimer <= 0f)
             {
@@ -442,9 +441,9 @@ namespace Player
             _anim.SetCrouch(_aimCrouch);
             UpdateAdsAim(intent, allowFaceFlip);
 
-            // Stand + moving (and not mid-recoil): Aim layer Aim_Standing (walk/stand/back).
-            // Still / crouch / firing: Base SMG so Aim_SMG_Hold + fire vibration recoil show.
-            // `moving` is stable across shots (not per-frame ForcePlay) → no move-shoot jitter.
+            // 站立 + 移动（且非后坐力中）：Aim 层 Aim_Standing（走/站/退）。
+            // 静止 / 蹲姿 / 开火：基础层 SMG，以便 Aim_SMG_Hold + 开火振动后坐力显示。
+            // `moving` 跨射击保持稳定（非每帧 ForcePlay）→ 无移动射击抖动。
             bool moving = !_aimCrouch && _vibrationTimer <= 0f
                 && Mathf.Abs(intent.Move) > 0.1f;
             if (moving)
@@ -466,12 +465,12 @@ namespace Player
 
             if (intent.Fire && _fireCooldown <= 0f)
             {
-                // Recoil only when not walking — vibration over Aim_Standing would flicker.
+                // 仅在非走路时后坐力 — 振动盖在 Aim_Standing 上会闪烁。
                 TryFire(allowRecoil: !moving);
             }
         }
 
-        /// <summary>Crouch hold: drive Base Aim_SMG_Hold / return from vibration.</summary>
+        /// <summary>蹲姿持枪：驱动基础层 Aim_SMG_Hold / 从振动返回。</summary>
         private void TickHoldBaseSmg()
         {
             if (_vibrationTimer > 0f)
@@ -505,7 +504,7 @@ namespace Player
         }
 
         /// <summary>
-        /// Stand hold parks Base under Aim_Standing without per-frame ForcePlay (avoids restart jitter).
+        /// 站立持枪把基础层停在 Aim_Standing 下，避免每帧 ForcePlay（防止重启抖动）。
         /// </summary>
         private void ParkBaseSmgHold()
         {
@@ -520,10 +519,10 @@ namespace Player
         }
 
         /// <summary>
-        /// SMG state Crouch_Aim_to_Stand_Aim BlendTree:
-        /// crouching=0 → Aim_Aim_SMG_Hold_to_Crouch_Aim (stand→crouch),
-        /// crouching=1 → Crouch_Crouch_Aim_to_Stand_Aim (crouch→stand).
-        /// Weight is locked to the source pose for the whole clip.
+        /// SMG 状态 Crouch_Aim_to_Stand_Aim BlendTree：
+        /// crouching=0 → Aim_Aim_SMG_Hold_to_Crouch_Aim（站→蹲），
+        /// crouching=1 → Crouch_Crouch_Aim_to_Stand_Aim（蹲→站）。
+        /// 整段片段权重锁定为源姿势。
         /// </summary>
         private void BeginCrouchAimTransition(bool toCrouch)
         {
@@ -531,7 +530,7 @@ namespace Player
             _crouchAimTransitionTarget = toCrouch;
             _crouchAimClipSeen = false;
             _crouchAimTransitionTimer = PlayerAnimTimings.CrouchAimTransition.ClipLength + 0.05f;
-            // Source pose selects the clip — NOT the destination (destination would invert them).
+            // 源姿势选择片段 — 不是目标姿势（目标会把两者反转）。
             _crouchAimBlend = toCrouch ? 0f : 1f;
             _anim.SetCrouchingWeight(_crouchAimBlend);
             _anim.ForcePlayAim(PlayerAnimDriver.States.CrouchAimToStandAim);
@@ -539,7 +538,7 @@ namespace Player
 
         private void TickCrouchAimTransition(PlayerIntent intent, bool wantAds, bool allowFaceFlip)
         {
-            // ADS dropped / interrupted mid-swap: abandon the transition and release.
+            // 切换中途松开 ADS / 被打断：放弃过渡并收枪。
             if (!wantAds)
             {
                 EnterRelease();
@@ -548,7 +547,7 @@ namespace Player
 
             UpdateAdsAim(intent, allowFaceFlip);
             SetAimWeightImmediate(0f);
-            // Keep BlendTree on the correct transition clip for the whole duration.
+            // 整段持续期间把 BlendTree 锁在正确的过渡片段上。
             _anim.SetCrouchingWeight(_crouchAimBlend);
             _crouchAimTransitionTimer -= _motor.DeltaTime;
 
@@ -560,11 +559,11 @@ namespace Player
             }
             else if (!_crouchAimClipSeen)
             {
-                // Play may not stick first frame — keep forcing until Mecanim reports the state.
+                // 首帧 Play 可能未生效 — 持续 Force 直到 Mecanim 报告该状态。
                 _anim.ForcePlayAim(PlayerAnimDriver.States.CrouchAimToStandAim);
             }
 
-            // Duration-locked: do not use AimFinished from the previous Hold pose.
+            // 按时长锁定：不要用上一 Hold 姿势的 AimFinished。
             float minPlay = PlayerAnimTimings.CrouchAimTransition.ClipLength * 0.85f;
             float elapsed = PlayerAnimTimings.CrouchAimTransition.ClipLength + 0.05f
                 - _crouchAimTransitionTimer;
@@ -582,9 +581,9 @@ namespace Player
         }
 
         /// <summary>
-        /// Play Aim_SMG_Release to completion unless move / combat / jump / crouch / ADS cuts it.
-        /// While crouched, keep crouching=1 so Crouch_Crouch_Aim_SMG_Release plays. Animator already
-        /// transitions Release → Crouching; do not re-Play Release after that exit (cancel jitter).
+        /// 播放 Aim_SMG_Release 至完成，除非移动 / 战斗 / 跳跃 / 蹲下 / ADS 切断。
+        /// 蹲姿时保持 crouching=1，以便播放 Crouch_Crouch_Aim_SMG_Release。动画器已会
+        /// 从 Release → Crouching；退出后不要再 Play Release（取消抖动）。
         /// </summary>
         private void TickRelease(PlayerIntent intent, bool actionInterrupt, bool sliding, bool wantAds)
         {
@@ -601,11 +600,11 @@ namespace Player
                 return;
             }
 
-            // Left crouch during crouch-ADS release → yield so PlayerCrouch can BeginStandUp.
-            // PlayerCrouch's ExitCrouch(adsActive) snaps Standing without touching the animator
-            // (it defers to the gun while ADS owns the base anim) — clear crouch/crouching here
-            // so nothing leaves a stale crouch=true / crouching=1 behind (PlayerCrouch.TickStanding
-            // never clears it once already Standing).
+            // 蹲姿 ADS 收枪中起身 → 让出，使 PlayerCrouch 能 BeginStandUp。
+            // PlayerCrouch 的 ExitCrouch(adsActive) 切到 Standing 且不碰动画器
+            //（ADS 占用基础动画时 defer 给枪）— 在此清除 crouch/crouching，
+            // 以免留下过期的 crouch=true / crouching=1（PlayerCrouch.TickStanding
+            // 一旦已是 Standing 不会再清除）。
             if (_aimCrouch && !intent.Crouch)
             {
                 FinishRelease(keepCrouch: false);
@@ -613,14 +612,14 @@ namespace Player
                 return;
             }
 
-            // Stand release + crouch (held or pressed): yield so Crouch enter can play.
+            // 站立收枪 + 蹲下（按住或按下）：让出，以便播放进入蹲姿。
             if (!_aimCrouch && intent.Crouch)
             {
                 FinishRelease(keepCrouch: false);
                 return;
             }
 
-            // Crouch-ADS release: ignore A/D (no strafe). Stand release still yields to move.
+            // 蹲姿 ADS 收枪：忽略 A/D（无侧移）。站立收枪仍对移动让出。
             bool inputInterrupt = actionInterrupt || sliding
                 || intent.SlashPressed || intent.JumpPressed
                 || intent.EvadePressed || intent.ReloadPressed
@@ -628,7 +627,7 @@ namespace Player
 
             if (inputInterrupt)
             {
-                // Yield base layer to locomotion / melee / jump — do not ForcePlay Idle here.
+                // 把基础层让给移动 / 近战 / 跳跃 — 此处不要 ForcePlay Idle。
                 FinishRelease(keepCrouch: intent.Crouch && _aimCrouch);
                 return;
             }
@@ -644,13 +643,13 @@ namespace Player
             }
             else if (!_releaseClipSeen && _phaseTimer > 0f && !onCrouching)
             {
-                // First frames only — Mecanim may not report the state yet.
+                // 仅前几帧 — Mecanim 可能尚未报告该状态。
                 _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgRelease);
                 onRelease = true;
             }
             else if (_releaseClipSeen && !onRelease)
             {
-                // exitTime handoff (Crouching) or SMG Exit — settle, do not restart Release.
+                // exitTime 交接（Crouching）或 SMG Exit — 落定，不要重启 Release。
                 FinishRelease(keepCrouch: intent.Crouch && _aimCrouch);
                 return;
             }
@@ -661,7 +660,7 @@ namespace Player
             }
         }
 
-        /// <summary>SE_foldSMG @ 0.5833 — same Cocking.ogg (BlendTree skips anim SendEvent).</summary>
+        /// <summary>SE_foldSMG @ 0.5833 — 同一 Cocking.ogg（BlendTree 跳过动画 SendEvent）。</summary>
         private void TickReleaseSe()
         {
             if (_audio == null || _releaseSeFoldSmg)
@@ -687,7 +686,7 @@ namespace Player
             if (keepCrouch)
             {
                 _anim.SetCrouch(true);
-                // Prefer Mecanim Release→Crouching exit; only ForcePlay if we never landed there.
+                // 优先 Mecanim Release→Crouching 退出；仅在从未落到该处时 ForcePlay。
                 if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching))
                 {
                     _anim.SyncCurrent(PlayerAnimDriver.States.Crouching);
@@ -702,15 +701,15 @@ namespace Player
         }
 
         /// <summary>
-        /// Movement FaceCheck: aimDir = abs(facingSign - GAME_MOVE) → 0 walk / 1 stand / 2 back.
-        /// Gun OnADS: Aim_Target follows mouse; AimPivot SmoothLookAt2d; flip when mouse crosses.
+        /// Movement FaceCheck：aimDir = abs(facingSign - GAME_MOVE) → 0 走 / 1 站 / 2 退。
+        /// Gun OnADS：Aim_Target 跟随鼠标；AimPivot SmoothLookAt2d；鼠标越过时翻转。
         /// </summary>
         private void UpdateAdsAim(PlayerIntent intent, bool allowFaceFlip)
         {
             ResolveRefs();
 
-            // Movement FaceCheck: aimDir = abs(facing - move) → 0 walk / 1 stand / 2 back.
-            // Crouch / ADSCrouch: ignore A/D — lock stand aimDir (_aimCrouch mirrors the crouch FSM).
+            // Movement FaceCheck：aimDir = abs(facing - move) → 0 走 / 1 站 / 2 退。
+            // Crouch / ADSCrouch：忽略 A/D — 锁定站立 aimDir（_aimCrouch 镜像蹲姿 FSM）。
             float move = _aimCrouch ? 0f : intent.Move;
             float aimLocomotion = Mathf.Abs(_motor.Facing - move);
             _anim.SetAimDir(aimLocomotion);
@@ -731,7 +730,7 @@ namespace Player
                 Vector3 cur = aimTarget.position;
                 Vector3 target = new Vector3(aimPoint.x, aimPoint.y, cur.z);
                 float t = Mathf.Clamp01(aimTargetSmoothing);
-                // FollowMouse2D uses Lerp with smoothing as blend factor each frame.
+                // FollowMouse2D 每帧用 Lerp，smoothing 作为混合系数。
                 aimTarget.position = Vector3.Lerp(cur, target, t <= 0f ? 1f : t);
                 aimPoint = aimTarget.position;
             }
@@ -749,14 +748,14 @@ namespace Player
             if (aimPivot != null)
             {
                 float angle = Mathf.Atan2(_aimDir.y, _aimDir.x) * Mathf.Rad2Deg;
-                // When facing left, localScale.x is negative; compensate so the pivot still
-                // points at the mouse in world space (same idea as Gun Turn + SmoothLookAt2d).
+                // 朝左时 localScale.x 为负；补偿使枢轴在世界空间仍指向鼠标
+                //（与 Gun Turn + SmoothLookAt2d 思路相同）。
                 Quaternion desired = Quaternion.Euler(0f, 0f, angle);
                 float step = Mathf.Clamp01(aimLookSpeed * _motor.DeltaTime);
                 aimPivot.rotation = Quaternion.Slerp(aimPivot.rotation, desired, step);
             }
 
-            // Face mouse only when FacingOwner is Gun (ground ADS).
+            // 仅当 FacingOwner 为 Gun（地面 ADS）时面向鼠标。
             if (!allowFaceFlip || !_motor.IsGrounded)
             {
                 return;
@@ -774,8 +773,8 @@ namespace Player
         }
 
         /// <summary>
-        /// GunSight red ray: shown while the gun is up (Holding / Reloading, not during raise),
-        /// from the muzzle along the current aim direction; optionally clipped at obstacles.
+        /// GunSight 红色射线：枪举起时显示（Holding / Reloading，举枪过程中不显示），
+        /// 从枪口沿当前瞄准方向；可选在障碍处截断。
         /// </summary>
         private void UpdateAimLaser()
         {
@@ -791,7 +790,7 @@ namespace Player
 
             EnsureLaser();
 
-            // GunSight shows once the gun is up: Holding + Reloading (floor keeps it during reload).
+            // GunSight 在枪举起后显示：Holding + Reloading（floor 换弹时也保留）。
             bool visible = (_phase == AdsPhase.Holding || _phase == AdsPhase.Reloading)
                 && _anim.IsInSmgAim();
             _laser.enabled = visible;
@@ -840,7 +839,7 @@ namespace Player
             }
 
             var go = new GameObject("GunSightLaser");
-            // Parent under Aiming (floor GunSight socket), not the Heroine root.
+            // 挂到 Aiming 下（floor GunSight 插槽），而非女主根节点。
             go.transform.SetParent(_aimingRoot != null ? _aimingRoot : transform, false);
             _laser = go.AddComponent<LineRenderer>();
             _laser.useWorldSpace = true;
@@ -861,7 +860,7 @@ namespace Player
 
             _laser.startColor = laserColor;
             _laser.endColor = new Color(laserColor.r, laserColor.g, laserColor.b, 0f);
-            // Render above the character sprites.
+            // 渲染在角色精灵之上。
             _laser.sortingOrder = 100;
             _laser.enabled = false;
         }
@@ -885,7 +884,7 @@ namespace Player
             _phaseTimer = _settings.adsBlendTime > 0f ? _settings.adsBlendTime : 0.25f;
             _anim.SetAiming(true);
             _anim.SetAimDir(1f);
-            // Base/SMG owns the pose; keep Aim layer off so Aim_Standing cannot override.
+            // 基础层/SMG 拥有姿势；保持 Aim 层关闭，以免 Aim_Standing 覆盖。
             SetAimWeightImmediate(0f);
             _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmg);
             if (!_playedAimSound)
@@ -900,8 +899,8 @@ namespace Player
             _phase = AdsPhase.Holding;
             _anim.SetAiming(true);
             _anim.SetCrouch(_aimCrouch);
-            // Default to Base SMG (weight 0). TickHolding raises Aim layer to 1 only while
-            // walking, so entering hold while still shows the Base aim pose (not a 1-frame walk).
+            // 默认基础层 SMG（权重 0）。TickHolding 仅在走路时把 Aim 层提到 1，
+            // 因此静止进入持枪显示基础层瞄准姿势（而非一帧走路）。
             SetAimWeightImmediate(0f);
 
             if (forcePlay || !_anim.IsPlayingAim(PlayerAnimDriver.States.AimSmgHold))
@@ -917,7 +916,7 @@ namespace Player
         private void EnterRelease()
         {
             _phase = AdsPhase.Releasing;
-            // Aim_Aim_SMG_Release clip length; move/attack/jump may cut it short.
+            // Aim_Aim_SMG_Release 片段长度；移动/攻击/跳跃可能提前切断。
             _phaseTimer = _settings.adsReleaseDuration > 0f
                 ? _settings.adsReleaseDuration
                 : PlayerAnimTimings.AimSmgRelease.ClipLength;
@@ -957,8 +956,8 @@ namespace Player
             _ammo--;
             _fireCooldown = _settings.fireInterval;
             _anim.SetTrigger("gunfire");
-            // Recoil = Base Aim_SMG_vibration with Aim layer off (crouch, or standing still).
-            // While walking (allowRecoil=false) keep Aim_Standing — recoil would flicker the walk.
+            // 后坐力 = 基础层 Aim_SMG_vibration 且 Aim 层关闭（蹲姿，或站立静止）。
+            // 走路时（allowRecoil=false）保持 Aim_Standing — 后坐力会使走路闪烁。
             if (allowRecoil)
             {
                 _vibrationTimer = 0.08f;
@@ -975,7 +974,7 @@ namespace Player
         }
 
         /// <summary>
-        /// GunFire Firing: CreateObject bullet + muzzle at Gun, cartridge at ejection port.
+        /// GunFire Firing：在 Gun 处 CreateObject 子弹 + 枪口闪光，在抛壳口 CreateObject 弹壳。
         /// </summary>
         private void SpawnFiringVfx()
         {
@@ -987,8 +986,10 @@ namespace Player
 
             if (bulletPrefab != null)
             {
-                // Spawn unrotated; PlayerBulletMover applies aim + prefab z=90 offset.
-                var bullet = Instantiate(bulletPrefab, muzzle.position, Quaternion.identity);
+                // 略向前于枪口生成，避免首发（Gun 骨骼仍在落入瞄准姿势）
+                // 与女主碰撞体重叠而立刻销毁。
+                Vector3 spawnPos = muzzle.position + (Vector3)(dir * 0.35f);
+                var bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
                 bullet.name = "_Bullet";
                 var mover = bullet.GetComponent<PlayerBulletMover>();
                 if (mover == null)
@@ -996,6 +997,7 @@ namespace Player
                     mover = bullet.AddComponent<PlayerBulletMover>();
                 }
 
+                mover.SetOwner(transform);
                 mover.Launch(dir, _settings.bulletSpeed);
             }
 
@@ -1010,7 +1012,7 @@ namespace Player
 
             if (cartridgePrefab != null && ejectionPort != null)
             {
-                // floor CreateObject rotation euler (-90, 0, 0) at SMG_EjectionPort.
+                // floor CreateObject 在 SMG_EjectionPort 处旋转欧拉角 (-90, 0, 0)。
                 var rot = ejectionPort.rotation * Quaternion.Euler(-90f, 0f, 0f);
                 var casing = Instantiate(cartridgePrefab, ejectionPort.position, rot);
                 casing.name = "SMG_Cartridge";
@@ -1031,11 +1033,11 @@ namespace Player
             _reloadSeCocking = false;
             _reloadClipSeen = false;
             _anim.SetAiming(true);
-            // Drop Aim_Standing so Base Aim_SMG_Reload is visible (stand move + reload).
+            // 关闭 Aim_Standing，使基础层 Aim_SMG_Reload 可见（站立移动 + 换弹）。
             SetAimWeightImmediate(0f);
             _anim.SetCrouch(_aimCrouch);
             _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgReload);
-            // Reload SEs are timed in TickReloadSe (Aim_* states are BlendTrees).
+            // 换弹音效在 TickReloadSe 中定时（Aim_* 状态为 BlendTree）。
         }
     }
 }

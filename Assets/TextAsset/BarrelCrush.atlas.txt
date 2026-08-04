@@ -1,0 +1,55 @@
+
+BarrelCrush.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1
+  rotate: false
+  xy: 597, 476
+  size: 178, 523
+  orig: 178, 523
+  offset: 0, 0
+  index: -1
+2
+  rotate: true
+  xy: 2, 127
+  size: 214, 551
+  orig: 214, 551
+  offset: 0, 0
+  index: -1
+3
+  rotate: false
+  xy: 777, 484
+  size: 176, 515
+  orig: 176, 515
+  offset: 0, 0
+  index: -1
+4
+  rotate: true
+  xy: 2, 2
+  size: 123, 347
+  orig: 123, 347
+  offset: 0, 0
+  index: -1
+5
+  rotate: false
+  xy: 597, 206
+  size: 201, 268
+  orig: 201, 268
+  offset: 0, 0
+  index: -1
+6
+  rotate: false
+  xy: 800, 48
+  size: 172, 434
+  orig: 172, 434
+  offset: 0, 0
+  index: -1
+7
+  rotate: false
+  xy: 2, 343
+  size: 593, 656
+  orig: 593, 656
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,27 @@
+
+Axe_Broke.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Axe_Broken_1
+  rotate: false
+  xy: 2, 2
+  size: 209, 191
+  orig: 209, 191
+  offset: 0, 0
+  index: -1
+Axe_Broken_2
+  rotate: true
+  xy: 213, 54
+  size: 52, 264
+  orig: 52, 264
+  offset: 0, 0
+  index: -1
+Axe_Broken_3
+  rotate: true
+  xy: 213, 108
+  size: 85, 287
+  orig: 85, 287
+  offset: 0, 0
+  index: -1

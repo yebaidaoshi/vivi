@@ -7,19 +7,18 @@ using UnityEditor;
 namespace Player
 {
     /// <summary>
-    /// Procedural slash (刀光) generator that reproduces the reference-art crescent
-    /// entirely in code, with no authored prefab / mesh dependency.
+    /// 程序化斩击（刀光）生成器：完全用代码复现参考美术的新月形，
+    /// 不依赖已制作的预制体 / 网格。
     ///
-    /// It mirrors <c>Assets/Material/SlashMaterial.mat</c> +
-    /// <c>Shader "Shader Graphs/SlashShaderGraph"</c>: an unlit, additive, two-sided arc.
-    /// The visible streaks ARE <b>tex_vfx-ult_trail_haze</b> — it feeds the base brightness
-    /// (<c>_MainTex</c>) plus a second scrolling copy (<c>_BrushTex</c>) for animated shimmer;
-    /// a <b>mask</b> gradient (Gradation_BtoW) fades tail→head and an HDR emissive tint drives
-    /// the glow. The crescent silhouette + soft edges come from a generated arc mesh whose
-    /// vertex alpha tapers at the tips and across the blade width.
+    /// 镜像 <c>Assets/Material/SlashMaterial.mat</c> +
+    /// <c>Shader "Shader Graphs/SlashShaderGraph"</c>：无光照、加法、双面弧。
+    /// 可见条纹即 <b>tex_vfx-ult_trail_haze</b> — 它提供基础亮度
+    /// （<c>_MainTex</c>），外加第二份滚动副本（<c>_BrushTex</c>）做动画微光；
+    /// <b>mask</b> 渐变（Gradation_BtoW）从尾→头淡出，HDR 自发光色调驱动
+    /// 辉光。新月轮廓 + 柔边来自生成的弧形网格，其顶点 alpha 在尖端与刀刃宽度上渐变。
     ///
-    /// <see cref="PlayerMelee"/> uses this as the runtime fallback when a slash prefab is
-    /// not assigned (the player rig is composed at runtime with no serialized VFX refs).
+    /// <see cref="PlayerMelee"/> 在未指定斩击预制体时以此作为运行时回退
+    ///（玩家骨架在运行时组合，无序列化特效引用）。
     /// </summary>
     public class PlayerSlashVfx : MonoBehaviour
     {
@@ -45,7 +44,7 @@ namespace Player
             public float ScrollSpeed;
         }
 
-        // Shared authored asset GUIDs (resolved in-editor); safe procedural fallbacks otherwise.
+        // 共享已制作资源 GUID（编辑器内解析）；否则用安全的程序化回退。
         private const string HazeGuid = "21289cd1fced7be4daee55a968efbf24"; // tex_vfx-ult_trail_haze
         private const string NoiseGuid = "8efed133e4f422240b95ae722414eea9"; // Noise1
         private const string GradationGuid = "835c19757c26aec4bbd12e2c7b116dc1"; // Gradation_BtoW
@@ -57,8 +56,8 @@ namespace Player
         private readonly Dictionary<SlashKind, Mesh> _meshCache = new Dictionary<SlashKind, Mesh>();
 
         /// <summary>
-        /// Spawn a one-shot procedural slash at a world pose, mirrored by <paramref name="facing"/>.
-        /// Matches <see cref="PlayerMelee"/>'s prefab path: unparented, world-space, own lifetime.
+        /// 在世界姿势处生成一次性程序化斩击，按 <paramref name="facing"/> 镜像。
+        /// 匹配 <see cref="PlayerMelee"/> 的预制体路径：未挂接、世界空间、自有生命周期。
         /// </summary>
         public GameObject Play(SlashKind kind, Vector3 worldPos, Quaternion worldRot, int facing,
             float lifetime)
@@ -79,7 +78,7 @@ namespace Player
             Transform t = go.transform;
             t.position = worldPos;
             t.rotation = worldRot * Quaternion.Euler(0f, 0f, p.RotationDeg);
-            // Mirror the arc horizontally when facing left (flat quad in XY).
+            // 朝左时水平镜像弧线（XY 平面四边形）。
             t.localScale = new Vector3(facing >= 0 ? 1f : -1f, 1f, 1f);
 
             var inst = go.AddComponent<SlashInstance>();
@@ -89,7 +88,7 @@ namespace Player
 
         private static KindProfile GetProfile(SlashKind kind)
         {
-            // Neutral grey HDR tint (matches SlashMaterial's ~0.52 grey), emissive via the material.
+            // 中性灰 HDR 色调（匹配 SlashMaterial 约 0.52 灰），自发光由材质驱动。
             Color grey = new Color(0.72f, 0.74f, 0.82f, 1f);
 
             switch (kind)
@@ -187,9 +186,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Build a curved ribbon (ring sector). UV.x runs tail→head along the arc (brush scrolls
-        /// along it); UV.y runs across the blade width. Vertex alpha bakes the crescent silhouette:
-        /// it tapers to 0 at both tips and toward the two radial edges, leaving a bright core.
+        /// 构建弯曲缎带（环扇区）。UV.x 沿弧尾→头（笔刷沿其滚动）；
+        /// UV.y 跨刀刃宽度。顶点 alpha 烘焙新月轮廓：两端尖端与两侧径向边缘渐变到 0，留下明亮核心。
         /// </summary>
         private static Mesh BuildArcMesh(float innerR, float outerR, float startDeg, float sweepDeg)
         {
@@ -209,9 +207,9 @@ namespace Player
                 float ang = Mathf.Deg2Rad * Mathf.Lerp(startDeg, startDeg + sweepDeg, t);
                 var dir = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang));
 
-                // Tip taper: 0 at both ends, peaks mid-arc (slightly head-weighted).
+                // 尖端渐变：两端为 0，弧中部峰值（略偏头部）。
                 float tipTaper = Mathf.Pow(Mathf.Sin(Mathf.PI * t), 0.6f);
-                // Blade gets thinner toward the tips too (pull width toward the mid radius).
+                // 刀刃向尖端也变细（把宽度拉向中半径）。
                 float widthScale = Mathf.Lerp(0.12f, 1f, Mathf.Sin(Mathf.PI * t));
 
                 for (int r = 0; r < rows; r++)
@@ -224,7 +222,7 @@ namespace Player
                     uvs[idx] = new Vector2(t, v);
                     normals[idx] = Vector3.back;
 
-                    // Soft edge across the width (bright core, transparent radial edges).
+                    // 宽度上的柔边（明亮核心，透明径向边缘）。
                     float widthProfile = Mathf.Sin(Mathf.PI * v);
                     byte a = (byte)Mathf.Clamp(tipTaper * widthProfile * 255f, 0f, 255f);
                     colors[idx] = new Color32(255, 255, 255, a);
@@ -275,14 +273,14 @@ namespace Player
 
             var mat = new Material(shader) { name = "ProcSlashMaterial" };
 
-            // The haze IS the visible slash: its fibers drive the base brightness (_MainTex,
-            // the universal slot honored by every fallback shader too) and a second scrolling
-            // copy in _BrushTex adds animated shimmer. Noise1 only perturbs; Gradation shapes.
+            // 雾纹即可见斩击：纤维驱动基础亮度（_MainTex，
+            // 也是所有回退着色器通用的槽），_BrushTex 中第二份滚动副本
+            // 增加动画微光。Noise1 仅扰动；Gradation 塑形。
             Texture haze = LoadTexture(HazeGuid) ?? GenerateHazeTexture();
             Texture noise = LoadTexture(NoiseGuid) ?? haze;
             Texture mask = LoadTexture(GradationGuid) ?? GenerateGradientTexture();
 
-            // SlashShaderGraph slots (guarded so fallback shaders don't spam warnings).
+            // SlashShaderGraph 槽位（加守卫，避免回退着色器刷警告）。
             SetTexture(mat, "_MainTex", haze);
             SetTexture(mat, "_BrushTex", haze);
             SetTexture(mat, "_Noise", noise);
@@ -335,8 +333,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Runtime fallback for the haze brush: a stack of soft horizontal streaks (grey) so the
-        /// slash keeps its wispy look even in a build where the authored texture isn't loadable.
+        /// 雾纹笔刷的运行时回退：一叠柔和水平条纹（灰色），以便在无法加载制作贴图的构建中
+        /// 斩击仍保持飘逸外观。
         /// </summary>
         private static Texture2D GenerateHazeTexture()
         {
@@ -349,7 +347,7 @@ namespace Player
                 {
                     float u = x / (float)size;
                     float v = y / (float)size;
-                    // Elongated (streaky) fbm: high frequency across, low along the streaks.
+                    // 拉长（条纹状）fbm：横向高频，沿条纹低频。
                     float n = Mathf.PerlinNoise(u * 24f, v * 4f) * 0.6f
                         + Mathf.PerlinNoise(u * 8f, v * 2f) * 0.4f;
                     byte c = (byte)Mathf.Clamp(n * 255f, 0f, 255f);
@@ -363,8 +361,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Runtime fallback for the shape mask (mimics Gradation_BtoW): a smooth 0→1 ramp along
-        /// U so the slash fades from a transparent tail to a bright leading head.
+        /// 形状遮罩的运行时回退（模仿 Gradation_BtoW）：沿 U 的平滑 0→1 坡度，
+        /// 使斩击从透明尾部淡入到明亮前端。
         /// </summary>
         private static Texture2D GenerateGradientTexture()
         {
@@ -382,7 +380,7 @@ namespace Player
             return tex;
         }
 
-        /// <summary>Per-instance driver: quick reveal, hold, then fade — plus a subtle grow.</summary>
+        /// <summary>每实例驱动：快速显现、保持、然后淡出 — 外加轻微放大。</summary>
         private sealed class SlashInstance : MonoBehaviour
         {
             private static readonly int AlphaId = Shader.PropertyToID("_Alpha");
@@ -433,12 +431,12 @@ namespace Player
 
             private void Apply(float t)
             {
-                // Reveal in the first 20%, then ease out to nothing.
+                // 前 20% 显现，随后缓出至无。
                 float reveal = Mathf.Clamp01(t / 0.2f);
                 float fade = Mathf.SmoothStep(1f, 0f, Mathf.Clamp01((t - 0.2f) / 0.8f));
                 float a = reveal * fade;
 
-                // Grow slightly as it dissipates + drift the brush for a flowing streak.
+                // 消散时略微放大 + 漂移笔刷以产生流动条纹。
                 transform.localScale *= 1f + 0.35f * Time.deltaTime;
 
                 _renderer.GetPropertyBlock(_mpb);

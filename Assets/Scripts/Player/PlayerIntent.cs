@@ -8,8 +8,8 @@ namespace Player
     public float Vertical;
     public float StickX;//用来存储摇杆在水平方向上的偏移量或输入值
     public float StickY;//用来存储摇杆在垂直方向上的偏移量或输入值
-    //鼠标在 2D 游戏世界里的坐标只有 X 和 Y， Z 轴没有用
-    //注意：只有当 HasAimPoint 为 true 时（比如鼠标没移出屏幕或者就没有摄像机）
+    //鼠标在 2D 游戏世界里的坐标只有 X 和 Y，Z 轴没有用
+    //注意：只有当 HasAimPoint 为 true 时（比如鼠标没移出屏幕且存在摄像机）AimPoint 才有效
         public Vector2 AimPoint;
         public bool HasAimPoint;
 
@@ -42,7 +42,8 @@ namespace Player
         public bool Items;//物品栏状态？！
         public bool Menu;//菜单状态？！
 
-        public bool WantsAds;//玩家是否像进入瞄准状态
+        /// <summary>来自 RMB/按键或摇杆的 ADS；派生属性，使枪/蹲/近战始终看到实时瞄准意图。</summary>
+        public bool WantsAds => Ads || StickAds;
         //玩家是否想要中断软动作（Soft Action），例如在攻击或技能动画播放时，玩家可能希望通过某些输入来中断当前动作。
         public bool WantsSoftActionInterrupt =>
             Mathf.Abs(Move) > 0.1f //玩家移动

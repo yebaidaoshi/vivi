@@ -1,0 +1,229 @@
+
+Gibbon.png
+size: 2048,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Arm_Front_3
+  rotate: true
+  xy: 1384, 301
+  size: 92, 86
+  orig: 92, 86
+  offset: 0, 0
+  index: -1
+Arm_Front_3_B
+  rotate: true
+  xy: 1472, 301
+  size: 92, 86
+  orig: 92, 86
+  offset: 0, 0
+  index: -1
+Arm_Rear_1
+  rotate: true
+  xy: 1016, 280
+  size: 109, 366
+  orig: 109, 366
+  offset: 0, 0
+  index: -1
+Arm_Rear_2
+  rotate: true
+  xy: 2, 9
+  size: 173, 369
+  orig: 173, 369
+  offset: 0, 0
+  index: -1
+Arm_Rear_3
+  rotate: true
+  xy: 1606, 88
+  size: 96, 94
+  orig: 96, 94
+  offset: 0, 0
+  index: -1
+Arm_Right_1
+  rotate: true
+  xy: 1107, 75
+  size: 109, 366
+  orig: 109, 366
+  offset: 0, 0
+  index: -1
+Arm_Right_2
+  rotate: true
+  xy: 373, 13
+  size: 169, 377
+  orig: 169, 377
+  offset: 0, 0
+  index: -1
+B_Arm_Front_3
+  rotate: true
+  xy: 1560, 305
+  size: 88, 85
+  orig: 88, 85
+  offset: 0, 0
+  index: -1
+B_Arm_Front_3_Close
+  rotate: true
+  xy: 1410, 5
+  size: 68, 76
+  orig: 68, 76
+  offset: 0, 0
+  index: -1
+B_Arm_Front_3_Open
+  rotate: false
+  xy: 1611, 4
+  size: 100, 82
+  orig: 100, 82
+  offset: 0, 0
+  index: -1
+Hair
+  rotate: true
+  xy: 1107, 6
+  size: 67, 167
+  orig: 67, 167
+  offset: 0, 0
+  index: -1
+Head
+  rotate: true
+  xy: 1216, 464
+  size: 219, 139
+  orig: 219, 139
+  offset: 0, 0
+  index: -1
+Head_B
+  rotate: true
+  xy: 1357, 537
+  size: 146, 133
+  orig: 146, 133
+  offset: 0, 0
+  index: -1
+Jaw
+  rotate: false
+  xy: 1488, 2
+  size: 121, 78
+  orig: 121, 78
+  offset: 0, 0
+  index: -1
+Jaw_B
+  rotate: false
+  xy: 1276, 3
+  size: 132, 70
+  orig: 132, 70
+  offset: 0, 0
+  index: -1
+Leg_Front_1
+  rotate: true
+  xy: 1174, 685
+  size: 126, 251
+  orig: 126, 251
+  offset: 0, 0
+  index: -1
+Leg_Front_2
+  rotate: false
+  xy: 1016, 391
+  size: 198, 275
+  orig: 198, 275
+  offset: 0, 0
+  index: -1
+Leg_Left_1
+  rotate: true
+  xy: 752, 22
+  size: 160, 353
+  orig: 160, 353
+  offset: 0, 0
+  index: -1
+Leg_Left_2
+  rotate: true
+  xy: 1016, 186
+  size: 92, 310
+  orig: 92, 310
+  offset: 0, 0
+  index: -1
+Leg_Left_3
+  rotate: true
+  xy: 1357, 395
+  size: 140, 116
+  orig: 140, 116
+  offset: 0, 0
+  index: -1
+Leg_Rear_1
+  rotate: true
+  xy: 1174, 813
+  size: 208, 191
+  orig: 208, 191
+  offset: 0, 0
+  index: -1
+Leg_Rear_2
+  rotate: true
+  xy: 1367, 869
+  size: 152, 217
+  orig: 152, 217
+  offset: 0, 0
+  index: -1
+Leg_Right_1
+  rotate: false
+  xy: 1012, 668
+  size: 160, 353
+  orig: 160, 353
+  offset: 0, 0
+  index: -1
+Leg_Right_2
+  rotate: true
+  xy: 1328, 186
+  size: 92, 310
+  orig: 92, 310
+  offset: 0, 0
+  index: -1
+Leg_Right_3
+  rotate: true
+  xy: 1475, 395
+  size: 140, 116
+  orig: 140, 116
+  offset: 0, 0
+  index: -1
+Pen
+  rotate: true
+  xy: 742, 184
+  size: 46, 105
+  orig: 46, 105
+  offset: 0, 0
+  index: -1
+Rock
+  rotate: false
+  xy: 1475, 82
+  size: 129, 102
+  orig: 129, 102
+  offset: 0, 0
+  index: -1
+Tail
+  rotate: false
+  xy: 2, 184
+  size: 738, 837
+  orig: 738, 837
+  offset: 0, 0
+  index: -1
+Torso
+  rotate: false
+  xy: 742, 604
+  size: 268, 417
+  orig: 268, 417
+  offset: 0, 0
+  index: -1
+Torso_B
+  rotate: false
+  xy: 742, 232
+  size: 272, 370
+  orig: 272, 370
+  offset: 0, 0
+  index: -1
+
+Gibbon2.png
+size: 128,64
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Mosaic/Pen
+  rotate: true
+  xy: 2, 2
+  size: 46, 105
+  orig: 46, 105
+  offset: 0, 0
+  index: -1

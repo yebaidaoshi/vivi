@@ -10,10 +10,10 @@ namespace Player
     }
 
     /// <summary>
-    /// Ground locomotion: Idle / Run / soft A_to_B exits
-    /// (<c>Run_to_Idle</c>, <c>Crouch_To_Idle</c>, stand-up <c>Slide_To_Idle</c>,
-    /// soft <c>Landing_to_Run*</c>).
-    /// Facing reverse flips scale and stays on Run (no Run_Turning).
+    /// 地面移动：Idle / Run / 软 A_to_B 退出
+    ///（<c>Run_to_Idle</c>、<c>Crouch_To_Idle</c>、起身 <c>Slide_To_Idle</c>、
+    /// 软 <c>Landing_to_Run*</c>）。
+    /// 朝向反转会翻转 scale 并留在 Run（不走 Run_Turning）。
     /// </summary>
     public class PlayerLocomotion
     {
@@ -23,7 +23,7 @@ namespace Player
         private PlayerLocoState _state = PlayerLocoState.Idle;
 
         public PlayerLocoState State => _state;
-        /// <summary>Unused — Run_Turning removed; kept so Arbiter snapshot stays stable.</summary>
+        /// <summary>未使用 — Run_Turning 已移除；保留以使 Arbiter 快照保持稳定。</summary>
         public bool TurnLockActive => false;
         public bool IsStopping => _stopping;
 
@@ -58,7 +58,7 @@ namespace Player
             float move = intent.Move;
             bool hasMove = Mathf.Abs(move) > 0.1f;
 
-            // Soft A_to_B stand/exit clips — hold until done; move cuts to Run.
+            // 软 A_to_B 站立/退出片段 — 保持到播完；有移动则切到 Run。
             string softExit = SoftExitTransition(anim);
             if (softExit != null)
             {
@@ -92,7 +92,7 @@ namespace Player
                 ClearStop();
                 ApplyFacing(intent, motor, move);
 
-                // Soft Landing_to_Run: visual only — yield to Run when done / already moving.
+                // 软 Landing_to_Run：仅视觉 — 播完 / 已在移动时让给 Run。
                 string landRun = LandToRunState(anim);
                 if (landRun != null && !anim.BaseFinished)
                 {
@@ -130,20 +130,20 @@ namespace Player
                 }
                 else if (!_stopClipSeen && _stopLock > 0f)
                 {
-                    // ForcePlay may not show until the next animator update — wait, do not restart.
+                    // ForcePlay 可能要到下一帧 Animator 更新才生效 — 等待，不要重开。
                     anim.SyncCurrent(PlayerAnimDriver.States.RunToIdle);
                 }
                 else
                 {
-                    // Clip was seen then Mecanim exitTime'd out, or safety timeout.
+                    // 片段已出现后被 Mecanim exitTime 切走，或安全超时。
                     FinishStopToIdle(anim);
                 }
 
                 return;
             }
 
-            // Only actual Run ownership — do not re-enter stop from leftover smoothed vx
-            // after Idle (high-speed release used to loop Run_to_Idle ↔ Idle).
+            // 仅在确实由 Run 持有时进入停止 — 不要因 Idle 后残留的平滑 vx
+            // 再次进入停止（高速松键曾导致 Run_to_Idle ↔ Idle 循环）。
             bool wasRunning = anim.IsPlaying(PlayerAnimDriver.States.Run)
                 || _state == PlayerLocoState.Run;
 
@@ -187,8 +187,8 @@ namespace Player
         }
 
         /// <summary>
-        /// Stand / exit transitions owned by loco as soft holds.
-        /// (Slide_To_Idle while SlideToCrouch is blocked via CrouchIsBusy → BlockLocomotionAnim.)
+        /// 由 loco 以软保持方式持有的站立/退出过渡。
+        ///（SlideToCrouch 被阻塞时的 Slide_To_Idle 经 CrouchIsBusy → BlockLocomotionAnim。）
         /// </summary>
         private static string SoftExitTransition(PlayerAnimDriver anim)
         {

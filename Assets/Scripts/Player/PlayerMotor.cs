@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// Rigidbody2D motor: immediate velocity, facing flip, ground/wall probes.
-    /// Uses Chronos Timeline.rigidbody2D when present (same as SetVelocity2dChronos).
+    /// Rigidbody2D 驱动器：即时速度、朝向翻转、地面/墙壁探测。
+    /// 若存在 Chronos Timeline.rigidbody2D 则使用之（与 SetVelocity2dChronos 相同）。
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerMotor : MonoBehaviour
@@ -40,7 +40,7 @@ namespace Player
             _rb = GetComponent<Rigidbody2D>();
             _timeline = GetComponent<Timeline>();
 
-            // Resolve ground mask: 0 (Nothing) => auto Ground + GroundCollider.
+            // 解析地面遮罩：0（Nothing）=> 自动 Ground + GroundCollider。
             _resolvedGroundMask = settings.groundMask.value;
             if (_resolvedGroundMask == 0)
             {
@@ -48,7 +48,7 @@ namespace Player
                 _resolvedGroundMask = auto != 0 ? auto : ~0;
             }
 
-            // Chronos owns gravityScale (it zeroes the Rigidbody2D and integrates itself).
+            // Chronos 拥有 gravityScale（会把 Rigidbody2D 置零并由自身积分）。
             if (_timeline == null)
             {
                 _rb.gravityScale = settings.gravityScale;
@@ -56,7 +56,7 @@ namespace Player
 
             _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            // Preserve the authored (uniform) scale; facing only flips its sign.
+            // 保留制作时设定的（均匀）缩放；朝向只翻转其符号。
             _baseScale = transform.localScale;
             if (Mathf.Abs(_baseScale.x) < 0.0001f)
             {
@@ -91,7 +91,7 @@ namespace Player
 
         private bool CheckGrounded()
         {
-            // Only count as grounded when not rising (prevents sticking right after a jump).
+            // 仅在非上升时计为着地（防止刚起跳后粘地）。
             if (GetVelocity().y > 0.5f)
             {
                 return false;
@@ -99,7 +99,7 @@ namespace Player
 
             Vector2 origin = GroundOrigin();
 
-            // Overlap catches the resting/penetrating case; CircleCast catches the approach.
+            // Overlap 捕获静止/穿透情况；CircleCast 捕获接近过程。
             var overlap = Physics2D.OverlapCircle(origin, settings.groundCastRadius, _resolvedGroundMask);
             if (IsValidGround(overlap))
             {

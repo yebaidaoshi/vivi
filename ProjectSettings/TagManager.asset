@@ -3,7 +3,27 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - AllyProjectile
+  - Grass
+  - FX
+  - SoftGround
+  - HardGround
+  - LiquidGround
+  - PlayerDodge
+  - Blockable
+  - PlayerPresence
+  - EnemyPresence
+  - Fence
+  - LedgeUp
+  - LedgeDown
+  - Reflective
+  - Interactive
+  - Grab
+  - Breakable
+  - EnemyMagic
+  - Fire
   layers:
   - Default
   - TransparentFX
@@ -11,42 +31,69 @@ TagManager:
   - 
   - Water
   - UI
+  - 
+  - 
+  - Characters
   - Ground
-  - Enemy
-  - Player
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - HitBox
+  - MouseArea
+  - Projectile
+  - Invincible
+  - Shield
+  - Ledge
+  - Searcher
+  - Utage
+  - UtageUI
+  - GroundCollider
+  - Lights
+  - LedgeChecker
+  - PPS
+  - Parallax
+  - Parallax2
+  - Parallax3
+  - ParallaxZero
+  - Parallax4
+  - PlayerShield
+  - ShieldCollider
+  - GrabPoint
+  - L2D
   m_SortingLayers:
-  - name: "\u8FDC"
-    uniqueID: 1834047357
+  - name: ParallaxBack4
+    uniqueID: 1820763051
     locked: 0
-  - name: "\u4E2D"
-    uniqueID: 887938613
+  - name: ParallaxBack3
+    uniqueID: 3307088117
     locked: 0
-  - name: "\u8FD1"
-    uniqueID: 1254517077
+  - name: ParallaxBack2
+    uniqueID: 1869550159
+    locked: 0
+  - name: ParallaxBack1
+    uniqueID: 4061090189
+    locked: 0
+  - name: Default-2
+    uniqueID: 2796654987
+    locked: 0
+  - name: Default-1
+    uniqueID: 2012887761
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Default2
+    uniqueID: 1397525999
+    locked: 0
+  - name: Default3
+    uniqueID: 2178975723
+    locked: 0
+  - name: ParallaxFore1
+    uniqueID: 3781574777
+    locked: 0
+  - name: ParallaxFore2
+    uniqueID: 3392416803
+    locked: 0
+  - name: ParallaxFore3
+    uniqueID: 2362610771
+    locked: 0
+  - name: ParallaxFore4
+    uniqueID: 2834857653
     locked: 0

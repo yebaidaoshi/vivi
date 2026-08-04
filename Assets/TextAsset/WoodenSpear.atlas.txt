@@ -1,0 +1,20 @@
+
+WoodenSpear.png
+size: 64,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+WoodenSpear_Broke_Handle
+  rotate: false
+  xy: 2, 200
+  size: 33, 241
+  orig: 33, 241
+  offset: 0, 0
+  index: -1
+WoodenSpear_Broke_Tip
+  rotate: false
+  xy: 2, 2
+  size: 29, 196
+  orig: 29, 196
+  offset: 0, 0
+  index: -1

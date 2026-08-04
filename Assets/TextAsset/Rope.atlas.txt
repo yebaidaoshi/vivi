@@ -1,0 +1,13 @@
+
+Rope.png
+size: 2048,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Vine
+  rotate: true
+  xy: 2, 2
+  size: 84, 1024
+  orig: 84, 1024
+  offset: 0, 0
+  index: -1

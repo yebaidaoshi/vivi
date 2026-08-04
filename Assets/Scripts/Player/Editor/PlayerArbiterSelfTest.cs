@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Player.Editor
 {
 	/// <summary>
-	/// Lightweight assert suite for <see cref="PlayerArbiter"/> (menu: Player/Run Arbiter Self-Test).
+	/// <see cref="PlayerArbiter"/> 的轻量断言套件（菜单：Player/Run Arbiter Self-Test）。
 	/// </summary>
 	public static class PlayerArbiterSelfTest
 	{
