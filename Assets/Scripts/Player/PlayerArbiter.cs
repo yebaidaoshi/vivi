@@ -47,7 +47,8 @@ namespace Player
             c.CanMagic = !adsLocksActions && !s.MeleeLocksActions && !backStepHard
                 && !s.CrouchIsSliding && !s.JumpLandToRunLocksActions && !s.MagicBusy;
 
-            c.OverrideSpeed = s.CrouchIsSliding || s.MeleeLocksMovement
+            bool crouchRolling = s.CrouchState == PlayerCrouchState.SlideToCrouch;
+            c.OverrideSpeed = s.CrouchIsSliding || crouchRolling || s.MeleeLocksMovement
                 || s.JumpIsBackFlipping || backStepHard || s.MagicBusy;
             c.VelocityOwner = c.OverrideSpeed
                 ? PlayerVelocityOwner.ImmediateOverride

@@ -174,6 +174,13 @@ namespace Player
             public const float ClipLength = 0.6f;
         }
 
+        public static class Roll //Slide后接翻滚然后缓慢调整蹲姿
+        {
+            public const float Cancelable = 0.13333f;
+            public const float Movable = 0.4176f;
+            public const float ClipLength = 1.5f;
+
+        }
         public static class MagicChannel
         {
             public const float ClipLength = 0.6333f;

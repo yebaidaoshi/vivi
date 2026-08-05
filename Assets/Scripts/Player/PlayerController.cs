@@ -126,6 +126,10 @@ namespace Player
             crouch.Tick(intent/*这一帧的输入*/, jump.OnAir/*当前是否在空中*/, _caps.CanCrouch/*能蹲吗*/,//传入玩家意图、是否在空中、是否可以蹲下，便于蹲下脚本处理具体逻辑
                 adsActive: gun.IsAds/*枪械正在瞄准吗*/, gunOwnsBaseAnim: gun.OwnsCrouchBaseAnim/*枪械占用了基础动画层吗*/,
                 yieldBaseAnim: melee.IsAttacking || magic.IsBusy)/*近战或魔法正在播放动画吗*/;
+            if (crouch.State == PlayerCrouchState.SlideToCrouch && melee.IsAttacking)
+            {
+                melee.Cancel();
+            }
             ResolveCaps();
 
             melee.Tick(intent, _caps.CanMelee);
@@ -197,29 +201,30 @@ namespace Player
 
             var intent = inputReader.Intent;
             _ctx.Intent = intent;
+            if (crouch.State == PlayerCrouchState.SlideToCrouch)
+            {
+                crouch.ApplyFixedVelocity();
+                motor.ClampFallSpeed();
+                anim.SetAxis(0f);
+                return;  // 跳过后续所有逻辑
+            }
 
             if (_caps.VelocityOwner == PlayerVelocityOwner.ImmediateOverride)
             {
-                if (jump.HasVelocityOverride)
-                {
-                    jump.ApplyFixedVelocity();
-                }
-                else if (backStep.HasVelocityOverride)
-                {
-                    backStep.ApplyFixedVelocity();
-                }
-                else if (magic.HasVelocityOverride)
-                {
-                    magic.ApplyFixedVelocity();
-                }
-                else if (melee.HasVelocityOverride)
-                {
-                    melee.ApplyFixedVelocity();
-                }
-                else if (crouch.HasVelocityOverride)
-                {
-                    crouch.ApplyFixedVelocity();
-                }
+                if 
+                    (jump.HasVelocityOverride) jump.ApplyFixedVelocity();
+
+                else if 
+                    (backStep.HasVelocityOverride) backStep.ApplyFixedVelocity();
+
+                else if 
+                    (magic.HasVelocityOverride) magic.ApplyFixedVelocity();
+
+                else if 
+                    (crouch.HasVelocityOverride) crouch.ApplyFixedVelocity();  
+                                                                                   
+                else if 
+                    (melee.HasVelocityOverride) melee.ApplyFixedVelocity();
 
                 motor.ClampFallSpeed();
             }
@@ -228,6 +233,7 @@ namespace Player
                 // 蹲下 / 蹲下-ADS：忽略 A/D，不参与速度与朝向转向。
                 float axis = crouch.IsCrouching ? 0f : intent.Move;
                 float speed = ComputeLocomotionSpeed(axis);
+                
 
                 bool allowFlip = _caps.FacingOwner == PlayerFacingOwner.Locomotion
                     && _caps.CanFlip

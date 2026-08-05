@@ -67,7 +67,7 @@ namespace Player
         public float slideForce = 40f;
         public float slideDuration = 0.45f;
         [Tooltip("跑步多少秒后蹲下变为滑铲（Crouching RunningCheck）。")]
-        public float runTimeToSlide = 0.3f;
+        public float runTimeToSlide = 0.15f;//原0.3f太严格 不够丝滑
 
         [Header("后空翻（W + 背后 A/D → Jump State 7）")]
         [Tooltip("State 7 在 SetVelocity(0,0) 后 AddForce Impulse Y。")]
