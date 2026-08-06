@@ -100,7 +100,7 @@ namespace Player
         private float _rollElapsed;   // 记录翻滚已播放时间
         private float _rollStartVx;   // 记录翻滚起始水平速度
         private string _rollStateName;
-
+        
         public PlayerCrouchState State => _state;
 
         public bool IsCrouching => _state == PlayerCrouchState.Entering
@@ -190,7 +190,7 @@ namespace Player
 
             _hasOverrideVx = false;
 
-
+            Debug.Log($"Tick - 当前状态: {_state}");
 
             if (onAir)
 
@@ -261,7 +261,7 @@ namespace Player
                     break;
 
                 case PlayerCrouchState.Crouching:
-
+                    Debug.Log($"Tick - 进入 Crouching 分支");
                     TickCrouching(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
 
                     break;
@@ -458,6 +458,14 @@ namespace Player
 
         {
 
+            var spine = GetComponent<Spine.Unity.SkeletonAnimation>();
+            if (spine != null && spine.AnimationState != null)
+            {
+                var track = spine.AnimationState.GetCurrent(0);
+                
+            }
+
+
             if (!intent.Crouch)
 
             {
@@ -495,7 +503,7 @@ namespace Player
                 _anim.PlayBase(PlayerAnimDriver.States.Crouching);
 
             }
-
+            
         }
 
 
@@ -537,6 +545,13 @@ namespace Player
         private void TickSliding(PlayerIntent intent)
 
         {
+            if (!intent.Crouch)
+
+            {
+
+                BeginStandUpFromSlide();
+                return;
+            }
             if (Mathf.Abs(intent.Move) > 0.1f)
             {
                 int desired = intent.Move > 0f ? 1 : -1;
@@ -603,13 +618,7 @@ namespace Player
 
             }
 
-            else
-
-            {
-
-                BeginStandUpFromSlide();
-
-            }
+            
 
         }
 
@@ -628,9 +637,9 @@ namespace Player
                 _anim.SetCrouchingWeight(1f);
             }
 
-            if (!intent.Crouch)
+            if (!intent.Crouch && _rollElapsed>= PlayerAnimTimings.Roll.Movable + 0.05f)
             {
-                BeginStandUpFromSlide();
+               BeginStandUp();
                 return;
             }
 
@@ -681,9 +690,17 @@ namespace Player
                 }
             }
 
+
             if (_phaseTimer <= 0f)
             {
-                EnterCrouchingOnRollEnd();
+                if (intent.Crouch)
+                {
+                    EnterCrouchingOnRollEnd();
+                }
+                else
+                {
+                    BeginStandUp();
+                }
             }
         }
         private void EnterCrouchingOnRollEnd()
@@ -691,6 +708,16 @@ namespace Player
             _state = PlayerCrouchState.Crouching;
             _anim.SetCrouch(true);
             _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+
+            // 强制 Spine 立即应用新动画的第一帧，清除残留
+            var spine = GetComponent<Spine.Unity.SkeletonAnimation>();
+            if (spine != null)
+            {
+                spine.AnimationState.SetAnimation(0, "Crouching", true);
+                spine.AnimationState.Update(0);           // 立即执行一帧更新
+                spine.Skeleton.SetToSetupPose();          // 重置所有插槽/附件到初始姿势（可选）
+            }
+
             _hasOverrideVx = false;
         }
 
@@ -698,39 +725,23 @@ namespace Player
         private void TickStandingUp(PlayerIntent intent)
 
         {
-
             UpdateRunAccum(intent);
 
-
-
-            // 软 A_to_B：任何动作立即切断；否则由 loco 软保持 Crouch_To_Idle。
-
             if (intent.WantsSoftActionInterrupt)
-
             {
-
                 ForceStand();
-
                 return;
-
             }
-
-
 
             _phaseTimer -= _motor.DeltaTime;
 
-            bool onStandClip = _anim.IsPlaying(PlayerAnimDriver.States.CrouchToIdle)
-
-                || _anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle);
+            bool onStandClip = _anim.CurrentBase == PlayerAnimDriver.States.CrouchToIdle
+                             || _anim.CurrentBase == PlayerAnimDriver.States.SlideToIdle;
 
             if (!onStandClip || _anim.BaseFinished || _phaseTimer <= 0f)
-
             {
-
                 ForceStand();
-
             }
-
         }
 
 
@@ -923,11 +934,8 @@ namespace Player
         {
 
             _state = PlayerCrouchState.StandingUp;
-
             _phaseTimer = PlayerAnimTimings.CrouchToIdle.ClipLength + 0.05f;
-
-            _anim.SetCrouch(false);
-
+            _anim.SetCrouchingWeight(0f);
             _anim.ForcePlay(PlayerAnimDriver.States.CrouchToIdle);
 
         }
@@ -939,13 +947,9 @@ namespace Player
         {
 
             StopSlideSmokeTrail();
-
             _state = PlayerCrouchState.StandingUp;
-
             _phaseTimer = PlayerAnimTimings.SlideToIdle.ClipLength + 0.05f;
-
-            _anim.SetCrouch(false);
-
+            _anim.SetCrouchingWeight(0f);
             _anim.ForcePlay(PlayerAnimDriver.States.SlideToIdle);
 
         }
@@ -985,17 +989,11 @@ namespace Player
         {
 
             StopSlideSmokeTrail();
-
             _state = PlayerCrouchState.Standing;
-
             _slideTimer = 0f;
-
             _phaseTimer = 0f;
-
             _runAccum = 0f;
-
             _hasOverrideVx = false;
-
             _anim.SetCrouch(false);
 
         }

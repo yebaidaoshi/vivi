@@ -47,6 +47,7 @@ namespace Player
                 _state = PlayerLocoState.Idle;
                 return;
             }
+            
 
             if (!motor.IsGrounded)
             {
@@ -192,16 +193,14 @@ namespace Player
         /// </summary>
         private static string SoftExitTransition(PlayerAnimDriver anim)
         {
-            if (anim.IsPlaying(PlayerAnimDriver.States.CrouchToIdle))
+            if (anim.CurrentBase == PlayerAnimDriver.States.CrouchToIdle)
             {
                 return PlayerAnimDriver.States.CrouchToIdle;
             }
-
-            if (anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle))
+            if (anim.CurrentBase == PlayerAnimDriver.States.SlideToIdle)
             {
                 return PlayerAnimDriver.States.SlideToIdle;
             }
-
             return null;
         }
 

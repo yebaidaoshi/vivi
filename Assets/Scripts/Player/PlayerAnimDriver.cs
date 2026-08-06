@@ -659,9 +659,9 @@ namespace Player
 
         }
 
-
-
+        
         // 女主控制器使用的规范状态路径。
+         public string CurrentBase => _currentBase;
 
         public static class States
 
@@ -762,6 +762,9 @@ namespace Player
             public const string MagicChannelCancelOnAir = "Magic_Channel_Cancel_OnAir";
 
             public const string MagicFrontCast = "Magic_FrontCast";
+
+
+
 
         }
 
