@@ -682,6 +682,7 @@ namespace Player
             public const string LandingToRunForward = "Landing_to_Run_Forward";
 
             public const string BackStep = "BackStep";
+            public const string StepForward2 = "Step_Forward2";
 
             public const string Crouch = "Crouch";
 

@@ -210,5 +210,12 @@ namespace Player
         {
             public const float ClipLength = 0.6667f;
         }
+        public static class StepForward2
+        {
+            
+            public const float SteppedForward = 8f / 60f;
+            
+            public const float ClipLength = 22f / 60f;
+        }
     }
 }

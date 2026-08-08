@@ -201,7 +201,16 @@ namespace Player
             {
                 return PlayerAnimDriver.States.SlideToIdle;
             }
+            if (anim.CurrentBase == PlayerAnimDriver.States.BackStep)
+            {
+                return PlayerAnimDriver.States.BackStep;
+            }
+            if (anim.CurrentBase == PlayerAnimDriver.States.RunToIdle)
+            {
+                return PlayerAnimDriver.States.RunToIdle;
+            }
             return null;
+            
         }
 
         private static string LandToRunState(PlayerAnimDriver anim)

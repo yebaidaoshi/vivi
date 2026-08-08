@@ -46,6 +46,9 @@ namespace Player
             if (Held(left) || (useArrowKeys && Input.GetKey(KeyCode.LeftArrow))) move -= 1f;
             if (Held(right) || (useArrowKeys && Input.GetKey(KeyCode.RightArrow))) move += 1f;
             i.Move = move;
+            i.MoveLeftPressed = Down(left) || (useArrowKeys && Input.GetKeyDown(KeyCode.LeftArrow));
+            i.MoveRightPressed = Down(right) || (useArrowKeys && Input.GetKeyDown(KeyCode.RightArrow));
+
 
             float vertical = 0f;
             if (Held(up)) vertical += 1f;

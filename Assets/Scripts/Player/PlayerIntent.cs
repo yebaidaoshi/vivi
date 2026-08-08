@@ -42,6 +42,8 @@ namespace Player
         public bool Items;//物品栏状态？！
         public bool Menu;//菜单状态？！
 
+        public bool MoveLeftPressed;   // A / 左方向键 本帧刚按下
+        public bool MoveRightPressed;  // D / 右方向键 本帧刚按下
         /// <summary>来自 RMB/按键或摇杆的 ADS；派生属性，使枪/蹲/近战始终看到实时瞄准意图。</summary>
         public bool WantsAds => Ads || StickAds;
         //玩家是否想要中断软动作（Soft Action），例如在攻击或技能动画播放时，玩家可能希望通过某些输入来中断当前动作。
@@ -55,6 +57,7 @@ namespace Player
             || Crouch//玩家按了下蹲 或 持续按下
             || ReloadPressed//玩家按了换弹
             || Skill;//玩家按了技能
+        public bool ForwardPressed(int facing) => facing >= 0 ? MoveRightPressed : MoveLeftPressed;
     }
 
 

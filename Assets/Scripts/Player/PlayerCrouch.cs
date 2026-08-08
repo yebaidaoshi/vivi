@@ -233,13 +233,15 @@ namespace Player
             _yieldedBaseAnimLastFrame = yieldBaseAnim;
 
             if (yieldFallingEdge && intent.Crouch
-
                 && (_state == PlayerCrouchState.Crouching || _state == PlayerCrouchState.Entering))
-
             {
-
-                EnterCrouch(adsActive);
-
+                // 如果当前已经在播放蹲姿循环（Crouching）或进入片段（Crouch），则跳过重播
+                bool alreadyOnCrouchAnim = _anim.CurrentBase == PlayerAnimDriver.States.Crouch
+                    || _anim.CurrentBase == PlayerAnimDriver.States.Crouching;
+                if (!alreadyOnCrouchAnim)
+                {
+                    EnterCrouch(adsActive);
+                }
             }
 
 
@@ -268,13 +270,12 @@ namespace Player
 
                 case PlayerCrouchState.Sliding:
 
-                    TickSliding(intent);
+                    TickSliding(intent, yieldBaseAnim);
 
                     break;
-
                 case PlayerCrouchState.SlideToCrouch:
 
-                    TickSlideToCrouch(intent);
+                    TickSlideToCrouch(intent, yieldBaseAnim);
 
                     break;
 
@@ -542,9 +543,15 @@ namespace Player
 
 
 
-        private void TickSliding(PlayerIntent intent)
+        private void TickSliding(PlayerIntent intent, bool yieldBaseAnim)
 
         {
+            if (yieldBaseAnim)
+
+            {
+                // 仍然需要更新物理/计时器，但跳过所有 _anim.ForcePlay/PlayBase 调用
+                return;
+            }
             if (!intent.Crouch)
 
             {
@@ -552,6 +559,7 @@ namespace Player
                 BeginStandUpFromSlide();
                 return;
             }
+            
             if (Mathf.Abs(intent.Move) > 0.1f)
             {
                 int desired = intent.Move > 0f ? 1 : -1;
@@ -624,13 +632,17 @@ namespace Player
 
 
 
-        private void TickSlideToCrouch(PlayerIntent intent)
+        private void TickSlideToCrouch(PlayerIntent intent, bool yieldBaseAnim)
         {
             _hasOverrideVx = true;
 
             _rollElapsed += _motor.DeltaTime;
             _phaseTimer -= _motor.DeltaTime;
 
+            if (yieldBaseAnim)
+            {
+                return;
+            }
             if (_anim.IsPlaying(PlayerAnimDriver.States.SlideToIdle))
             {
                 _anim.SyncCurrent(PlayerAnimDriver.States.SlideToIdle);

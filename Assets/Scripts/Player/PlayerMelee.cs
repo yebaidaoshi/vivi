@@ -96,6 +96,11 @@ namespace Player
         private PlayerMotorSettings _settings;
         private PlayerSlashVfx _slashVfx;
 
+        private PlayerDash _dash;
+        private bool _isDashing;
+        private int _pendingComboAfterDash;
+        private bool _dashInputBuffered;
+
         private PlayerMeleePhase _phase = PlayerMeleePhase.Idle;
         private int _combo;
         private float _elapsed;
@@ -113,6 +118,8 @@ namespace Player
         /// <summary>_Melee4AfterSlash State 1 等待后播放 Melee4After 音效（距 Katana4 0.5s）。</summary>
         private bool _pendingMelee4AfterSe;
         private float _melee4AfterSeAt;
+        private bool _isCrouchAttack;
+        private bool _hasSpawnedCrouchSlash;  // 防止下蹲攻击每帧重复触发特效
 
         public PlayerMeleePhase Phase => _phase;
         public bool IsAttacking => _phase != PlayerMeleePhase.Idle;
@@ -124,13 +131,16 @@ namespace Player
         public bool LocksMovement => _phase == PlayerMeleePhase.WindupLocked
             || _phase == PlayerMeleePhase.ActionCancelable;
         public int Combo => _combo;
-        public bool HasVelocityOverride => _hasOverrideVx && LocksMovement;
+        public bool HasVelocityOverride => _isDashing || (_hasOverrideVx && LocksMovement);
 
         public void Init(PlayerContext context)
         {
             _ctx = context;
             context.Bind(out _motor, out _anim, out _audio, out _settings);
             ResolveVfx();
+            _dash = GetComponent<PlayerDash>() ?? gameObject.AddComponent<PlayerDash>();
+            _dash.Init(context);
+
         }
 
         private void ResolveVfx()
@@ -403,8 +413,16 @@ namespace Player
                 BeginJumpAttack();
                 return;
             }
-
-            DoGroundCombo(1);
+            if (_ctx.IsCrouchBusy)
+            {
+                DoCrouchAttack();
+                return;
+            }
+            else
+            {
+             DoGroundCombo(1);
+            }
+                
         }
 
         /// <summary>开始跳跃攻击，按当前竖直速度选择 Up/Down
@@ -443,6 +461,11 @@ namespace Player
 
         public void ApplyFixedVelocity()
         {
+            if (_isDashing)
+            {
+                _dash.ApplyFixedVelocity();
+                return;
+            }
             if (_hasOverrideVx)
             {
                 _motor.SetImmediateVelocityX(_overrideVx);
@@ -469,36 +492,66 @@ namespace Player
         }
 
         private void TickActiveAttack(PlayerIntent intent, bool gunBusy)
-        {
+        {   
+            float dt = _motor.DeltaTime;
+            if (_isDashing)
+            {
+                TickDash(intent, dt);
+                return;
+            }
+
+
+            if (_isCrouchAttack)
+            {
+
+                _elapsed += dt;
+                TickLunge(dt);
+                if (!_hasSpawnedCrouchSlash && _elapsed >= 0.0667f)
+                {
+                    _hasSpawnedCrouchSlash = true;
+                    SpawnSlash(slideSlashPrefab, PlayerSlashVfx.SlashKind.Slide);
+                    _audio?.PlayKatana(1);
+                }
+                AdvancePhase();
+                if (TickMovableGroundInterrupt(intent)) return;
+                if (TickCrouchAttackRestart(intent, gunBusy)) return;   // 新增
+                if (TickCancelableInterrupts(intent, gunBusy)) return;
+                TickSheathEnd();
+                return;
+            }
+
+
+
             if (TickJumpAttackLanding())
             {
                 return;
             }
 
-            float dt = _motor.DeltaTime;
+            
             _elapsed += dt;
 
             TickLunge(dt);
             TickPendingSlashVfx();
-
-            // Movable 解锁蹲下 / 跑步 — 最近解锁的动作优先于继续挥砍，
-            // 故在按住 Slash 衔接地面连招（TickComboChain）或重启（TickAttack3Restart）之前检查。
-            // 仅地面：空中 / 跳跃攻击衔接不受影响，仍在下方处理。
+            TickDashBuffer(intent);          
+            if (TickDashChain(intent))
+            {
+                return;
+            }
             if (TickMovableGroundInterrupt(intent))
             {
                 return;
             }
-
             if (TickComboChain(intent))
             {
                 return;
             }
-
             if (TickJumpAttackChain(intent))
             {
                 return;
             }
-
+            // Movable 解锁蹲下 / 跑步 — 最近解锁的动作优先于继续挥砍，
+            // 故在按住 Slash 衔接地面连招（TickComboChain）或重启（TickAttack3Restart）之前检查。
+            // 仅地面：空中 / 跳跃攻击衔接不受影响，仍在下方处理。
             AdvancePhase();
 
             if (TickAttack3Restart(intent, gunBusy))
@@ -529,7 +582,7 @@ namespace Player
             }
 
             bool behind = PlayerJump.IsMoveBehind(intent.Move, _motor.Facing);
-            bool crouchInterrupt = intent.CrouchPressed || _ctx.IsCrouchBusy;
+            bool crouchInterrupt = !_isCrouchAttack && (intent.CrouchPressed || _ctx.IsCrouchBusy);
             bool moveInterrupt = !behind && Mathf.Abs(intent.Move) > 0.1f;
             if (!crouchInterrupt && !moveInterrupt)
             {
@@ -577,8 +630,34 @@ namespace Player
             }
 
             return false;
+
         }
 
+        private bool TickDashChain(PlayerIntent intent)
+        {
+            bool groundCombo = _combo >= 1 && _combo <= _settings.maxMeleeCombo;
+            bool canChain = groundCombo && _combo < _settings.maxMeleeCombo
+                && _ctx.IsGrounded && !_ctx.IsSliding;
+
+            if (!canChain)
+            {
+                return false;
+            }
+
+            // 核心窗口：Cancelable 之后，Movable 之前
+            if (_elapsed < _cancelableAt || _elapsed >= _movableAt)
+            {
+                return false;
+            }
+
+            if (intent.ForwardPressed(_motor.Facing))
+            {
+                BeginDash(_combo + 1);
+                return true;
+            }
+
+            return false;
+        }
         /// <summary>新的跳跃攻击已衔接时返回 true（调用方应停止本帧）。
         /// 跳跃攻击不属于地面连招（<see cref="_combo"/> 保持 0），故自行衔接：
         /// 一旦 JCancelable 触发（<see cref="_cancelableAt"/>）挥砍锁定解除，
@@ -624,6 +703,18 @@ namespace Player
 
             return false;
         }
+        /// <summary>蹲下攻击 Movable 之后按下攻击键 → 重新播放同一个 Crouch_Attack
+        /// （非连招，只有一个动画；每次都是全新的单次攻击）。</summary>
+        private bool TickCrouchAttackRestart(PlayerIntent intent, bool gunBusy)
+        {
+            if (_phase == PlayerMeleePhase.MovableSheath && intent.SlashPressed
+                && _ctx.IsGrounded && !_ctx.IsSliding && !gunBusy && _ctx.IsCrouchBusy)
+            {
+                DoCrouchAttack();
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>Cancelable / Movable 动作 + 移动打断。攻击结束时返回 true。</summary>
         private bool TickCancelableInterrupts(PlayerIntent intent, bool gunBusy)
@@ -644,7 +735,8 @@ namespace Player
             // 滑铲本身经 actionInterrupt 强制结束（gunBusy = !CanMelee，现亦对
             // !CrouchIsSliding 门控）— 此处覆盖普通蹲下/起身情况。
             bool crouchInterrupt = _phase == PlayerMeleePhase.MovableSheath
-                && (intent.CrouchPressed || _ctx.IsCrouchBusy);
+               && !_isCrouchAttack
+               && (intent.CrouchPressed || _ctx.IsCrouchBusy);
 
             // 跳跃由 Cancelable 门控（PlayerArbiter.CanJump 使用 MeleeLocksActions），故跳跃
             // 按下从 ActionCancelable 起即可结束地面攻击 — 不只在 Movable 之后。
@@ -715,6 +807,22 @@ namespace Player
             SpawnComboSlash(index);
         }
 
+        private void DoCrouchAttack()
+        {
+            _isCrouchAttack = true;
+            _hasSpawnedCrouchSlash = false;
+            _activeState = "Crouch_Attack";
+            _combo = 0;
+            _elapsed = 0;
+            _attackableAt = 0.4f;
+            _cancelableAt = 0.3167f;
+            _movableAt = 0.6667f;
+            _sheathEndAt = 2.5f;
+            _anim.ForcePlay("Crouch_Attack");
+            _overrideVx = 0;
+            _hasOverrideVx = true;
+            _phase = PlayerMeleePhase.WindupLocked;
+        }
         private void BeginAttack(string state, float attackableAt, float cancelableAt,
             float movableAt, float sheathEndAt, int combo)
         {
@@ -726,6 +834,7 @@ namespace Player
             _sheathEndAt = Mathf.Max(sheathEndAt, _movableAt);
             _combo = combo;
             _activeState = state;
+            _sheathEndAt = Mathf.Max(sheathEndAt, _movableAt);
             _anim.ForcePlay(state);
             // 清掉任何到来的跑步/滑铲动量，以免打击带着横向惯性。
             _overrideVx = 0f;
@@ -735,13 +844,97 @@ namespace Player
 
         private void EndAttack()
         {
-            _phase = PlayerMeleePhase.Idle;
+            if (_isDashing)
+            {
+                _dash.End();
+                _isDashing = false;
+            }
+
+            if (_isCrouchAttack && _ctx != null && _ctx.IsCrouchBusy)
+            {
+                _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+            }
+
+            _phase = PlayerMeleePhase.Idle;      
             _activeState = null;
             _combo = 0;
             _hasOverrideVx = false;
             _pendingAttack2Katana3 = false;
             _pendingAttack3Katana4 = false;
-            // 保留 _pendingMelee4AfterSe — 余斩音效按 Time.time 定时，比攻击更长寿。
+            _isCrouchAttack = false;
+            _dashInputBuffered = false;
+        }
+        private void BeginDash(int nextCombo)
+        {
+            _isDashing = true;
+            _pendingComboAfterDash = Mathf.Clamp(nextCombo, 1, _settings.maxMeleeCombo);
+            _elapsed = 0f;
+            _activeState = PlayerAnimDriver.States.StepForward2;
+            _phase = PlayerMeleePhase.WindupLocked;
+            _dashInputBuffered = false;
+            _dash.Begin();
+        }
+
+        private void TickDash(PlayerIntent intent, float dt)
+        {
+            bool dashFinished = _dash.Tick(dt);
+            _elapsed = _dash.Elapsed;
+
+            bool chainable = _elapsed >= _dash.SteppedForwardAt;
+            if (chainable && intent.SlashPressed && _ctx.IsGrounded && !_ctx.IsSliding)
+            {
+                int next = _pendingComboAfterDash;
+                EndDash();
+                DoGroundCombo(next);
+                return;
+            }
+            bool actionInterrupt = intent.WantsAds || intent.ReloadPressed || intent.JumpPressed;
+            if (actionInterrupt)
+            {
+                EndDash();
+                EndAttack();
+                return;
+            }
+            if (dashFinished)
+            {
+                EndDash();                   
+                EndAttack();                  
+                _anim.ForcePlay(PlayerAnimDriver.States.RunToIdle);
+            }
+        }
+        private float DashWindowOpenAt()
+        {
+            switch (_combo)
+            {
+                case 1: return PlayerAnimTimings.Attack1.E_Katana1;  // 0.0667s
+                case 2: return PlayerAnimTimings.Attack2.E_Katana2;  // 0.0333s
+                default: return 6f / 60f;                            // 0.1s
+            }
+        }
+        private void TickDashBuffer(PlayerIntent intent)
+        {
+            // 已缓冲则跳过
+            if (_dashInputBuffered)
+            {
+                return;
+            }
+
+            // 超过 Movable 则不再接受输入
+            if (_elapsed >= _movableAt)
+            {
+                return;
+            }
+
+            // 窗口：斩击特效时刻 → Movable 之前
+            if (_elapsed >= DashWindowOpenAt() && intent.ForwardPressed(_motor.Facing))
+            {
+                _dashInputBuffered = true;
+            }
+        }
+        private void EndDash()
+        {
+            _dash.End();
+            _isDashing = false;
         }
 
         public void Cancel()

@@ -627,8 +627,8 @@ namespace Player
 
             if (inputInterrupt)
             {
-                // 把基础层让给移动 / 近战 / 跳跃 — 此处不要 ForcePlay Idle。
-                FinishRelease(keepCrouch: intent.Crouch && _aimCrouch);
+                // actionInterrupt 为 true 时，表明近战/跳跃/后撤步已声明基础层所有权
+                FinishRelease(keepCrouch: intent.Crouch && _aimCrouch, skipBaseAnim: actionInterrupt);
                 return;
             }
 
@@ -675,7 +675,7 @@ namespace Player
             }
         }
 
-        private void FinishRelease(bool keepCrouch = false)
+        private void FinishRelease(bool keepCrouch = false, bool skipBaseAnim = false)
         {
             _phase = AdsPhase.Idle;
             _releaseHoldsAnim = false;
@@ -686,17 +686,19 @@ namespace Player
             if (keepCrouch)
             {
                 _anim.SetCrouch(true);
-                // 优先 Mecanim Release→Crouching 退出；仅在从未落到该处时 ForcePlay。
-                if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching))
+
+                if (!skipBaseAnim)
                 {
-                    _anim.SyncCurrent(PlayerAnimDriver.States.Crouching);
-                }
-                else
-                {
-                    _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+                    if (_anim.IsPlaying(PlayerAnimDriver.States.Crouching))
+                    {
+                        _anim.SyncCurrent(PlayerAnimDriver.States.Crouching);
+                    }
+                    else
+                    {
+                        _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
+                    }
                 }
             }
-
             _aimCrouch = false;
         }
 

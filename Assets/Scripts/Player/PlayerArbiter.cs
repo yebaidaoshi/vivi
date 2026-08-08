@@ -35,8 +35,10 @@ namespace Player
                                                                 // CrouchEnterLocked：在蹲下进入片段自身的 Attackable 事件之前，近战不得
                                                                 // 打断该过渡（其他打断——松开 S、魔法、后撤步/
                                                                 // 后空翻——不受影响，见 PlayerCrouch.CrouchEnterLocked）。
+
+            bool crouchRolling = s.CrouchState == PlayerCrouchState.SlideToCrouch;
             c.CanMelee = !adsLocksActions && !backStepHard && !s.JumpLandToRunLocksActions
-                && !s.MagicBusy && !s.CrouchIsSliding && !s.CrouchEnterLocked;
+                && !s.MagicBusy && !s.CrouchIsSliding && !crouchRolling && !s.CrouchEnterLocked;
             // ADS 进入：蹲着时允许；滑铲 / 从滑铲进入仍阻止。
             c.CanAds = !s.MeleeLocksActions && !backStepHard && !s.JumpOnAir
                 && !s.CrouchIsSliding
@@ -47,7 +49,7 @@ namespace Player
             c.CanMagic = !adsLocksActions && !s.MeleeLocksActions && !backStepHard
                 && !s.CrouchIsSliding && !s.JumpLandToRunLocksActions && !s.MagicBusy;
 
-            bool crouchRolling = s.CrouchState == PlayerCrouchState.SlideToCrouch;
+            
             c.OverrideSpeed = s.CrouchIsSliding || crouchRolling || s.MeleeLocksMovement
                 || s.JumpIsBackFlipping || backStepHard || s.MagicBusy;
             c.VelocityOwner = c.OverrideSpeed

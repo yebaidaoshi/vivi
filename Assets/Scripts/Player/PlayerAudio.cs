@@ -26,7 +26,7 @@ namespace Player
         public AudioClip run2;
         public AudioClip backStep;
         public AudioClip slide;
-
+        [SerializeField] private AudioClip dashStepSound;//冲刺
         [Header("近战")]
         public AudioClip swordSwing;
         public AudioClip melee2;
@@ -147,6 +147,9 @@ namespace Player
                 case "SE_foldSMG":
                     // 收枪折叠在 floor Effects State 11 使用同一段 Cocking.ogg。
                     PlayCocking();
+                    break;
+                case "Stepped_Forward":
+                    Play(dashStepSound); 
                     break;
             }
         }
