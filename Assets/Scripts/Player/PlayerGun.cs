@@ -12,6 +12,8 @@ namespace Player
     /// 移动叠加：Movement ADS 设置 aimDir = abs(facingScale - GAME_MOVE)
     ///   （0 走路 / 1 站立 / 2 后退走），供 Aim 层 Aim_Standing 混合树使用。
     /// </summary>
+    // 晚于 BoneFollower / SkeletonUtilityBone（默认 0），换弹时才能读到本帧枪口位姿。
+    [DefaultExecutionOrder(1000)]
     public class PlayerGun : MonoBehaviour
     {
         private enum AdsPhase
@@ -67,10 +69,14 @@ namespace Player
         private Quaternion _aimPivotRestLocal = Quaternion.identity;
         private bool _aimPivotRestStored;
         private Vector2 _aimDir = Vector2.right;
+        /// <summary>换弹开始时锁存的瞄准方向 — 换弹期间枪线 / AimPivot 不再跟随鼠标。</summary>
+        private Vector2 _reloadFrozenAimDir = Vector2.right;
         /// <summary>收枪过程中，仅当没有打断时为 true — 允许 Idle/Run/近战切断收枪。</summary>
         private bool _releaseHoldsAnim;
         private LineRenderer _laser;
         private Transform _aimingRoot;
+        /// <summary>AimPivot 下的 LaserPointer（SkeletonUtilityBone），换弹时枪线挂点。</summary>
+        private Transform _laserPointer;
 
         // Aim_*_SMG 状态使用 BlendTree — Unity 不会可靠触发片段 SendEvent。
         // 按与烘焙事件时间匹配的已用时间驱动换弹 / 收枪音效。
@@ -165,6 +171,11 @@ namespace Player
                 _aimingRoot = FindChildTransform("Aiming");
             }
 
+            if (_laserPointer == null)
+            {
+                _laserPointer = FindChildTransform("LaserPointer");
+            }
+
             // 初始化时挂到 Aiming 下，使层级与 floor GunSight 放置一致。
             if (showAimLaser)
             {
@@ -172,20 +183,20 @@ namespace Player
             }
 
 #if UNITY_EDITOR
-			if (bulletPrefab == null)
-			{
-				bulletPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/_Bullet.prefab");
-			}
+            if (bulletPrefab == null)
+            {
+                bulletPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/_Bullet.prefab");
+            }
 
-			if (muzzleFlashPrefab == null)
-			{
-				muzzleFlashPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/MuzzleFlashLight.prefab");
-			}
+            if (muzzleFlashPrefab == null)
+            {
+                muzzleFlashPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/MuzzleFlashLight.prefab");
+            }
 
-			if (cartridgePrefab == null)
-			{
-				cartridgePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/SMG_Cartridge.prefab");
-			}
+            if (cartridgePrefab == null)
+            {
+                cartridgePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/SMG_Cartridge.prefab");
+            }
 #endif
         }
 
@@ -255,6 +266,11 @@ namespace Player
                 }
             }
 
+            // 枪线改在 LateUpdate：等 Spine BoneFollower / UtilityBone 写完枪口后再画。
+        }
+
+        private void LateUpdate()
+        {
             UpdateAimLaser();
         }
 
@@ -295,7 +311,8 @@ namespace Player
             TickReloadSe();
             _aimCrouch = _crouched;
             _anim.SetCrouch(_aimCrouch);
-            UpdateAdsAim(intent, allowFaceFlip);
+            // 换弹：只更新走路/站立 locomotion aimDir；冻结枪线与 AimPivot，不跟鼠标。
+            UpdateReloadAimLocomotion(intent);
 
             // 移动站立：保持 Aim_Standing（走路腿部 + GunSight 线）。floor Movement
             // State 4（ADS_RELOAD）把 Aim 层留在 1 — 走路换弹仅有音频。
@@ -703,6 +720,20 @@ namespace Player
         }
 
         /// <summary>
+        /// 换弹期间：仅刷动画 locomotion aimDir；不跟鼠标。
+        /// 枪线挂到 LaserPointer/Gun，随换弹动画位移/转动（见 UpdateAimLaser）。
+        /// </summary>
+        private void UpdateReloadAimLocomotion(PlayerIntent intent)
+        {
+            float move = _aimCrouch ? 0f : intent.Move;
+            float aimLocomotion = Mathf.Abs(_motor.Facing - move);
+            _anim.SetAimDir(aimLocomotion);
+            _aimDir = _reloadFrozenAimDir.sqrMagnitude > 0.0001f
+                ? _reloadFrozenAimDir.normalized
+                : new Vector2(_motor.Facing, 0f);
+        }
+
+        /// <summary>
         /// Movement FaceCheck：aimDir = abs(facingSign - GAME_MOVE) → 0 走 / 1 站 / 2 退。
         /// Gun OnADS：Aim_Target 跟随鼠标；AimPivot SmoothLookAt2d；鼠标越过时翻转。
         /// </summary>
@@ -775,8 +806,8 @@ namespace Player
         }
 
         /// <summary>
-        /// GunSight 红色射线：枪举起时显示（Holding / Reloading，举枪过程中不显示），
-        /// 从枪口沿当前瞄准方向；可选在障碍处截断。
+        /// GunSight 红色射线：Holding 时跟鼠标瞄准；Reloading 时挂到 LaserPointer/Gun，
+        /// 随换弹动画移动（不跟鼠标）。举枪过程中不显示。
         /// </summary>
         private void UpdateAimLaser()
         {
@@ -792,13 +823,91 @@ namespace Player
 
             EnsureLaser();
 
-            // GunSight 在枪举起后显示：Holding + Reloading（floor 换弹时也保留）。
             bool visible = (_phase == AdsPhase.Holding || _phase == AdsPhase.Reloading)
-                && _anim.IsInSmgAim();
+                && _anim != null && _anim.IsInSmgAim();
             _laser.enabled = visible;
             if (!visible)
             {
                 return;
+            }
+
+            ResolveRefs();
+
+            if (_phase == AdsPhase.Reloading)
+            {
+                Transform attach = _laserPointer != null
+                    ? _laserPointer
+                    : (gunMuzzle != null ? gunMuzzle : aimPivot);
+                if (attach != null)
+                {
+                    DrawLaserAttachedToMuzzle(attach);
+                    return;
+                }
+            }
+
+            DrawLaserWorldAim();
+        }
+
+        /// <summary>
+        /// 换弹：枪线作为枪口子物体，本地沿 +X，自动跟随 BoneFollower / UtilityBone。
+        /// </summary>
+        private void DrawLaserAttachedToMuzzle(Transform attach)
+        {
+            if (_laser.transform.parent != attach)
+            {
+                _laser.useWorldSpace = false;
+                _laser.transform.SetParent(attach, false);
+            }
+
+            _laser.transform.localPosition = Vector3.zero;
+            _laser.transform.localRotation = Quaternion.identity;
+            _laser.transform.localScale = Vector3.one;
+
+            Vector3 origin = attach.position;
+            Vector2 dir = attach.right;
+            if (dir.sqrMagnitude < 0.0001f)
+            {
+                dir = _aimDir.sqrMagnitude > 0.0001f
+                    ? _aimDir.normalized
+                    : new Vector2(_motor != null ? _motor.Facing : 1f, 0f);
+            }
+            else
+            {
+                dir.Normalize();
+            }
+
+            Vector2 end = (Vector2)origin + dir * laserMaxLength;
+            if (laserBlockMask.value != 0)
+            {
+                var hit = Physics2D.Raycast(origin, dir, laserMaxLength, laserBlockMask);
+                if (hit.collider != null && !hit.collider.isTrigger
+                    && hit.collider.transform != transform
+                    && !hit.collider.transform.IsChildOf(transform))
+                {
+                    end = hit.point;
+                }
+            }
+
+            _laser.startWidth = laserWidth;
+            _laser.endWidth = laserWidth;
+            _laser.SetPosition(0, Vector3.zero);
+            _laser.SetPosition(1, attach.InverseTransformPoint(new Vector3(end.x, end.y, origin.z)));
+        }
+
+        /// <summary>持枪：世界空间射线，方向为鼠标 _aimDir。</summary>
+        private void DrawLaserWorldAim()
+        {
+            if (_aimingRoot != null && _laser.transform.parent != _aimingRoot)
+            {
+                _laser.useWorldSpace = true;
+                _laser.transform.SetParent(_aimingRoot, false);
+                _laser.transform.localPosition = Vector3.zero;
+                _laser.transform.localRotation = Quaternion.identity;
+                _laser.transform.localScale = Vector3.one;
+            }
+            else
+            {
+                _laser.useWorldSpace = true;
             }
 
             Transform originT = gunMuzzle != null
@@ -1034,6 +1143,11 @@ namespace Player
             _reloadSeSetMagazine = false;
             _reloadSeCocking = false;
             _reloadClipSeen = false;
+            // 锁存当前瞄准，换弹期间枪线不再跟随鼠标。
+            _reloadFrozenAimDir = _aimDir.sqrMagnitude > 0.0001f
+                ? _aimDir.normalized
+                : new Vector2(_motor != null ? _motor.Facing : 1, 0f);
+            _aimDir = _reloadFrozenAimDir;
             _anim.SetAiming(true);
             // 关闭 Aim_Standing，使基础层 Aim_SMG_Reload 可见（站立移动 + 换弹）。
             SetAimWeightImmediate(0f);
