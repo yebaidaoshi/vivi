@@ -40,6 +40,9 @@ namespace Player
         private string _landingState;
         private bool _landToRun;
         private float _landToRunElapsed;
+
+        private int _backFlipTakeoffDir;
+        private float _prevMove;
         public PlayerAirState State => _state;
         public bool OnAir => _state == PlayerAirState.Rising || _state == PlayerAirState.Falling
             || _state == PlayerAirState.BackFlip;
@@ -78,6 +81,7 @@ namespace Player
 
         public void Tick(PlayerIntent intent, bool movementLocked, bool actionOwnsAnim = false)
         {
+
             float dt = _motor.DeltaTime;
 
             if (_landLock > 0f)
@@ -101,7 +105,7 @@ namespace Player
 
             bool grounded = _motor.IsGrounded;
             bool suppressAnim = actionOwnsAnim;
-
+            _prevMove = intent.Move;
             if (_state == PlayerAirState.BackFlip)
             {
                 // 后空翻期间 JumpLocked 始终为真 — 用 actionOwnsAnim，不用 movementLocked。
@@ -117,6 +121,25 @@ namespace Player
                     return;
                 }
                 // 已到达 SE_Run — 动作已解锁，继续往下走。
+            }
+
+
+            if (_state == PlayerAirState.BackFlipLand)
+            {
+                TickBackFlipLandHold(intent, suppressAnim);
+                if (_state != PlayerAirState.Grounded)
+                    return;   // 仍在落地中，或已衔接新后空翻，本帧结束
+            }
+            else if (LandingLocked)
+            {
+                // 其他落地（普通 Landing）保持原有逻辑
+                if (intent.WantsSoftActionInterrupt || actionOwnsAnim)
+                    FinishLanding();
+                else
+                {
+                    TickLandHold(_landingState);
+                    return;
+                }
             }
 
             if (LandingLocked)
@@ -498,13 +521,13 @@ namespace Player
         private void BeginBackFlip()
         {
             _state = PlayerAirState.BackFlip;
-            _jumpConsumed = true;
+            _jumpConsumed = true;          
             _jumpBuffer = 0f;
             _backFlipAir = _settings.backFlipMinAir;
             _landLock = 0f;
             _takeoffLock = _settings.backFlipMinAir;
+            _backFlipTakeoffDir = -_motor.Facing;   
 
-            // floor State 7：SetVelocity(0,0) → BackStepForce=-30*facing → AddForce (fx, 30)
             float fx = -_settings.backFlipForce * _motor.Facing;
             _motor.SetVelocity(Vector2.zero);
             _motor.AddForce(new Vector2(fx, _settings.backFlipJumpForce), ForceMode2D.Impulse);
@@ -518,7 +541,7 @@ namespace Player
             _state = PlayerAirState.BackFlipLand;
             _landingState = PlayerAnimDriver.States.BackFlipLand;
             _landLock = PlayerAnimTimings.BackFlipLand.ClipLength + 0.05f;
-            _jumpConsumed = false;
+            
             _motor.SetImmediateVelocityX(0f);
             _anim.SetAirFloat(0f, 0f);
             _anim.ForcePlay(_landingState);
@@ -534,5 +557,65 @@ namespace Player
 
             _takeoffLock = Mathf.Max(_takeoffLock, 0.05f);
         }
+        private void TickBackFlipLandHold(PlayerIntent intent, bool actionOwnsAnim)
+        {
+            if (actionOwnsAnim)
+            {
+                FinishLanding();
+                return;
+            }
+            bool takeoffDirHeld = _backFlipTakeoffDir > 0
+                ? intent.Move > 0.1f
+                : intent.Move < -0.1f;
+            bool oppositeNow = _backFlipTakeoffDir > 0
+                ? intent.Move < -0.1f
+                : intent.Move > 0.1f;
+            bool oppositePressed = oppositeNow && !(_prevMove < -0.1f || _prevMove > 0.1f); 
+           
+            if (!takeoffDirHeld && oppositePressed)
+            {
+                FinishLanding();            
+                BeginOppositeBackFlip();   
+                return;
+            }
+            bool staleBackFlipHold = takeoffDirHeld && intent.Jump;
+            if (!staleBackFlipHold)
+            {
+               
+                bool realActionInterrupt = Mathf.Abs(intent.Move) > 0.1f
+                    || intent.JumpPressed
+                    || intent.SlashPressed
+                    || intent.WantsAds
+                    || intent.EvadePressed
+                    || intent.Crouch
+                    || intent.ReloadPressed
+                    || intent.Skill;
+
+                if (realActionInterrupt)
+                {
+                    FinishLanding();
+                    return;
+                }
+            }
+            TickLandHold(_landingState);
+        }
+        private void BeginOppositeBackFlip()
+        {
+            _backFlipTakeoffDir = -_backFlipTakeoffDir;   // 反转方向
+            _state = PlayerAirState.BackFlip;
+            _jumpConsumed = true;
+            _jumpBuffer = 0f;
+            _backFlipAir = _settings.backFlipMinAir;
+            _landLock = 0f;
+            _takeoffLock = _settings.backFlipMinAir;
+
+            float fx = _settings.backFlipForce * _backFlipTakeoffDir;
+            _motor.SetVelocity(Vector2.zero);
+            _motor.AddForce(new Vector2(fx, _settings.backFlipJumpForce), ForceMode2D.Impulse);
+            _anim.SetAirFloat(0f, 0f);
+            _anim.ForcePlay(PlayerAnimDriver.States.BackFlip);
+            _audio?.PlayBackFlip();
+        }
+
     }
 }
