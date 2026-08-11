@@ -1,0 +1,10 @@
+NeedlePlant.png
+size:512,512
+filter:Linear,Linear
+pma:true
+Body
+bounds:2,125,225,282
+Leg
+bounds:229,71,163,336
+Pump
+bounds:2,2,127,121

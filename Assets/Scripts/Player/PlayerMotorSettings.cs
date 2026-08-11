@@ -93,5 +93,9 @@ namespace Player
         public int maxMeleeCombo = 3;
         [Tooltip("未使用：地面近战不再施加前冲（攻击保持原地）。")]
         public float meleeLungeSpeed = 0f;
+
+        [Tooltip("受击")]
+        public int maxHealth = 100;
+        public float invincibleTime = 0.2f;
     }
 }

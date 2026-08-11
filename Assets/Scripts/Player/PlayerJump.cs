@@ -40,9 +40,10 @@ namespace Player
         private string _landingState;
         private bool _landToRun;
         private float _landToRunElapsed;
-
-        private int _backFlipTakeoffDir;
+        private int _backFlipTakeoffDir;       
         private float _prevMove;
+
+      
         public PlayerAirState State => _state;
         public bool OnAir => _state == PlayerAirState.Rising || _state == PlayerAirState.Falling
             || _state == PlayerAirState.BackFlip;

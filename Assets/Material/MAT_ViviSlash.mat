@@ -94,29 +94,29 @@ Material:
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _Blend: 2
-    - _BodyIntensity: 3
+    - _BodyIntensity: 1.5
     - _CastShadows: 1
-    - _CoreIntensity: 8
+    - _CoreIntensity: 2.5
     - _Cull: 0
-    - _DetailIntensity: 1
+    - _DetailIntensity: 0.5
     - _Dissolve: 0
     - _DissolveEdgeIntensity: 5
-    - _DissolveEdgeWidth: 0.06
-    - _DissolveSoftness: 0.08
+    - _DissolveEdgeWidth: 0.08
+    - _DissolveSoftness: 0.05
     - _Distortion: 0.03
     - _DstBlend: 1
-    - _EdgeIntensity: 2
+    - _EdgeIntensity: 1.5
     - _EnableExternalAlpha: 0
     - _FlowSpeed: 6
     - _Opacity: 1
-    - _Progress: 0
+    - _Progress: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReverseDirection: 0
     - _ScanSoftness: 0.03
     - _SrcBlend: 5
     - _Surface: 1
-    - _TailLength: 0.55
+    - _TailLength: 1
     - _ZTest: 4
     - _ZWrite: 0
     - _ZWriteControl: 2

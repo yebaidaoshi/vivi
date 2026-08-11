@@ -1,10 +1,17 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace Player
 {
+    public interface IDamageable
+    {
+        void TakeDamage(int damage, UnityEngine.Vector2 knockback, UnityEngine.GameObject attacker);
+        bool IsDead { get; }
+    }
     public enum PlayerMeleePhase
     {
         Idle,
@@ -57,7 +64,13 @@ namespace Player
                 SheathEnd = PlayerAnimTimings.Attack3.ClipLength
             },
         };
-
+        [Header("攻击判定框（Spine 骨骼子物体）")]
+        [SerializeField] private Collider2D[] attackColliders; 
+        [SerializeField] private Collider2D slideAttackCollider; 
+        [SerializeField] private Collider2D jumpAttackCollider;
+        [Header("伤害参数")]
+        [SerializeField] private int meleeDamage = 30;          
+        [SerializeField] private LayerMask damageLayerMask = ~0;
         [Header("斩击特效（Effects E_Katana1/2/3）")]
         [SerializeField] private GameObject slash1Prefab;
         [SerializeField] private GameObject slash2Prefab;
@@ -121,7 +134,7 @@ namespace Player
         private bool _isCrouchAttack;
         private bool _hasSpawnedCrouchSlash;  // 防止下蹲攻击每帧重复触发特效
 
-       
+
         public PlayerMeleePhase Phase => _phase;
         public bool IsAttacking => _phase != PlayerMeleePhase.Idle;
         /// <summary>直到 Cancelable — 阻挡 ADS / 后撤 / 跳跃
@@ -150,25 +163,25 @@ namespace Player
             _slashVfx = GetComponent<PlayerSlashVfx>() ?? gameObject.AddComponent<PlayerSlashVfx>();
 
 #if UNITY_EDITOR
-			// 编辑器便利（模块在运行时组合，无序列化引用）。
-			if (slash1Prefab == null) slash1Prefab = LoadPrefab("Slash1_1");
-			if (slash2Prefab == null) slash2Prefab = LoadPrefab("Slash2");
-			if (slash3Prefab == null) slash3Prefab = LoadPrefab("Slash3");
-			if (slideSlashPrefab == null) slideSlashPrefab = LoadPrefab("Slash1_Slide");
-			if (jumpSlashUpPrefab == null) jumpSlashUpPrefab = LoadPrefab("JumpSlashUp");
-			if (jumpSlashDownPrefab == null) jumpSlashDownPrefab = LoadPrefab("JumpSlash_Down");
-			if (slash4Prefab == null) slash4Prefab = LoadPrefab("Slash4");
-			if (katana4SmokePrefab == null) katana4SmokePrefab = LoadPrefab("Katana4_Smoke");
-			if (melee4AfterSlashPrefab == null) melee4AfterSlashPrefab = LoadPrefab("_Melee4AfterSlash");
-			if (melee4AfterPrefab == null) melee4AfterPrefab = LoadPrefab("Melee4After");
+            // 编辑器便利（模块在运行时组合，无序列化引用）。
+            if (slash1Prefab == null) slash1Prefab = LoadPrefab("Slash1_1");
+            if (slash2Prefab == null) slash2Prefab = LoadPrefab("Slash2");
+            if (slash3Prefab == null) slash3Prefab = LoadPrefab("Slash3");
+            if (slideSlashPrefab == null) slideSlashPrefab = LoadPrefab("Slash1_Slide");
+            if (jumpSlashUpPrefab == null) jumpSlashUpPrefab = LoadPrefab("JumpSlashUp");
+            if (jumpSlashDownPrefab == null) jumpSlashDownPrefab = LoadPrefab("JumpSlash_Down");
+            if (slash4Prefab == null) slash4Prefab = LoadPrefab("Slash4");
+            if (katana4SmokePrefab == null) katana4SmokePrefab = LoadPrefab("Katana4_Smoke");
+            if (melee4AfterSlashPrefab == null) melee4AfterSlashPrefab = LoadPrefab("_Melee4AfterSlash");
+            if (melee4AfterPrefab == null) melee4AfterPrefab = LoadPrefab("Melee4After");
 #endif
         }
 
 #if UNITY_EDITOR
-		private static GameObject LoadPrefab(string prefabName)
-		{
-			return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/" + prefabName + ".prefab");
-		}
+        private static GameObject LoadPrefab(string prefabName)
+        {
+            return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameObject/" + prefabName + ".prefab");
+        }
 #endif
 
         /// <summary>
@@ -217,6 +230,7 @@ namespace Player
 
         private void SpawnComboSlash(int index)
         {
+            DisableAllColliders();
             _pendingAttack2Katana3 = false;
             _pendingAttack3Katana4 = false;
             _pendingMelee4AfterSe = false;
@@ -226,10 +240,12 @@ namespace Player
                     // Attack2.anim：E_Katana2 @ 0.0333（近起点）+ E_Katana3 @ 0.3167。
                     SpawnSlash(slash2Prefab, PlayerSlashVfx.SlashKind.Attack2);
                     _pendingAttack2Katana3 = true;
+                    EnableCollider("Attack2_1");
                     break;
                 case 3:
                     // Attack3.anim（动画器 Attack4）：仅 E_Katana4 @ 0.1667 — 延迟。
                     _pendingAttack3Katana4 = true;
+                    EnableCollider("Attack1");
                     break;
                 default:
                     SpawnSlash(slash1Prefab, PlayerSlashVfx.SlashKind.Attack1);
@@ -247,6 +263,7 @@ namespace Player
             {
                 _pendingAttack2Katana3 = false;
                 SpawnSlash(slash3Prefab, PlayerSlashVfx.SlashKind.Attack3);
+                EnableCollider("Attack2_2");
                 _audio?.PlayKatana(3);
             }
 
@@ -255,6 +272,7 @@ namespace Player
             {
                 _pendingAttack3Katana4 = false;
                 SpawnMelee4Vfx();
+                EnableCollider("Attack_3");
             }
 
         }
@@ -421,15 +439,16 @@ namespace Player
             }
             else
             {
-             DoGroundCombo(1);
+                DoGroundCombo(1);
             }
-                
+
         }
 
         /// <summary>开始跳跃攻击，按当前竖直速度选择 Up/Down
         ///（镜像 <see cref="Tick"/> 中的初始触发检查）。</summary>
         private void BeginJumpAttack()
         {
+            DisableAllColliders();
             float vy = _motor.GetVelocity().y;
             if (vy >= 0f)
             {
@@ -493,7 +512,7 @@ namespace Player
         }
 
         private void TickActiveAttack(PlayerIntent intent, bool gunBusy)
-        {   
+        {
             float dt = _motor.DeltaTime;
             if (_isDashing)
             {
@@ -528,12 +547,12 @@ namespace Player
                 return;
             }
 
-            
+
             _elapsed += dt;
 
             TickLunge(dt);
             TickPendingSlashVfx();
-            TickDashBuffer(intent);          
+            TickDashBuffer(intent);
             if (TickDashChain(intent))
             {
                 return;
@@ -810,6 +829,7 @@ namespace Player
 
         private void DoCrouchAttack()
         {
+            DisableAllColliders();
             _isCrouchAttack = true;
             _hasSpawnedCrouchSlash = false;
             _activeState = "Crouch_Attack";
@@ -827,6 +847,7 @@ namespace Player
         private void BeginAttack(string state, float attackableAt, float cancelableAt,
             float movableAt, float sheathEndAt, int combo)
         {
+            DisableAllColliders();
             _phase = PlayerMeleePhase.WindupLocked;
             _elapsed = 0f;
             _attackableAt = attackableAt;
@@ -856,7 +877,7 @@ namespace Player
                 _anim.ForcePlay(PlayerAnimDriver.States.Crouching);
             }
 
-            _phase = PlayerMeleePhase.Idle;      
+            _phase = PlayerMeleePhase.Idle;
             _activeState = null;
             _combo = 0;
             _hasOverrideVx = false;
@@ -898,8 +919,8 @@ namespace Player
             }
             if (dashFinished)
             {
-                EndDash();                   
-                EndAttack();                  
+                EndDash();
+                EndAttack();
                 _anim.ForcePlay(PlayerAnimDriver.States.RunToIdle);
             }
         }
@@ -942,5 +963,46 @@ namespace Player
         {
             EndAttack();
         }
+        private void DisableAllColliders()
+        {
+            foreach (var col in attackColliders)
+                if (col != null) col.enabled = false;
+            if (slideAttackCollider != null) slideAttackCollider.enabled = false;
+            if (jumpAttackCollider != null) jumpAttackCollider.enabled = false;
+        }
+        private void EnableCollider(string name)
+        {
+            
+            foreach (var col in attackColliders)
+            {
+                if (col != null && col.gameObject.name == name)
+                {
+                    col.enabled = true;
+                    DetectHitsWithCollider(col);
+                    col.enabled = false;
+                    return;
+                }
+            }
+        }
+
+        private void DetectHitsWithCollider(Collider2D col)
+        {
+            var hits = new List<Collider2D>();
+            var filter = new ContactFilter2D();
+            filter.layerMask = damageLayerMask;
+            filter.useLayerMask = true;
+
+            int count = col.OverlapCollider(filter, hits);
+            for (int i = 0; i < count; i++)
+            {
+                var damageable = hits[i].GetComponent<IDamageable>();
+                if (damageable != null && hits[i].transform != transform)
+                {
+                    Vector2 knockback = (hits[i].transform.position - transform.position).normalized * 5f;
+                    damageable.TakeDamage(meleeDamage, knockback, gameObject);
+                }
+            }
+        }
+
     }
 }

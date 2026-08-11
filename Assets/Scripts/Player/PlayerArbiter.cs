@@ -49,9 +49,9 @@ namespace Player
             c.CanMagic = !adsLocksActions && !s.MeleeLocksActions && !backStepHard
                 && !s.CrouchIsSliding && !s.JumpLandToRunLocksActions && !s.MagicBusy;
 
-            
+
             c.OverrideSpeed = s.CrouchIsSliding || crouchRolling || s.MeleeLocksMovement
-                || s.JumpIsBackFlipping || backStepHard || s.MagicBusy;
+                || s.JumpIsBackFlipping || s.JumpLandingLocked || backStepHard || s.MagicBusy;
             c.VelocityOwner = c.OverrideSpeed
                 ? PlayerVelocityOwner.ImmediateOverride
                 : PlayerVelocityOwner.LocomotionRamp;
@@ -73,7 +73,7 @@ namespace Player
                 && !s.CrouchIsBusy
                 && s.AbsSmoothedVelocityX <= RunTurnSpeed;
             c.CanMove = !s.MeleeLocksMovement && !s.CrouchIsSliding && !backStepHard
-                && !s.JumpIsBackFlipping && !s.MagicBusy;
+                && !s.JumpIsBackFlipping && !s.JumpLandingLocked && !s.MagicBusy;
 
             return c;
         }
