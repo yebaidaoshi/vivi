@@ -77,6 +77,7 @@ namespace Player
         private Transform _aimingRoot;
         /// <summary>AimPivot 下的 LaserPointer（SkeletonUtilityBone），换弹时枪线挂点。</summary>
         private Transform _laserPointer;
+        private bool _aimPhysicsSuppressed;
 
         // Aim_*_SMG 状态使用 BlendTree — Unity 不会可靠触发片段 SendEvent。
         // 按与烘焙事件时间匹配的已用时间驱动换弹 / 收枪音效。
@@ -166,6 +167,15 @@ namespace Player
                 _aimPivotRestStored = true;
             }
 
+            // Prefabs/HeroineParent 的 AimPivot 链带非运动学 Rigidbody+HingeJoint，
+            // 会与 SkeletonUtilityBone 抢位姿 → _aimDir 每帧抖动（双线明暗不同、子弹左右打）。
+            // GameObject/HeroineParent（Player 场景）无此物理，故正常。
+            if (!_aimPhysicsSuppressed && aimPivot != null)
+            {
+                SuppressAimHierarchyPhysics(aimPivot);
+                _aimPhysicsSuppressed = true;
+            }
+
             if (_aimingRoot == null)
             {
                 _aimingRoot = FindChildTransform("Aiming");
@@ -211,6 +221,37 @@ namespace Player
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// 关掉瞄准骨骼树上的铰链物理，只保留 SkeletonUtilityBone / BoneFollower 驱动。
+        /// </summary>
+        private static void SuppressAimHierarchyPhysics(Transform aimPivotRoot)
+        {
+            var hinges = aimPivotRoot.GetComponentsInChildren<HingeJoint>(true);
+            for (int i = 0; i < hinges.Length; i++)
+            {
+                if (hinges[i] != null)
+                {
+                    Destroy(hinges[i]);
+                }
+            }
+
+            var bodies = aimPivotRoot.GetComponentsInChildren<Rigidbody>(true);
+            for (int i = 0; i < bodies.Length; i++)
+            {
+                var rb = bodies[i];
+                if (rb == null)
+                {
+                    continue;
+                }
+
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.detectCollisions = false;
+            }
         }
 
         /// <param name="actionInterrupt">
@@ -720,8 +761,8 @@ namespace Player
         }
 
         /// <summary>
-        /// 换弹期间：仅刷动画 locomotion aimDir；不跟鼠标。
-        /// 枪线挂到 LaserPointer/Gun，随换弹动画位移/转动（见 UpdateAimLaser）。
+        /// 换弹期间：仅刷动画 locomotion aimDir；不跟鼠标转 AimPivot。
+        /// 枪线仍在 LateUpdate 用世界空间绘制（起点/朝向读枪口骨骼）。
         /// </summary>
         private void UpdateReloadAimLocomotion(PlayerIntent intent)
         {
@@ -806,8 +847,8 @@ namespace Player
         }
 
         /// <summary>
-        /// GunSight 红色射线：Holding 时跟鼠标瞄准；Reloading 时挂到 LaserPointer/Gun，
-        /// 随换弹动画移动（不跟鼠标）。举枪过程中不显示。
+        /// GunSight 红色射线：Holding 跟鼠标；Reloading 起点跟枪口、方向用枪口朝向（不跟鼠标）。
+        /// 始终一条世界空间 LineRenderer，不挂到骨骼上（避免残留双线）。
         /// </summary>
         private void UpdateAimLaser()
         {
@@ -833,91 +874,44 @@ namespace Player
 
             ResolveRefs();
 
-            if (_phase == AdsPhase.Reloading)
-            {
-                Transform attach = _laserPointer != null
-                    ? _laserPointer
-                    : (gunMuzzle != null ? gunMuzzle : aimPivot);
-                if (attach != null)
-                {
-                    DrawLaserAttachedToMuzzle(attach);
-                    return;
-                }
-            }
-
-            DrawLaserWorldAim();
-        }
-
-        /// <summary>
-        /// 换弹：枪线作为枪口子物体，本地沿 +X，自动跟随 BoneFollower / UtilityBone。
-        /// </summary>
-        private void DrawLaserAttachedToMuzzle(Transform attach)
-        {
-            if (_laser.transform.parent != attach)
-            {
-                _laser.useWorldSpace = false;
-                _laser.transform.SetParent(attach, false);
-            }
-
-            _laser.transform.localPosition = Vector3.zero;
-            _laser.transform.localRotation = Quaternion.identity;
-            _laser.transform.localScale = Vector3.one;
-
-            Vector3 origin = attach.position;
-            Vector2 dir = attach.right;
-            if (dir.sqrMagnitude < 0.0001f)
-            {
-                dir = _aimDir.sqrMagnitude > 0.0001f
-                    ? _aimDir.normalized
-                    : new Vector2(_motor != null ? _motor.Facing : 1f, 0f);
-            }
-            else
-            {
-                dir.Normalize();
-            }
-
-            Vector2 end = (Vector2)origin + dir * laserMaxLength;
-            if (laserBlockMask.value != 0)
-            {
-                var hit = Physics2D.Raycast(origin, dir, laserMaxLength, laserBlockMask);
-                if (hit.collider != null && !hit.collider.isTrigger
-                    && hit.collider.transform != transform
-                    && !hit.collider.transform.IsChildOf(transform))
-                {
-                    end = hit.point;
-                }
-            }
-
-            _laser.startWidth = laserWidth;
-            _laser.endWidth = laserWidth;
-            _laser.SetPosition(0, Vector3.zero);
-            _laser.SetPosition(1, attach.InverseTransformPoint(new Vector3(end.x, end.y, origin.z)));
-        }
-
-        /// <summary>持枪：世界空间射线，方向为鼠标 _aimDir。</summary>
-        private void DrawLaserWorldAim()
-        {
-            if (_aimingRoot != null && _laser.transform.parent != _aimingRoot)
-            {
-                _laser.useWorldSpace = true;
-                _laser.transform.SetParent(_aimingRoot, false);
-                _laser.transform.localPosition = Vector3.zero;
-                _laser.transform.localRotation = Quaternion.identity;
-                _laser.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                _laser.useWorldSpace = true;
-            }
-
             Transform originT = gunMuzzle != null
                 ? gunMuzzle
-                : (aimPivot != null ? aimPivot : transform);
+                : (_laserPointer != null ? _laserPointer : (aimPivot != null ? aimPivot : transform));
             Vector3 originPos = originT.position;
             Vector2 origin = originPos;
-            Vector2 dir = _aimDir.sqrMagnitude > 0.0001f
-                ? _aimDir.normalized
-                : new Vector2(_motor.Facing, 0f);
+
+            Vector2 dir;
+            if (_phase == AdsPhase.Reloading)
+            {
+                // 换弹：不跟鼠标。朝向优先枪口骨骼，但角色靠 localScale.x 翻转时
+                // transform.right 会指反，需与冻结瞄准 / Facing 对齐。
+                Vector2 frozen = _reloadFrozenAimDir.sqrMagnitude > 0.0001f
+                    ? _reloadFrozenAimDir.normalized
+                    : new Vector2(_motor != null ? _motor.Facing : 1, 0f);
+                Vector2 muzzleDir = new Vector2(originT.right.x, originT.right.y);
+                if (muzzleDir.sqrMagnitude > 0.0001f)
+                {
+                    muzzleDir.Normalize();
+                    if (Vector2.Dot(muzzleDir, frozen) < 0f)
+                    {
+                        muzzleDir = -muzzleDir;
+                    }
+
+                    dir = muzzleDir;
+                }
+                else
+                {
+                    dir = frozen;
+                }
+            }
+            else if (_aimDir.sqrMagnitude > 0.0001f)
+            {
+                dir = _aimDir.normalized;
+            }
+            else
+            {
+                dir = new Vector2(_motor.Facing, 0f);
+            }
 
             Vector2 end = origin + dir * laserMaxLength;
             if (laserBlockMask.value != 0)
@@ -931,6 +925,7 @@ namespace Player
                 }
             }
 
+            _laser.useWorldSpace = true;
             _laser.startWidth = laserWidth;
             _laser.endWidth = laserWidth;
             _laser.SetPosition(0, new Vector3(origin.x, origin.y, originPos.z));
@@ -939,19 +934,55 @@ namespace Player
 
         private void EnsureLaser()
         {
-            if (_laser != null)
-            {
-                return;
-            }
-
             if (_aimingRoot == null)
             {
                 _aimingRoot = FindChildTransform("Aiming");
             }
 
+            // 全场景只保留一条 GunSightLaser：优先复用，再删多余。
+            // （挂在骨骼/铰链链下的残留不在 Heroine 子层级时，GetComponentsInChildren 会漏掉。）
+            LineRenderer kept = _laser;
+#if UNITY_2023_1_OR_NEWER
+            var existing = Object.FindObjectsByType<LineRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
+            var existing = Object.FindObjectsOfType<LineRenderer>(true);
+#endif
+            for (int i = 0; i < existing.Length; i++)
+            {
+                var lr = existing[i];
+                if (lr == null || lr.name != "GunSightLaser")
+                {
+                    continue;
+                }
+
+                if (kept == null)
+                {
+                    kept = lr;
+                    continue;
+                }
+
+                if (lr != kept)
+                {
+                    Destroy(lr.gameObject);
+                }
+            }
+
+            _laser = kept;
+            if (_laser != null)
+            {
+                // 不要挂在角色下：Heroine localScale.x 翻转时，部分管线会把
+                // 同一条 LineRenderer 画成“双线”观感；世界根 + useWorldSpace 即可。
+                if (_laser.transform.parent != null)
+                {
+                    _laser.transform.SetParent(null, true);
+                }
+
+                _laser.useWorldSpace = true;
+                return;
+            }
+
             var go = new GameObject("GunSightLaser");
-            // 挂到 Aiming 下（floor GunSight 插槽），而非女主根节点。
-            go.transform.SetParent(_aimingRoot != null ? _aimingRoot : transform, false);
+            go.transform.SetParent(null, false);
             _laser = go.AddComponent<LineRenderer>();
             _laser.useWorldSpace = true;
             _laser.positionCount = 2;
@@ -971,9 +1002,17 @@ namespace Player
 
             _laser.startColor = laserColor;
             _laser.endColor = new Color(laserColor.r, laserColor.g, laserColor.b, 0f);
-            // 渲染在角色精灵之上。
             _laser.sortingOrder = 100;
             _laser.enabled = false;
+        }
+
+        private void OnDestroy()
+        {
+            if (_laser != null)
+            {
+                Destroy(_laser.gameObject);
+                _laser = null;
+            }
         }
 
         private void ResetAimPose()
