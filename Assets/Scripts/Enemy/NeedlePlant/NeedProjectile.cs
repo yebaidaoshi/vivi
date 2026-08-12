@@ -35,8 +35,17 @@ public class NeedProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // 如果是发射者本身，忽略
         if (other.gameObject == owner) return;
 
+        // ★ 检测是否被玩家的攻击碰撞体击中（玩家挥刀砍到子弹）
+        if (other.CompareTag("PlayerAttack"))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // 对玩家造成伤害（原有逻辑）
         IDamageable damageable = other.GetComponent<IDamageable>();
         if (damageable != null && !damageable.IsDead)
         {

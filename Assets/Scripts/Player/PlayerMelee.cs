@@ -65,11 +65,11 @@ namespace Player
             },
         };
         [Header("攻击判定框（Spine 骨骼子物体）")]
-        [SerializeField] private Collider2D[] attackColliders; 
-        [SerializeField] private Collider2D slideAttackCollider; 
+        [SerializeField] private Collider2D[] attackColliders;
+        [SerializeField] private Collider2D slideAttackCollider;
         [SerializeField] private Collider2D jumpAttackCollider;
         [Header("伤害参数")]
-        [SerializeField] private int meleeDamage = 30;          
+        [SerializeField] private int meleeDamage = 30;
         [SerializeField] private LayerMask damageLayerMask = ~0;
         [Header("斩击特效（Effects E_Katana1/2/3）")]
         [SerializeField] private GameObject slash1Prefab;
@@ -78,6 +78,10 @@ namespace Player
         [SerializeField] private GameObject slideSlashPrefab;
         [SerializeField] private GameObject jumpSlashUpPrefab;
         [SerializeField] private GameObject jumpSlashDownPrefab;
+
+        [Header("打击反馈")]
+        [SerializeField] private GameObject hitEffectPrefab;
+        [SerializeField] private float hitEffectLifetime = 0.8f;
 
         [Header("Attack4 / Melee4 特效（Effects E_Katana4 → State 15）")]
         [Tooltip("主新月 — CreateObject #1。")]
@@ -149,12 +153,15 @@ namespace Player
 
         public void Init(PlayerContext context)
         {
+            Debug.Log("=== PlayerMelee.Init 被调用 ===");
             _ctx = context;
             context.Bind(out _motor, out _anim, out _audio, out _settings);
             ResolveVfx();
             _dash = GetComponent<PlayerDash>() ?? gameObject.AddComponent<PlayerDash>();
             _dash.Init(context);
-
+            AutoFindColliders();
+            LoadHitEffect();
+            damageLayerMask = LayerMask.GetMask("HitBox");
         }
 
         private void ResolveVfx()
@@ -245,10 +252,11 @@ namespace Player
                 case 3:
                     // Attack3.anim（动画器 Attack4）：仅 E_Katana4 @ 0.1667 — 延迟。
                     _pendingAttack3Katana4 = true;
-                    EnableCollider("Attack1");
+                    EnableCollider("Attack3");
                     break;
                 default:
                     SpawnSlash(slash1Prefab, PlayerSlashVfx.SlashKind.Attack1);
+                    EnableCollider("Attack1");
                     break;
             }
         }
@@ -965,6 +973,7 @@ namespace Player
         }
         private void DisableAllColliders()
         {
+            if (attackColliders == null) return;
             foreach (var col in attackColliders)
                 if (col != null) col.enabled = false;
             if (slideAttackCollider != null) slideAttackCollider.enabled = false;
@@ -972,7 +981,6 @@ namespace Player
         }
         private void EnableCollider(string name)
         {
-            
             foreach (var col in attackColliders)
             {
                 if (col != null && col.gameObject.name == name)
@@ -987,6 +995,7 @@ namespace Player
 
         private void DetectHitsWithCollider(Collider2D col)
         {
+            if (attackColliders == null) return;
             var hits = new List<Collider2D>();
             var filter = new ContactFilter2D();
             filter.layerMask = damageLayerMask;
@@ -995,14 +1004,67 @@ namespace Player
             int count = col.OverlapCollider(filter, hits);
             for (int i = 0; i < count; i++)
             {
-                var damageable = hits[i].GetComponent<IDamageable>();
-                if (damageable != null && hits[i].transform != transform)
+                var hit = hits[i];
+                if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                    continue;
+
+                var damageable = hit.GetComponentInParent<IDamageable>();
+                if (damageable != null && !damageable.IsDead)
                 {
-                    Vector2 knockback = (hits[i].transform.position - transform.position).normalized * 5f;
+                    if (hitEffectPrefab != null)
+                    {
+                        Vector3 spawnPos = hit.ClosestPoint(transform.position);
+                        var fx = Instantiate(hitEffectPrefab, spawnPos, Quaternion.identity);
+                        Destroy(fx, hitEffectLifetime);
+                    }
+
+                    Vector2 knockback = (hit.transform.position - transform.position).normalized * 5f;
                     damageable.TakeDamage(meleeDamage, knockback, gameObject);
                 }
             }
         }
+        private void AutoFindColliders()
+        {
+            // 如果你已经在 Inspector 里手动拖了，就不再覆盖
+            if (attackColliders != null && attackColliders.Length > 0)
+                return;
 
+            // 获取所有子物体（包括隐藏的、未激活的）上的 Collider2D 组件
+            var allColliders = GetComponentsInChildren<Collider2D>(true);
+            var found = new List<Collider2D>();
+
+            foreach (var col in allColliders)
+            {
+                // 只要名字以 Attack 开头的（Attack1, Attack2_1, Attack_3 ...）
+                if (col.gameObject.name.StartsWith("Attack"))
+                {
+                    found.Add(col);
+                    // 顺便把碰撞体设为禁用状态，防止未攻击时触发误判
+                    col.enabled = false;
+                }
+            }
+
+            attackColliders = found.ToArray();
+        }
+
+        private void LoadHitEffect()
+        {
+            if (hitEffectPrefab != null) return;
+
+#if UNITY_EDITOR
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("BulletHit t:Prefab");
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                if (path.EndsWith(".prefab"))
+                {
+                    hitEffectPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (hitEffectPrefab != null) return;
+                }
+            }
+#else
+    hitEffectPrefab = Resources.Load<GameObject>("BulletHit");
+#endif
+        }
     }
 }

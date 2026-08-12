@@ -57,6 +57,7 @@ namespace Player
             gun = gun ?? GetComponent<PlayerGun>() ?? gameObject.AddComponent<PlayerGun>();
             backStep = backStep ?? GetComponent<PlayerBackStep>() ?? gameObject.AddComponent<PlayerBackStep>();
             magic = magic ?? GetComponent<PlayerMagic>() ?? gameObject.AddComponent<PlayerMagic>();
+            
         }
         //??（空合并运算符）逻辑：如果左边不是 null，就用左边；如果左边是 null，就用右边
         private PlayerAudio ResolveAudioModule()//确保音频模块存在，如果不存在则添加
@@ -97,13 +98,14 @@ namespace Player
             _ctx.Audio = audioPlayer;//连接音频播放器组件
             _ctx.Settings = motor.Settings;//连接移动组件的设置
             _ctx.NotifyJumpAttack = jump.NotifyJumpAttack;//连接跳跃组件的通知方法
-
+            
             jump.Init(_ctx);
             crouch.Init(_ctx);
             melee.Init(_ctx);
             gun.Init(_ctx);
             backStep.Init(_ctx);
             magic.Init(_ctx);
+            
         }
         private void Update()
         {

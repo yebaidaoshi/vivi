@@ -1,17 +1,22 @@
 using Player;
 using UnityEngine;
-using Spine.Unity;
 
 public class EnemyTurret : MonoBehaviour, IDamageable
 {
-    public enum State { Idle, Aiming, Fire, Hit, Die }
+    public enum State { Idle, Aiming, Fire, Hit, Die, AimingBurst, FireBurst }
 
     [Header("攻击设置")]
     public Transform player;
     public float attackRange = 8f;
+    [Range(0f, 180f)] public float attackAngle = 60f;
     public float aimDuration = 0.5f;
     public float fireCooldown = 1.5f;
     public int damage = 10;
+
+    [Header("大招设置")]
+    public float aimBurstDuration = 0.75f;
+    public float fireBurstDuration = 1f;
+    public int damageBurst = 25;
 
     [Header("子弹预制体")]
     public GameObject needPrefab;
@@ -26,7 +31,11 @@ public class EnemyTurret : MonoBehaviour, IDamageable
     private bool hasFired;
     private Animator anim;
 
-    // 获取实际朝向（世界空间中的右方向）
+    private int _shotCounter;
+    private int _burstFrameIndex;
+    private float _burstTimer;
+    private float[] _burstFrameTimes = { 0.05f, 0.3f, 0.583f };
+
     private Vector2 Forward => transform.right;
 
     void Awake()
@@ -34,13 +43,10 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         anim = GetComponent<Animator>();
         if (anim == null)
         {
-            Debug.LogError("❌ 缺少 Animator 组件！请添加 SkeletonMecanim。");
+            Debug.LogError("❌ 缺少 Animator 组件！");
             enabled = false;
             return;
         }
-
-        if (anim.runtimeAnimatorController == null)
-            Debug.LogWarning("⚠️ Animator Controller 未赋值，请在 SkeletonMecanim 的 Animator 字段中指定。");
 
         health = maxHealth;
 
@@ -68,9 +74,10 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         switch (currentState)
         {
             case State.Idle:
-                // 检测玩家是否在前方且距离足够
                 if (dist <= attackRange && IsPlayerInFront())
                     ChangeState(State.Aiming);
+                else
+                    _shotCounter = 0;
                 break;
 
             case State.Aiming:
@@ -90,6 +97,31 @@ public class EnemyTurret : MonoBehaviour, IDamageable
                     ChangeState(State.Idle);
                 break;
 
+            case State.AimingBurst:
+                stateTimer -= Time.deltaTime;
+                if (stateTimer <= 0f)
+                    ChangeState(State.FireBurst);
+                break;
+
+            case State.FireBurst:
+                stateTimer -= Time.deltaTime;
+                _burstTimer += Time.deltaTime;
+
+                if (_burstFrameIndex < _burstFrameTimes.Length)
+                {
+                    float targetTime = _burstFrameTimes[_burstFrameIndex];
+                    if (_burstTimer >= targetTime)
+                    {
+                        // 三发全部朝正前方
+                        SpawnBullet(Forward, damageBurst);
+                        _burstFrameIndex++;
+                    }
+                }
+
+                if (stateTimer <= 0f)
+                    ChangeState(State.Idle);
+                break;
+
             case State.Hit:
                 if (!IsPlayingState("Hit"))
                     ChangeState(State.Idle);
@@ -97,35 +129,62 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>判断玩家是否在敌人正前方（夹角小于 60°）</summary>
     private bool IsPlayerInFront()
     {
         Vector2 toPlayer = (player.position - transform.position).normalized;
-        float dot = Vector2.Dot(toPlayer, Forward);
-        return dot > 0.5f; // 0.5 ≈ 60°
+        Vector2 checkDir = -Forward;
+        float dot = Vector2.Dot(toPlayer, checkDir);
+        float cosHalfAngle = Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad);
+        return dot >= cosHalfAngle;
     }
 
     void ChangeState(State newState)
     {
-        if (currentState == State.Fire)
+        if (currentState == State.Fire || currentState == State.FireBurst)
+        {
             hasFired = false;
+            _burstFrameIndex = 0;
+            _burstTimer = 0f;
+        }
 
         currentState = newState;
         stateTimer = 0f;
 
-        string stateName = newState.ToString();
-        Debug.Log($"🔄 切换到状态: {stateName}");
+        string stateName = GetStateName(newState);
         PlayState(stateName);
 
-        if (newState == State.Aiming)
-            stateTimer = aimDuration;
-        else if (newState == State.Fire)
-            stateTimer = fireCooldown;
+        switch (newState)
+        {
+            case State.Aiming:
+                stateTimer = aimDuration;
+                break;
+            case State.Fire:
+                stateTimer = fireCooldown;
+                break;
+            case State.AimingBurst:
+                stateTimer = aimBurstDuration;
+                break;
+            case State.FireBurst:
+                stateTimer = fireBurstDuration;
+                _burstFrameIndex = 0;
+                _burstTimer = 0f;
+                break;
+        }
 
         if (newState == State.Die)
         {
             GetComponent<Collider2D>().enabled = false;
             enabled = false;
+        }
+    }
+
+    private string GetStateName(State state)
+    {
+        switch (state)
+        {
+            case State.AimingBurst: return "Aiming_Burst";
+            case State.FireBurst: return "Fire_Burst";
+            default: return state.ToString();
         }
     }
 
@@ -138,9 +197,10 @@ public class EnemyTurret : MonoBehaviour, IDamageable
     private bool IsPlayingState(string stateName)
     {
         if (anim == null) return false;
-        var info = anim.GetCurrentAnimatorStateInfo(0);
-        return info.IsName(stateName);
+        return anim.GetCurrentAnimatorStateInfo(0).IsName(stateName);
     }
+
+    // ========== 发射逻辑 ==========
 
     private void FireNeed()
     {
@@ -150,8 +210,20 @@ public class EnemyTurret : MonoBehaviour, IDamageable
             return;
         }
 
-        // 子弹向敌人当前朝向发射（使用 transform.right）
-        Vector2 dir = Forward;
+        if (_shotCounter >= 2)
+        {
+            _shotCounter = 0;
+            ChangeState(State.AimingBurst);
+            return;
+        }
+
+        SpawnBullet(Forward, damage);
+        _shotCounter++;
+        Debug.Log($"💥 普通射击 {_shotCounter}/2");
+    }
+
+    private void SpawnBullet(Vector2 dir, int bulletDamage)
+    {
         Vector3 spawnPos = firePoint.position;
         spawnPos.z = 0f;
 
@@ -161,7 +233,7 @@ public class EnemyTurret : MonoBehaviour, IDamageable
 
         NeedProjectile proj = need.GetComponent<NeedProjectile>();
         if (proj != null)
-            proj.Initialize(dir, damage, gameObject);
+            proj.Initialize(dir, bulletDamage, gameObject);
         else
         {
             Rigidbody2D rb = need.GetComponent<Rigidbody2D>();
@@ -169,7 +241,8 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         }
     }
 
-    // ---------- IDamageable ----------
+    // ========== IDamageable ==========
+
     public bool IsDead => currentState == State.Die;
 
     public void TakeDamage(int damage, Vector2 knockback, GameObject attacker)
@@ -184,13 +257,42 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         ChangeState(State.Hit);
     }
 
+    // ========== 可视化 ==========
+
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Vector3 center = transform.position;
+        Vector3 forward = Forward;
 
-        // 显示朝向（蓝色射线）
         Gizmos.color = Color.blue;
-        Gizmos.DrawRay(transform.position, (Vector3)Forward * 2f);
+        Gizmos.DrawRay(center, forward * 3f);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(center, -forward * 3f);
+
+        Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
+        int segments = 30;
+        float halfAngleRad = attackAngle * 0.5f * Mathf.Deg2Rad;
+        Vector3 checkDir = -forward;
+        Vector3 startDir = Quaternion.Euler(0, 0, -halfAngleRad * Mathf.Rad2Deg) * checkDir;
+        Vector3 endDir = Quaternion.Euler(0, 0, halfAngleRad * Mathf.Rad2Deg) * checkDir;
+
+        Vector3 prevPoint = center + startDir * attackRange;
+        for (int i = 1; i <= segments; i++)
+        {
+            float t = (float)i / segments;
+            float a = Mathf.Lerp(-halfAngleRad, halfAngleRad, t);
+            Vector3 dir = Quaternion.Euler(0, 0, a * Mathf.Rad2Deg) * checkDir;
+            Vector3 point = center + dir * attackRange;
+            Gizmos.DrawLine(prevPoint, point);
+            prevPoint = point;
+        }
+        Gizmos.DrawLine(center, center + startDir * attackRange);
+        Gizmos.DrawLine(center, center + endDir * attackRange);
+
+#if UNITY_EDITOR
+        UnityEditor.Handles.Label(center + Vector3.up * 2f,
+            "蓝=发射方向  绿=检测方向  红=检测范围");
+#endif
     }
 }
