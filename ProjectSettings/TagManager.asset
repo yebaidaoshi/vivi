@@ -98,3 +98,6 @@ TagManager:
   - name: ParallaxFore4
     uniqueID: 2834857653
     locked: 0
+  - name: FrontUILayer
+    uniqueID: 2165362101
+    locked: 0

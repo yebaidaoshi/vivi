@@ -3092,6 +3092,7 @@ GameObject:
   - component: {fileID: 8796312173775522971}
   - component: {fileID: 5683388993581127060}
   - component: {fileID: 7926584739797830365}
+  - component: {fileID: 7926584739797830366}
   m_Layer: 8
   m_Name: Heroine
   m_TagString: PlayerPresence
@@ -3484,14 +3485,67 @@ MonoBehaviour:
   motor: {fileID: 0}
   jump: {fileID: 0}
   crouch: {fileID: 0}
-  melee: {fileID: 0}
+  melee: {fileID: 7926584739797830366}
   gun: {fileID: 0}
   backStep: {fileID: 0}
   magic: {fileID: 0}
   anim: {fileID: 0}
   audioPlayer: {fileID: 2057198633299344149}
+  health: {fileID: 0}
   controlLocomotion: 1
   locked: 0
+--- !u!114 &7926584739797830366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5439934679462333295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37f8fde0743d51647aea98ba17583bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackColliders: []
+  slideAttackCollider: {fileID: 0}
+  jumpAttackCollider: {fileID: 0}
+  meleeDamage: 30
+  damageLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  slash1Prefab: {fileID: 1709254077376921, guid: a1b2c3d4e5f60718293a4b5c6d7e8f90, type: 2}
+  slash2Prefab: {fileID: 1709254077376921, guid: b2c3d4e5f60718293a4b5c6d7e8f901a, type: 2}
+  slash3Prefab: {fileID: 1709254077376921, guid: c3d4e5f60718293a4b5c6d7e8f901a2b, type: 2}
+  slideSlashPrefab: {fileID: 1709254077376921, guid: f4ff5dd1e0359914289595f38cc59448, type: 2}
+  jumpSlashUpPrefab: {fileID: 1709254077376921, guid: 93e65e82e29a0554bb0a243770be2c91, type: 2}
+  jumpSlashDownPrefab: {fileID: 1709254077376921, guid: fe954238f19dfa847951b70a1b4bae2f, type: 2}
+  slash1OffsetXScale: 1.5
+  slash1OffsetY: 3.6
+  slash2OffsetXScale: 1
+  slash2OffsetY: 4
+  slash3OffsetXScale: 3
+  slash3OffsetY: 3.6
+  slideOffsetXScale: 1
+  slideOffsetY: 3.6
+  jumpUpOffsetXScale: 1
+  jumpUpOffsetY: 5.6
+  jumpDownOffsetXScale: 1
+  jumpDownOffsetY: 2.4
+  hitEffectPrefab: {fileID: 0}
+  hitEffectLifetime: 0.8
+  slash4Prefab: {fileID: 1709254077376921, guid: d4e5f60718293a4b5c6d7e8f901a2b3c, type: 2}
+  katana4SmokePrefab: {fileID: 1709254077376921, guid: 6c37a0223977a6848993a8ce9ae804ad, type: 2}
+  melee4AfterSlashPrefab: {fileID: 1709254077376921, guid: 99c85c9e2ccf80e4fb262a6c2d5ac3d8, type: 2}
+  melee4AfterPrefab: {fileID: 1709254077376921, guid: a2610eeabe55d0745b094131f44fd569, type: 2}
+  slash4OffsetXScale: 3
+  slash4OffsetY: 3.6
+  melee4AfterLifetime: 4
+  melee4AfterOffset: {x: 0, y: 4, z: 0}
+  expandRadiusMultiplier: 1
+  expandRefractionMultiplier: 1
+  slashSpawn: {fileID: 0}
+  slashOffset: {x: 0.7, y: 4}
+  slashLifetime: 1.2
 --- !u!1 &5601392617562920153
 GameObject:
   m_ObjectHideFlags: 0
@@ -4158,6 +4212,7 @@ MonoBehaviour:
   run2: {fileID: 8300000, guid: e058b246458022447a81da482b988eb0, type: 3}
   backStep: {fileID: 8300000, guid: 67a2b7b43fb77184b85ecaa984c795eb, type: 3}
   slide: {fileID: 8300000, guid: e3ef3547b43d63d44bbf164c15a243bb, type: 3}
+  dashStepSound: {fileID: 0}
   swordSwing: {fileID: 8300000, guid: 34915ada6930f5f46959bbfcb45eb656, type: 3}
   melee2: {fileID: 8300000, guid: 3727c0f46526cdc4aa1d3c1c1fc01759, type: 3}
   melee3: {fileID: 8300000, guid: fa7fa923829a6f44192a444c844f1138, type: 3}

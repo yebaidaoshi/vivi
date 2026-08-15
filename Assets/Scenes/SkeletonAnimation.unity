@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 195516329}
   - component: {fileID: 195516328}
   m_Layer: 0
-  m_Name: "\u5929\u7A7A "
+  m_Name: "\u5929\u7A7A"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -215,8 +215,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 2012887761
-  m_SortingLayer: -1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 9.7, y: 6.46, z: 0}
@@ -1592,7 +1592,7 @@ GameObject:
   - component: {fileID: 379602199}
   - component: {fileID: 379602198}
   m_Layer: 0
-  m_Name: "\u5C71 "
+  m_Name: "\u5C71"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3314,7 +3314,7 @@ GameObject:
   - component: {fileID: 1061043606}
   - component: {fileID: 1061043605}
   m_Layer: 0
-  m_Name: "\u8349\u4E1B "
+  m_Name: "\u8349\u4E1B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4897,7 +4897,7 @@ GameObject:
   - component: {fileID: 1161507303}
   - component: {fileID: 1161507302}
   m_Layer: 0
-  m_Name: "\u8349\u5730 "
+  m_Name: "\u8349\u5730"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5026,7 +5026,7 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1254517077
+  m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -6605,6 +6605,14 @@ PrefabInstance:
     - target: {fileID: 7141373403773918777, guid: 410ab7aa62c7b96409d710d3ca655c4e, type: 3}
       propertyPath: m_Name
       value: HeroineParent
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336585275533452022, guid: 410ab7aa62c7b96409d710d3ca655c4e, type: 3}
+      propertyPath: expandSizeMultiplier
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336585275533452022, guid: 410ab7aa62c7b96409d710d3ca655c4e, type: 3}
+      propertyPath: expandRefractionMultiplier
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 7526798358028591760, guid: 410ab7aa62c7b96409d710d3ca655c4e, type: 3}
       propertyPath: m_LocalPosition.y

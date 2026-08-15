@@ -93,7 +93,8 @@ namespace Vivi.Slash
             float tail = tailCurve.Evaluate(t);
             float opacity = Mathf.Clamp01(opacityCurve.Evaluate(t));
             float dissolve = Mathf.Clamp01(dissolveCurve.Evaluate(t));
-            transform.localScale = _baseScale * scaleCurve.Evaluate(t);
+            // 扩大剑气：scaleCurve 放大暂时关闭
+            // transform.localScale = _baseScale * scaleCurve.Evaluate(t);
 
             for (int i = 0; i < _renderers.Length; i++)
             {

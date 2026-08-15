@@ -81,19 +81,19 @@ namespace Player
         [Tooltip("State 12：GetScale.x * 1.5，Y=3.6")]
         [SerializeField] private float slash1OffsetXScale = 1.5f;
         [SerializeField] private float slash1OffsetY = 3.6f;
-        [Tooltip("State 13：GetScale.x（不乘），Y=4")]
+        [Tooltip("State 13：GetScale.x，Y=4")]
         [SerializeField] private float slash2OffsetXScale = 1f;
         [SerializeField] private float slash2OffsetY = 4f;
         [Tooltip("State 14：GetScale.x * 3，Y=3.6")]
         [SerializeField] private float slash3OffsetXScale = 3f;
         [SerializeField] private float slash3OffsetY = 3.6f;
-        [Tooltip("Effects State 20：GetScale.x（不乘），Y=3.6")]
+        [Tooltip("Effects State 20：GetScale.x，Y=3.6")]
         [SerializeField] private float slideOffsetXScale = 1f;
         [SerializeField] private float slideOffsetY = 3.6f;
-        [Tooltip("Effects State 22：GetScale.x（不乘），Y=5.6")]
+        [Tooltip("Effects State 22：GetScale.x，Y=5.6")]
         [SerializeField] private float jumpUpOffsetXScale = 1f;
         [SerializeField] private float jumpUpOffsetY = 5.6f;
-        [Tooltip("Effects State 23：GetScale.x（不乘），Y=2.4")]
+        [Tooltip("Effects State 23：GetScale.x，Y=2.4")]
         [SerializeField] private float jumpDownOffsetXScale = 1f;
         [SerializeField] private float jumpDownOffsetY = 2.4f;
 
@@ -117,6 +117,13 @@ namespace Player
         [SerializeField] private float melee4AfterLifetime = 4f;
         [Tooltip("_Melee4AfterSlash State 6 CreateObject 的 position 偏移。原作是 (0, 4, 0)。")]
         [SerializeField] private Vector3 melee4AfterOffset = new Vector3(0f, 4f, 0f);
+
+        [Header("扩大剑气")]
+        [Tooltip("圆形扭曲半径乘法因子。1 = 原作，0 = 关闭，2 = 两倍。Attack1–4 只动子物体，Melee4After 乘余斩球。")]
+        [SerializeField] [Min(0f)] private float expandRadiusMultiplier = 1f;
+        [Tooltip("屏幕折射强度乘法因子。1 = 原作 DistortionTest Strength (10,10)，0 = 无折射。")]
+        [SerializeField] [Min(0f)] private float expandRefractionMultiplier = 1f;
+        private static readonly int DistortionStrengthId = Shader.PropertyToID("Strength");
 
         [Tooltip("生成父节点。floor.unity CreateObject 使用 _Heroine 根；留空即如此。")]
         [SerializeField] private Transform slashSpawn;
@@ -263,7 +270,7 @@ namespace Player
         /// 不要挂到女主下，否则 ±1 朝向会把 6～14 的网格缩放压扁。
         /// </summary>
         private GameObject SpawnViviSlash(GameObject prefab, PlayerSlashVfx.SlashKind kind,
-            float offsetXScale, float offsetY)
+            float offsetXScale, float offsetY, bool applyExpandSize = false)
         {
             Transform spawnRoot = slashSpawn != null ? slashSpawn : transform;
             int facing = _motor != null ? _motor.Facing : 1;
@@ -276,7 +283,81 @@ namespace Player
                 fx.transform.Rotate(0f, 180f, 0f, Space.Self);
             }
 
+            if (applyExpandSize)
+            {
+                ApplyExpandSize(fx != null ? fx.transform : null, childrenOnly: true);
+            }
+
             return fx;
+        }
+
+        /// <summary>
+        /// Attack 斩击只动子物体（圆形扭曲），不动根上的判定盒。
+        /// 扭曲粒子 Scaling Mode = Local，半径必须改 startSize；折射改 Strength。
+        /// </summary>
+        private void ApplyExpandSize(Transform t, bool childrenOnly)
+        {
+            if (t == null)
+            {
+                return;
+            }
+
+            float radius = Mathf.Max(0f, expandRadiusMultiplier);
+            float refraction = Mathf.Max(0f, expandRefractionMultiplier);
+            if (Mathf.Approximately(radius, 1f) && Mathf.Approximately(refraction, 1f))
+            {
+                return;
+            }
+
+            if (childrenOnly)
+            {
+                for (int i = 0; i < t.childCount; i++)
+                {
+                    ScaleExpandFx(t.GetChild(i), radius, refraction);
+                }
+
+                return;
+            }
+
+            ScaleExpandFx(t, radius, refraction);
+        }
+
+        private static void ScaleExpandFx(Transform root, float radius, float refraction)
+        {
+            var systems = root.GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < systems.Length; i++)
+            {
+                if (!Mathf.Approximately(radius, 1f))
+                {
+                    ParticleSystem.MainModule main = systems[i].main;
+                    main.startSizeMultiplier *= radius;
+                }
+
+                if (Mathf.Approximately(refraction, 1f))
+                {
+                    continue;
+                }
+
+                var renderer = systems[i].GetComponent<ParticleSystemRenderer>();
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                Material mat = renderer.sharedMaterial;
+                if (mat == null || !mat.HasProperty(DistortionStrengthId))
+                {
+                    continue;
+                }
+
+                var block = new MaterialPropertyBlock();
+                renderer.GetPropertyBlock(block);
+                Vector4 strength = mat.GetVector(DistortionStrengthId);
+                strength.x *= refraction;
+                strength.y *= refraction;
+                block.SetVector(DistortionStrengthId, strength);
+                renderer.SetPropertyBlock(block);
+            }
         }
 
         private void SpawnComboSlash(int index)
@@ -291,7 +372,7 @@ namespace Player
                 case 2:
                     // Attack2.anim：E_Katana2 @ 0.0333（近起点）+ E_Katana3 @ 0.3167。
                     SpawnViviSlash(slash2Prefab, PlayerSlashVfx.SlashKind.Attack2,
-                        slash2OffsetXScale, slash2OffsetY);
+                        slash2OffsetXScale, slash2OffsetY, applyExpandSize: true);
                     _pendingAttack2Katana3 = true;
                     EnableCollider("Attack2_1");
                     break;
@@ -302,7 +383,7 @@ namespace Player
                     break;
                 default:
                     SpawnViviSlash(slash1Prefab, PlayerSlashVfx.SlashKind.Attack1,
-                        slash1OffsetXScale, slash1OffsetY);
+                        slash1OffsetXScale, slash1OffsetY, applyExpandSize: true);
                     EnableCollider("Attack1");
                     break;
             }
@@ -318,7 +399,7 @@ namespace Player
             {
                 _pendingAttack2Katana3 = false;
                 SpawnViviSlash(slash3Prefab, PlayerSlashVfx.SlashKind.Attack3,
-                    slash3OffsetXScale, slash3OffsetY);
+                    slash3OffsetXScale, slash3OffsetY, applyExpandSize: true);
                 EnableCollider("Attack2_2");
                 _audio?.PlayKatana(3);
             }
@@ -363,6 +444,7 @@ namespace Player
                 facing,
                 1.2f);
             MirrorScaleX(after != null ? after.transform : null, facing);
+            ApplyExpandSize(after != null ? after.transform : null, childrenOnly: false);
         }
 
         /// <summary>
@@ -386,7 +468,7 @@ namespace Player
 
             // CreateObject #1 — ViviSlasher4。保留制作缩放 (9,8,9)；朝左 = Y+180。
             SpawnViviSlash(slash4Prefab, PlayerSlashVfx.SlashKind.Attack3,
-                slash4OffsetXScale, slash4OffsetY);
+                slash4OffsetXScale, slash4OffsetY, applyExpandSize: true);
 
             // CreateObject #2 — Katana4_Smoke 在根处；SetScale x = facing * -2，当 |prefab.x|=2。
             // 不要抄女主旋转，否则预制体上的粒子朝向会被压平。

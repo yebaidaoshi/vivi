@@ -439,8 +439,8 @@ namespace Player
                 float fade = Mathf.SmoothStep(1f, 0f, Mathf.Clamp01((t - 0.2f) / 0.8f));
                 float a = reveal * fade;
 
-                // 消散时略微放大 + 漂移笔刷以产生流动条纹。
-                transform.localScale *= 1f + 0.35f * Time.deltaTime;
+                // 扩大剑气：消散时放大暂时关闭
+                // transform.localScale *= 1f + 0.35f * Time.deltaTime;
 
                 _renderer.GetPropertyBlock(_mpb);
                 if (_hasAlpha)
