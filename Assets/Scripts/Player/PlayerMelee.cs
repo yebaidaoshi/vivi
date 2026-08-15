@@ -71,13 +71,31 @@ namespace Player
         [Header("伤害参数")]
         [SerializeField] private int meleeDamage = 30;
         [SerializeField] private LayerMask damageLayerMask = ~0;
-        [Header("斩击特效（Effects E_Katana1/2/3）")]
+        [Header("斩击特效（Effects E_Katana1/2/3 → ViviSlasher）")]
         [SerializeField] private GameObject slash1Prefab;
         [SerializeField] private GameObject slash2Prefab;
         [SerializeField] private GameObject slash3Prefab;
         [SerializeField] private GameObject slideSlashPrefab;
         [SerializeField] private GameObject jumpSlashUpPrefab;
         [SerializeField] private GameObject jumpSlashDownPrefab;
+        [Tooltip("State 12：GetScale.x * 1.5，Y=3.6")]
+        [SerializeField] private float slash1OffsetXScale = 1.5f;
+        [SerializeField] private float slash1OffsetY = 3.6f;
+        [Tooltip("State 13：GetScale.x（不乘），Y=4")]
+        [SerializeField] private float slash2OffsetXScale = 1f;
+        [SerializeField] private float slash2OffsetY = 4f;
+        [Tooltip("State 14：GetScale.x * 3，Y=3.6")]
+        [SerializeField] private float slash3OffsetXScale = 3f;
+        [SerializeField] private float slash3OffsetY = 3.6f;
+        [Tooltip("Effects State 20：GetScale.x（不乘），Y=3.6")]
+        [SerializeField] private float slideOffsetXScale = 1f;
+        [SerializeField] private float slideOffsetY = 3.6f;
+        [Tooltip("Effects State 22：GetScale.x（不乘），Y=5.6")]
+        [SerializeField] private float jumpUpOffsetXScale = 1f;
+        [SerializeField] private float jumpUpOffsetY = 5.6f;
+        [Tooltip("Effects State 23：GetScale.x（不乘），Y=2.4")]
+        [SerializeField] private float jumpDownOffsetXScale = 1f;
+        [SerializeField] private float jumpDownOffsetY = 2.4f;
 
         [Header("打击反馈")]
         [SerializeField] private GameObject hitEffectPrefab;
@@ -97,6 +115,8 @@ namespace Player
         [SerializeField] private float slash4OffsetY = 3.6f;
         [Tooltip("_Melee4AfterSlash 必须长于其 ChronosWait / Melee4After 链。")]
         [SerializeField] private float melee4AfterLifetime = 4f;
+        [Tooltip("_Melee4AfterSlash State 6 CreateObject 的 position 偏移。原作是 (0, 4, 0)。")]
+        [SerializeField] private Vector3 melee4AfterOffset = new Vector3(0f, 4f, 0f);
 
         [Tooltip("生成父节点。floor.unity CreateObject 使用 _Heroine 根；留空即如此。")]
         [SerializeField] private Transform slashSpawn;
@@ -135,6 +155,8 @@ namespace Player
         /// <summary>_Melee4AfterSlash State 1 等待后播放 Melee4After 音效（距 Katana4 0.5s）。</summary>
         private bool _pendingMelee4AfterSe;
         private float _melee4AfterSeAt;
+        private Vector3 _melee4AfterSpawnPos;
+        private Transform _melee4AfterSlashFx;
         private bool _isCrouchAttack;
         private bool _hasSpawnedCrouchSlash;  // 防止下蹲攻击每帧重复触发特效
 
@@ -171,13 +193,13 @@ namespace Player
 
 #if UNITY_EDITOR
             // 编辑器便利（模块在运行时组合，无序列化引用）。
-            if (slash1Prefab == null) slash1Prefab = LoadPrefab("Slash1_1");
-            if (slash2Prefab == null) slash2Prefab = LoadPrefab("Slash2");
-            if (slash3Prefab == null) slash3Prefab = LoadPrefab("Slash3");
+            if (slash1Prefab == null) slash1Prefab = LoadPrefab("ViviSlasher1_1") ?? LoadPrefab("Slash1_1");
+            if (slash2Prefab == null) slash2Prefab = LoadPrefab("ViviSlasher2") ?? LoadPrefab("Slash2");
+            if (slash3Prefab == null) slash3Prefab = LoadPrefab("ViviSlasher3") ?? LoadPrefab("Slash3");
             if (slideSlashPrefab == null) slideSlashPrefab = LoadPrefab("Slash1_Slide");
             if (jumpSlashUpPrefab == null) jumpSlashUpPrefab = LoadPrefab("JumpSlashUp");
             if (jumpSlashDownPrefab == null) jumpSlashDownPrefab = LoadPrefab("JumpSlash_Down");
-            if (slash4Prefab == null) slash4Prefab = LoadPrefab("Slash4");
+            if (slash4Prefab == null) slash4Prefab = LoadPrefab("ViviSlasher4") ?? LoadPrefab("Slash4");
             if (katana4SmokePrefab == null) katana4SmokePrefab = LoadPrefab("Katana4_Smoke");
             if (melee4AfterSlashPrefab == null) melee4AfterSlashPrefab = LoadPrefab("_Melee4AfterSlash");
             if (melee4AfterPrefab == null) melee4AfterPrefab = LoadPrefab("Melee4After");
@@ -235,17 +257,41 @@ namespace Player
             return fx;
         }
 
+        /// <summary>
+        /// 原作 ViviSlasher：世界空间 CreateObject，保留制作缩放，
+        /// 偏移 (facing * xScale, y)，朝左 Y+180（FSM FloatSignTest → SetRotation）。
+        /// 不要挂到女主下，否则 ±1 朝向会把 6～14 的网格缩放压扁。
+        /// </summary>
+        private GameObject SpawnViviSlash(GameObject prefab, PlayerSlashVfx.SlashKind kind,
+            float offsetXScale, float offsetY)
+        {
+            Transform spawnRoot = slashSpawn != null ? slashSpawn : transform;
+            int facing = _motor != null ? _motor.Facing : 1;
+            Vector3 worldPos = spawnRoot.position + new Vector3(facing * offsetXScale, offsetY, 0f);
+            // Prefab transform is identity; 3D tilt lives on the particle Start Rotation.
+            // Do not copy the heroine rotation or the authored (-64, 29, 20) arc goes flat.
+            var fx = SpawnWorldFx(prefab, kind, worldPos, Quaternion.identity, facing, slashLifetime);
+            if (fx != null && facing < 0)
+            {
+                fx.transform.Rotate(0f, 180f, 0f, Space.Self);
+            }
+
+            return fx;
+        }
+
         private void SpawnComboSlash(int index)
         {
             DisableAllColliders();
             _pendingAttack2Katana3 = false;
             _pendingAttack3Katana4 = false;
             _pendingMelee4AfterSe = false;
+            _melee4AfterSlashFx = null;
             switch (index)
             {
                 case 2:
                     // Attack2.anim：E_Katana2 @ 0.0333（近起点）+ E_Katana3 @ 0.3167。
-                    SpawnSlash(slash2Prefab, PlayerSlashVfx.SlashKind.Attack2);
+                    SpawnViviSlash(slash2Prefab, PlayerSlashVfx.SlashKind.Attack2,
+                        slash2OffsetXScale, slash2OffsetY);
                     _pendingAttack2Katana3 = true;
                     EnableCollider("Attack2_1");
                     break;
@@ -255,7 +301,8 @@ namespace Player
                     EnableCollider("Attack3");
                     break;
                 default:
-                    SpawnSlash(slash1Prefab, PlayerSlashVfx.SlashKind.Attack1);
+                    SpawnViviSlash(slash1Prefab, PlayerSlashVfx.SlashKind.Attack1,
+                        slash1OffsetXScale, slash1OffsetY);
                     EnableCollider("Attack1");
                     break;
             }
@@ -270,7 +317,8 @@ namespace Player
                 && _elapsed >= PlayerAnimTimings.Attack2.E_Katana3)
             {
                 _pendingAttack2Katana3 = false;
-                SpawnSlash(slash3Prefab, PlayerSlashVfx.SlashKind.Attack3);
+                SpawnViviSlash(slash3Prefab, PlayerSlashVfx.SlashKind.Attack3,
+                    slash3OffsetXScale, slash3OffsetY);
                 EnableCollider("Attack2_2");
                 _audio?.PlayKatana(3);
             }
@@ -298,20 +346,22 @@ namespace Player
         }
 
         /// <summary>
-        /// _Melee4AfterSlash FSM State 6：在所有者处 CreateObject(Melee4After) + SetScale x = facing。
-        /// 无 PlayMaker，故在此与延迟音效一起生成可见斩击。
+        /// _Melee4AfterSlash FSM State 6：CreateObject(Melee4After)
+        /// spawnPoint = 该物体，position = (0, 4, 0)，SetScale x = 所有者 Scale。
         /// </summary>
         private void SpawnMelee4AfterSlashFx()
         {
-            Transform spawnRoot = slashSpawn != null ? slashSpawn : transform;
             int facing = _motor != null ? _motor.Facing : 1;
+            Vector3 origin = _melee4AfterSlashFx != null
+                ? _melee4AfterSlashFx.position
+                : _melee4AfterSpawnPos;
             var after = SpawnWorldFx(
                 melee4AfterPrefab,
                 PlayerSlashVfx.SlashKind.After,
-                spawnRoot.position,
-                spawnRoot.rotation,
+                origin + melee4AfterOffset,
+                Quaternion.identity,
                 facing,
-                slashLifetime > 0f ? slashLifetime : 1.2f);
+                1.2f);
             MirrorScaleX(after != null ? after.transform : null, facing);
         }
 
@@ -333,29 +383,18 @@ namespace Player
             Transform spawnRoot = slashSpawn != null ? slashSpawn : transform;
             int facing = _motor.Facing;
             Vector3 rootPos = spawnRoot.position;
-            Quaternion rootRot = spawnRoot.rotation;
 
-            // CreateObject #1 — Slash4。保留制作缩放 (9,8,9)；朝左 = Y+180 Flip
-            //（floor SetFsmFloat → FloatSignTest → SetRotation Y+=180）。不要用女主
-            // localScale 覆盖缩放（那会把 9→±1 并弄坏网格）。
-            var slash4 = SpawnWorldFx(
-                slash4Prefab,
-                PlayerSlashVfx.SlashKind.Attack3,
-                rootPos + new Vector3(facing * slash4OffsetXScale, slash4OffsetY, 0f),
-                rootRot,
-                facing,
-                slashLifetime);
-            if (slash4 != null && facing < 0)
-            {
-                slash4.transform.Rotate(0f, 180f, 0f, Space.Self);
-            }
+            // CreateObject #1 — ViviSlasher4。保留制作缩放 (9,8,9)；朝左 = Y+180。
+            SpawnViviSlash(slash4Prefab, PlayerSlashVfx.SlashKind.Attack3,
+                slash4OffsetXScale, slash4OffsetY);
 
             // CreateObject #2 — Katana4_Smoke 在根处；SetScale x = facing * -2，当 |prefab.x|=2。
+            // 不要抄女主旋转，否则预制体上的粒子朝向会被压平。
             var smoke = SpawnWorldFx(
                 katana4SmokePrefab,
                 PlayerSlashVfx.SlashKind.After,
                 rootPos,
-                rootRot,
+                Quaternion.identity,
                 facing,
                 slashLifetime);
             MirrorScaleX(smoke != null ? smoke.transform : null, -facing);
@@ -365,10 +404,12 @@ namespace Player
                 melee4AfterSlashPrefab,
                 PlayerSlashVfx.SlashKind.After,
                 rootPos,
-                rootRot,
+                Quaternion.identity,
                 facing,
                 melee4AfterLifetime);
             MirrorScaleX(after != null ? after.transform : null, facing);
+            _melee4AfterSlashFx = after != null ? after.transform : null;
+            _melee4AfterSpawnPos = rootPos;
         }
 
         /// <summary>
@@ -469,7 +510,8 @@ namespace Player
                     0);
                 _ctx.NotifyJumpAttack?.Invoke();
                 _audio?.PlayMeleeSwing(0);
-                SpawnSlash(jumpSlashUpPrefab, PlayerSlashVfx.SlashKind.JumpUp);
+                SpawnViviSlash(jumpSlashUpPrefab, PlayerSlashVfx.SlashKind.JumpUp,
+                    jumpUpOffsetXScale, jumpUpOffsetY);
             }
             else
             {
@@ -483,7 +525,8 @@ namespace Player
                 _motor.SetVelocityY(-Mathf.Abs(_settings.jumpAttackDownYVelocity));
                 _ctx.NotifyJumpAttack?.Invoke();
                 _audio?.PlayJumpAttackDown();
-                SpawnSlash(jumpSlashDownPrefab, PlayerSlashVfx.SlashKind.JumpDown);
+                SpawnViviSlash(jumpSlashDownPrefab, PlayerSlashVfx.SlashKind.JumpDown,
+                    jumpDownOffsetXScale, jumpDownOffsetY);
             }
         }
 
@@ -537,7 +580,8 @@ namespace Player
                 if (!_hasSpawnedCrouchSlash && _elapsed >= 0.0667f)
                 {
                     _hasSpawnedCrouchSlash = true;
-                    SpawnSlash(slideSlashPrefab, PlayerSlashVfx.SlashKind.Slide);
+                    SpawnViviSlash(slideSlashPrefab, PlayerSlashVfx.SlashKind.Slide,
+                        slideOffsetXScale, slideOffsetY);
                     _audio?.PlayKatana(1);
                 }
                 AdvancePhase();

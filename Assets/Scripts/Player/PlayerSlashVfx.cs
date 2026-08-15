@@ -12,10 +12,9 @@ namespace Player
     ///
     /// 镜像 <c>Assets/Material/SlashMaterial.mat</c> +
     /// <c>Shader "Shader Graphs/SlashShaderGraph"</c>：无光照、加法、双面弧。
-    /// 可见条纹即 <b>tex_vfx-ult_trail_haze</b> — 它提供基础亮度
-    /// （<c>_MainTex</c>），外加第二份滚动副本（<c>_BrushTex</c>）做动画微光；
-    /// <b>mask</b> 渐变（Gradation_BtoW）从尾→头淡出，HDR 自发光色调驱动
-    /// 辉光。新月轮廓 + 柔边来自生成的弧形网格，其顶点 alpha 在尖端与刀刃宽度上渐变。
+    /// 可见条纹来自噪音/雾纹（<c>_Noise</c> / <c>_BrushTex</c>）+ HDR 色调，
+    /// <b>TrailRGB1</b> 只做层遮罩；<b>mask</b> 渐变（Gradation_BtoW）做扫过。
+    /// 新月轮廓 + 柔边来自生成的弧形网格。
     ///
     /// <see cref="PlayerMelee"/> 在未指定斩击预制体时以此作为运行时回退
     ///（玩家骨架在运行时组合，无序列化特效引用）。
@@ -47,7 +46,9 @@ namespace Player
         // 共享已制作资源 GUID（编辑器内解析）；否则用安全的程序化回退。
         private const string HazeGuid = "21289cd1fced7be4daee55a968efbf24"; // tex_vfx-ult_trail_haze
         private const string NoiseGuid = "8efed133e4f422240b95ae722414eea9"; // Noise1
+        private const string StreakGuid = "147c29879c27b1008a1ac3f9dc9fc4a1"; // trail_002
         private const string GradationGuid = "835c19757c26aec4bbd12e2c7b116dc1"; // Gradation_BtoW
+        private const string TrailRgbGuid = "94556fda5b4ed5c41be333d1d7368295"; // TrailRGB1 layer mask
 
         private const int ArcSegments = 48;
         private const int WidthRows = 6;
@@ -273,19 +274,21 @@ namespace Player
 
             var mat = new Material(shader) { name = "ProcSlashMaterial" };
 
-            // 雾纹即可见斩击：纤维驱动基础亮度（_MainTex，
-            // 也是所有回退着色器通用的槽），_BrushTex 中第二份滚动副本
-            // 增加动画微光。Noise1 仅扰动；Gradation 塑形。
             Texture haze = LoadTexture(HazeGuid) ?? GenerateHazeTexture();
             Texture noise = LoadTexture(NoiseGuid) ?? haze;
+            Texture streak = LoadTexture(StreakGuid) ?? haze;
             Texture mask = LoadTexture(GradationGuid) ?? GenerateGradientTexture();
+            Texture trail = LoadTexture(TrailRgbGuid) ?? haze;
 
-            // SlashShaderGraph 槽位（加守卫，避免回退着色器刷警告）。
-            SetTexture(mat, "_MainTex", haze);
+            // 主体是 trail_002 / Noise1，TrailRGB1 只做层遮罩。
+            SetTexture(mat, "_MainTex", trail);
             SetTexture(mat, "_BrushTex", haze);
             SetTexture(mat, "_Noise", noise);
+            SetTexture(mat, "_StreakTex", streak);
             SetTexture(mat, "Texture2D_4AF1F502", mask);
-            SetFloat(mat, "_BrushStrength", 0.7f);
+            SetFloat(mat, "_BrushStrength", 0.35f);
+            SetFloat(mat, "_NoiseStrength", 1f);
+            SetFloat(mat, "_Distortion", 0.06f);
             SetFloat(mat, "_BrushSpeed", 0.4f);
             SetFloat(mat, "_EmissionStrength", 2.5f);
             SetFloat(mat, "_Alpha", 1f);

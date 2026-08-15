@@ -41,6 +41,7 @@ Material:
       _ExtraScale: 0.5
       _FragScale: 0.5
       _Fuzziness: 1
+      _FragBlur: 2
       _GlossMapScale: 1
       _Glossiness: 0.5
       _GlossyReflections: 1
@@ -50,10 +51,12 @@ Material:
       _OcclusionStrength: 1
       _Parallax: 0.02
       _SOFT: 0
+      _CircleClip: 0
+      _UniformExpand: 1
       _Scale: 2.55
       _SmoothnessTextureChannel: 0
       _SpecularHighlights: 1
-      _Spike: 4
+      _Spike: 0
       _SrcBlend: 1
       _Stretch: 1
       _UVSec: 0
