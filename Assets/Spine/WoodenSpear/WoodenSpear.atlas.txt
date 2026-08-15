@@ -1,0 +1,8 @@
+WoodenSpear.png
+size:64,512
+filter:Linear,Linear
+pma:true
+WoodenSpear_Broke_Handle
+bounds:2,200,33,241
+WoodenSpear_Broke_Tip
+bounds:2,2,29,196

@@ -1,0 +1,15 @@
+Rope.png
+size:2048,512
+filter:Linear,Linear
+LightRope
+bounds:2,260,84,1024
+rotate:90
+Snake
+bounds:2,174,84,1024
+rotate:90
+Snake_White
+bounds:2,88,84,1024
+rotate:90
+Vine
+bounds:2,2,84,1024
+rotate:90

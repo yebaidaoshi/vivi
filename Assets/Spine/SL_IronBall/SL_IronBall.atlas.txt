@@ -1,0 +1,10 @@
+SL_IronBall.png
+size:512,512
+filter:Linear,Linear
+pma:true
+Chain_I
+bounds:316,367,107,21
+Chain_O
+bounds:2,2,104,71
+IronBall
+bounds:2,75,312,313

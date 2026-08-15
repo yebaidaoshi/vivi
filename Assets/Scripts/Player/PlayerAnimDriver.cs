@@ -769,7 +769,7 @@ namespace Player
             /// </summary>
             public const string Shirimochi_Dead = "Shirimochi_Dead";
 
-            public const string Shirimochi= "Shirimochi";//两个事件
+            public const string Shirimochi= "Shirimochi_1";//两个事件
 
             public const string Damage_A = "Damage_A";//事件是可取消
 

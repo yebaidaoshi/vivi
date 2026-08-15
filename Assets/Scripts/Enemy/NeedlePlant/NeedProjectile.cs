@@ -1,5 +1,5 @@
 using UnityEngine;
-using Player;   // 用于 IDamageable
+using Player;
 
 public class NeedProjectile : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class NeedProjectile : MonoBehaviour
     private Vector2 direction;
     private GameObject owner;
     private Rigidbody2D rb;
+    private bool _hasHit;
 
     void Awake()
     {
@@ -35,24 +36,30 @@ public class NeedProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // 如果是发射者本身，忽略
+        if (_hasHit) return;
         if (other.gameObject == owner) return;
 
-        // ★ 检测是否被玩家的攻击碰撞体击中（玩家挥刀砍到子弹）
         if (other.CompareTag("PlayerAttack"))
         {
             Destroy(gameObject);
             return;
         }
 
-        // 对玩家造成伤害（原有逻辑）
-        IDamageable damageable = other.GetComponent<IDamageable>();
-        if (damageable != null && !damageable.IsDead)
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
+        // ★ 如果找不到，尝试从 DamageTarget 获取
+        if (damageable == null)
         {
-            Vector2 knockback = direction * 3f;
-            damageable.TakeDamage(damage, knockback, owner);
+            var link = other.GetComponent<DamageTarget>();
+            if (link != null) damageable = link.Damageable;
         }
 
-        Destroy(gameObject);
+        if (damageable != null && !damageable.IsDead)
+        {
+            _hasHit = true;
+            Vector2 knockback = direction * 3f;
+            damageable.TakeDamage(damage, knockback, owner);
+            Destroy(gameObject);
+        }
     }
 }

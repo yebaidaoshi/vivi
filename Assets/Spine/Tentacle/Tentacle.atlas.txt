@@ -1,0 +1,7 @@
+Tentacle.png
+size:1024,512
+filter:Linear,Linear
+pma:true
+Tentacle
+bounds:2,2,324,812
+rotate:90

@@ -1,0 +1,6 @@
+Gargoyle_Snake_Ball.png
+size:512,512
+filter:Linear,Linear
+pma:true
+Gargoyle_Snake_Ball
+bounds:2,2,382,377

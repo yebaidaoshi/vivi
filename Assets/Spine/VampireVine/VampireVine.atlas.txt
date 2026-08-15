@@ -1,0 +1,6 @@
+VampireVine.png
+size:512,256
+filter:Linear,Linear
+pma:true
+VampireVine
+bounds:2,2,285,222

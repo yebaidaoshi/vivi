@@ -1,0 +1,8 @@
+skeleton.png
+size:1024,1024
+filter:Linear,Linear
+pma:true
+Eye
+bounds:2,2,132,69
+Shadow
+bounds:2,73,605,687

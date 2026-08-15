@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
-namespace Player 
+
+namespace Player
 {
     public class PlayerHealth : MonoBehaviour, IDamageable
     {
@@ -9,14 +10,13 @@ namespace Player
         private PlayerController _controller;
         private PlayerMotorSettings _settings;
         private PlayerAudio _audio;
-        [Header("生命值")]
-        [SerializeField] private int _maxHealth =114;
-        [SerializeField] private float _invincibleTimer = 0.2f;
 
-        
+        [Header("生命值")]
+        [SerializeField] private int _maxHealth = 114;
+        [SerializeField] private float hitStunDuration = 0.667f; // ≈40帧，同时控制无敌和硬直
 
         private int _currentHealth;
-        private float _invincibleTime;
+        private float _invincibleTimer;
         private bool _isDead;
 
         public int CurrentHealth => _currentHealth;
@@ -24,22 +24,20 @@ namespace Player
         public bool IsDead => _isDead;
         public bool IsInvincible => _invincibleTimer > 0f;
 
-        public System.Action<int, int> OnHealthChanged; // newHealth, maxHealth
+        public System.Action<int, int> OnHealthChanged;
         public System.Action OnDeath;
 
-       
         public void Init(PlayerContext context)
         {
             context.Bind(out _motor, out _anim, out _audio, out _settings);
             if (_settings != null && _settings.maxHealth > 0)
-            {
                 _maxHealth = _settings.maxHealth;
-                _invincibleTime = _settings.invincibleTime;
-            }
+
             _currentHealth = _maxHealth;
             _isDead = false;
-            _invincibleTimer = 0f;        
+            _invincibleTimer = 0f;
         }
+
         public void SetController(PlayerController controller)
         {
             _controller = controller;
@@ -50,32 +48,31 @@ namespace Player
             if (_invincibleTimer > 0f)
                 _invincibleTimer -= Time.deltaTime;
         }
+
         public void TakeDamage(int damage, Vector2 knockback, GameObject attacker)
         {
             if (_isDead || IsInvincible) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
-            _invincibleTimer = _invincibleTime;
-         
+            _invincibleTimer = hitStunDuration;
+
             if (_motor != null)
-            {
-                Vector2 v = _motor.GetVelocity();
-                v.x = 0f;          
-                _motor.SetVelocity(v);
-            }
-            if (_controller != null)
-            {
-                _controller.Locked = true;
-                StartCoroutine(UnlockAfterHitStun());
-            }
 
+                if (_controller != null)
+                {
+                    _controller.Locked = true;
+                    StartCoroutine(UnlockAfterHitStun());
+                    _controller.ResetCombo();
+                }
+
+            
+            if (_anim != null && !_isDead) _anim.ForcePlay("Damage_A");
+            
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
-            if (_currentHealth <= 0)
-            {
-                Die();
-            }
 
+            if (_currentHealth <= 0) Die();
         }
+
         private void Die()
         {
             if (_isDead) return;
@@ -86,35 +83,21 @@ namespace Player
             if (_controller != null)
                 _controller.Locked = true;
             if (_anim != null)
-            {
-                _anim.ForcePlay("Damage_A_Dead");
-            }
+                _anim.ForcePlay("Shirimochi_Dead");
         }
+
         public void Heal(int amount)
-            {
-                if (_isDead) return;
-                _currentHealth = Mathf.Min(_maxHealth, _currentHealth + amount);
-                OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
-            }
+        {
+            if (_isDead) return;
+            _currentHealth = Mathf.Min(_maxHealth, _currentHealth + amount);
+            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+        }
+
         private IEnumerator UnlockAfterHitStun()
         {
-            yield return new WaitForSeconds(_invincibleTime);
+            yield return new WaitForSeconds(hitStunDuration);
             if (_controller != null && !_isDead)
-            {
                 _controller.Locked = false;
-            }
         }
-
-
     }
-
 }
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,16 @@
+Mandrake.png
+size:1024,256
+filter:Linear,Linear
+Arm_Front
+bounds:556,149,85,75
+Arm_Rear
+bounds:556,72,71,75
+Body
+bounds:354,39,185,200
+rotate:90
+Eye
+bounds:2,2,82,39
+Leaf
+bounds:2,43,350,181
+Mouth
+bounds:643,187,49,37

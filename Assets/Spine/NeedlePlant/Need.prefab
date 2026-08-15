@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 4885603500232488595}
   - component: {fileID: 4759895229731449556}
   - component: {fileID: 2755366844679303352}
-  m_Layer: 0
+  - component: {fileID: 635291861004898024}
+  m_Layer: 10
   m_Name: Need
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,3 +137,30 @@ CapsuleCollider2D:
   m_Offset: {x: 0.15677896, y: -0.0049540508}
   m_Size: {x: 1.4529318, y: 0.31994006}
   m_Direction: 1
+--- !u!50 &635291861004898024
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2806995974662856136}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

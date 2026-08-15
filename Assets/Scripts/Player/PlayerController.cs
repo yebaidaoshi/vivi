@@ -18,6 +18,8 @@ namespace Player
         [SerializeField] private PlayerMagic magic;//魔法组件
         [SerializeField] private PlayerAnimDriver anim;//动画驱动组件
         [SerializeField] private PlayerAudio audioPlayer;//音频播放器组件
+        [SerializeField] private PlayerHealth health;
+
 
         [Header("选项")]
         [SerializeField] private bool controlLocomotion = true;//是否控制移动
@@ -57,7 +59,7 @@ namespace Player
             gun = gun ?? GetComponent<PlayerGun>() ?? gameObject.AddComponent<PlayerGun>();
             backStep = backStep ?? GetComponent<PlayerBackStep>() ?? gameObject.AddComponent<PlayerBackStep>();
             magic = magic ?? GetComponent<PlayerMagic>() ?? gameObject.AddComponent<PlayerMagic>();
-            
+            health = health ?? GetComponent<PlayerHealth>() ?? gameObject.AddComponent<PlayerHealth>();
         }
         //??（空合并运算符）逻辑：如果左边不是 null，就用左边；如果左边是 null，就用右边
         private PlayerAudio ResolveAudioModule()//确保音频模块存在，如果不存在则添加
@@ -105,13 +107,17 @@ namespace Player
             gun.Init(_ctx);
             backStep.Init(_ctx);
             magic.Init(_ctx);
-            
+            health.Init(_ctx);        
+            health.SetController(this);
+
         }
         private void Update()
         {
+            health.Tick();
 
             if (!_initialized || locked)
             {
+                health.Tick();
                 return;
             }
             var intent = inputReader.Intent;
@@ -348,6 +354,10 @@ namespace Player
 
             // 地面 DontMoveWhileCrouching / ADSCrouch：无 A/D 平移（含蹲下-ADS）。
             return 0f;
+        }
+        public void ResetCombo()
+        {
+            if (melee != null) melee.Cancel();
         }
 
         private void RefreshLayers()

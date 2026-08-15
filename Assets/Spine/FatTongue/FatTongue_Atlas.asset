@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: FatTongue_Atlas
+  m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
+  atlasFile: {fileID: 4900000, guid: 65657a9abb0eb09479e996e5a69def26, type: 3}
+  materials:
+  - {fileID: 2100000, guid: c7ea570b428c58f4c8d65bb60c2100ee, type: 2}
+  - {fileID: 2100000, guid: 7ff52610767b5b4438fd302150898c39, type: 2}
+  - {fileID: 2100000, guid: d6451c00f5f444d43ad1b9d0c87609a0, type: 2}
+  - {fileID: 2100000, guid: f36c9762a936c7a4d81a2cf24bcf6179, type: 2}

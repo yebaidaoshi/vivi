@@ -2,8 +2,8 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!19 &1
 Physics2DSettings:
-  serializedVersion: 4
   m_ObjectHideFlags: 0
+  serializedVersion: 6
   m_Gravity: {x: 0, y: -9.81}
   m_DefaultMaterial: {fileID: 0}
   m_VelocityIterations: 8
@@ -38,19 +38,11 @@ Physics2DSettings:
     m_IslandSolverJointCostScale: 10
     m_IslandSolverBodiesPerJob: 50
     m_IslandSolverContactsPerJob: 50
-  m_AutoSimulation: 1
+  m_SimulationMode: 0
   m_QueriesHitTriggers: 1
   m_QueriesStartInColliders: 1
   m_CallbacksOnDisable: 1
   m_ReuseCollisionCallbacks: 0
   m_AutoSyncTransforms: 1
-  m_AlwaysShowColliders: 0
-  m_ShowColliderSleep: 1
-  m_ShowColliderContacts: 0
-  m_ShowColliderAABB: 0
-  m_ContactArrowScale: 0.2
-  m_ColliderAwakeColor: {r: 0.5686275, g: 0.95686275, b: 0.54509807, a: 0.7529412}
-  m_ColliderAsleepColor: {r: 0.5686275, g: 0.95686275, b: 0.54509807, a: 0.36078432}
-  m_ColliderContactColor: {r: 1, g: 0, b: 1, a: 0.6862745}
-  m_ColliderAABBColor: {r: 1, g: 1, b: 0, a: 0.2509804}
-  m_LayerCollisionMatrix: fb0ad7(fcb0010(0c802d7(fffffff/ff90bd7(ff90ad7(fffffff/fffffff/fd84ad7(ffd3fff(fc816d1(ff90bd7(fc816d7(fc822d7(fc801d7(fc880e0(ffd7fd7(ffd7bd7(ffd7bd7(fc802d0(fff7fdf(fc882c0(ffdffff(ffdffff(ffdffff(ffdffff(ffdffff(ffdffff(fc80000*0c80000)0c80000,0ffffff/f
+  m_GizmoOptions: 10
+  m_LayerCollisionMatrix: fb0ed78fcb001080c802d78ffffffffff90bd78ff90ad78fffffffffffffffffd84ad78ffd3fff9fc916d19ff90bd78fc816d78fc822d78fc801d78fc880e08ffd7fd78ffd7bd78ffd7bd78fc802d08fff7fdf8fc882c08ffdffff8ffdffff8ffdffff8ffdffff8ffdffff8ffdffff8fc80600a0c8000090c80000c0ffffffff

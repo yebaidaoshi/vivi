@@ -1,0 +1,6 @@
+RaisingPlant.png
+size:2048,512
+filter:Linear,Linear
+pma:true
+RaisingPlant
+bounds:2,2,1223,429

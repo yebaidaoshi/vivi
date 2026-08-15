@@ -1,0 +1,14 @@
+Gargoyle_Snake_Wall.png
+size:1024,1024
+filter:Linear,Linear
+pma:true
+1
+bounds:2,2,171,589
+2
+bounds:348,102,182,489
+3
+bounds:686,245,192,346
+4
+bounds:175,35,171,556
+5
+bounds:532,144,152,447

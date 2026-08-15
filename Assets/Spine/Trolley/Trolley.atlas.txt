@@ -1,0 +1,8 @@
+Trolley.png
+size:2048,512
+filter:Linear,Linear
+pma:true
+Board
+bounds:2,132,1087,204
+Wheel
+bounds:1091,2,335,334
