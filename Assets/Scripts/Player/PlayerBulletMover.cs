@@ -15,6 +15,9 @@ namespace Player
         [SerializeField] private GameObject hitFxPrefab;
         [SerializeField] private float hitFxLifetime = 1.5f;
 
+        [Header("伤害")]
+        [SerializeField] private int damage = 20;   // ★ 子弹伤害，可在 Inspector 设置
+
         [Tooltip("_Bullet 预制体根制作时欧拉角 z=90。在 Atan2（+X）之上保留该偏移。")]
         [SerializeField] private float spriteAngleOffset = 90f;
 
@@ -24,6 +27,9 @@ namespace Player
         private bool _launched;
         private bool _spent;
         private Transform _owner;
+
+        // ★ 公开属性，允许外部脚本（如 PlayerGun）设置伤害
+        public int Damage { get => damage; set => damage = value; }
 
         private void Awake()
         {
@@ -132,6 +138,14 @@ namespace Player
                 return;
             }
 
+            // ★★★ 对敌人造成伤害 ★★★
+            IDamageable damageable = other.GetComponentInParent<IDamageable>();
+            if (damageable != null && !damageable.IsDead)
+            {
+                Vector2 knockback = (other.transform.position - transform.position).normalized * 5f;
+                damageable.TakeDamage(damage, knockback, gameObject);
+            }
+
             Spend(transform.position);
         }
 
@@ -145,6 +159,14 @@ namespace Player
             if (ShouldIgnore(collision.transform, collision.gameObject))
             {
                 return;
+            }
+
+            // 物理碰撞时也尝试造成伤害（如果子弹不是触发器，但这里是备用）
+            IDamageable damageable = collision.collider.GetComponentInParent<IDamageable>();
+            if (damageable != null && !damageable.IsDead)
+            {
+                Vector2 knockback = (collision.transform.position - transform.position).normalized * 5f;
+                damageable.TakeDamage(damage, knockback, gameObject);
             }
 
             Vector3 pos = collision.contactCount > 0

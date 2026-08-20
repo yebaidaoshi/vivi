@@ -25,6 +25,9 @@ public class EnemyTurret : MonoBehaviour, IDamageable
     [Header("生命值")]
     public int maxHealth = 50;
 
+    [Header("子弹方向修正")]
+    public bool reverseBulletDirection = true; // ★ 如果子弹方向反了，勾选这个
+
     private State currentState = State.Idle;
     private int health;
     private float stateTimer;
@@ -112,8 +115,10 @@ public class EnemyTurret : MonoBehaviour, IDamageable
                     float targetTime = _burstFrameTimes[_burstFrameIndex];
                     if (_burstTimer >= targetTime)
                     {
-                        // 三发全部朝正前方
-                        SpawnBullet(Forward, damageBurst);
+                        // ★ 根据 reverseBulletDirection 决定是否反转方向
+                        Vector2 fireDir = Forward;
+                        if (reverseBulletDirection) fireDir = -fireDir;
+                        SpawnBullet(fireDir, damageBurst);
                         _burstFrameIndex++;
                     }
                 }
@@ -131,11 +136,52 @@ public class EnemyTurret : MonoBehaviour, IDamageable
 
     private bool IsPlayerInFront()
     {
+        if (player == null) return false;
         Vector2 toPlayer = (player.position - transform.position).normalized;
-        Vector2 checkDir = -Forward;
-        float dot = Vector2.Dot(toPlayer, checkDir);
+        float dot = Vector2.Dot(toPlayer, Forward);
         float cosHalfAngle = Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad);
         return dot >= cosHalfAngle;
+    }
+
+    private void FireNeed()
+    {
+        if (needPrefab == null || player == null || firePoint == null)
+        {
+            Debug.LogError("❌ 缺少必要引用，无法发射！");
+            return;
+        }
+
+        if (_shotCounter >= 2)
+        {
+            _shotCounter = 0;
+            ChangeState(State.AimingBurst);
+            return;
+        }
+
+        // ★ 根据 reverseBulletDirection 决定是否反转方向
+        Vector2 fireDir = Forward;
+        if (reverseBulletDirection) fireDir = -fireDir;
+        SpawnBullet(fireDir, damage);
+        _shotCounter++;
+    }
+
+    private void SpawnBullet(Vector2 dir, int bulletDamage)
+    {
+        Vector3 spawnPos = firePoint.position;
+        spawnPos.z = 0f;
+
+        GameObject need = Instantiate(needPrefab, spawnPos, Quaternion.identity);
+        SpriteRenderer sr = need.GetComponent<SpriteRenderer>();
+        if (sr != null) sr.sortingOrder = 10;
+
+        NeedProjectile proj = need.GetComponent<NeedProjectile>();
+        if (proj != null)
+            proj.Initialize(dir, bulletDamage, gameObject);
+        else
+        {
+            Rigidbody2D rb = need.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.velocity = dir * 5f;
+        }
     }
 
     void ChangeState(State newState)
@@ -200,49 +246,7 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         return anim.GetCurrentAnimatorStateInfo(0).IsName(stateName);
     }
 
-    // ========== 发射逻辑 ==========
-
-    private void FireNeed()
-    {
-        if (needPrefab == null || player == null || firePoint == null)
-        {
-            Debug.LogError("❌ 缺少必要引用，无法发射！");
-            return;
-        }
-
-        if (_shotCounter >= 2)
-        {
-            _shotCounter = 0;
-            ChangeState(State.AimingBurst);
-            return;
-        }
-
-        SpawnBullet(Forward, damage);
-        _shotCounter++;
-        Debug.Log($"💥 普通射击 {_shotCounter}/2");
-    }
-
-    private void SpawnBullet(Vector2 dir, int bulletDamage)
-    {
-        Vector3 spawnPos = firePoint.position;
-        spawnPos.z = 0f;
-
-        GameObject need = Instantiate(needPrefab, spawnPos, Quaternion.identity);
-        SpriteRenderer sr = need.GetComponent<SpriteRenderer>();
-        if (sr != null) sr.sortingOrder = 10;
-
-        NeedProjectile proj = need.GetComponent<NeedProjectile>();
-        if (proj != null)
-            proj.Initialize(dir, bulletDamage, gameObject);
-        else
-        {
-            Rigidbody2D rb = need.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.velocity = dir * 5f;
-        }
-    }
-
     // ========== IDamageable ==========
-
     public bool IsDead => currentState == State.Die;
 
     public void TakeDamage(int damage, Vector2 knockback, GameObject attacker)
@@ -258,41 +262,34 @@ public class EnemyTurret : MonoBehaviour, IDamageable
     }
 
     // ========== 可视化 ==========
-
     void OnDrawGizmosSelected()
     {
+        if (player == null) return;
+
         Vector3 center = transform.position;
         Vector3 forward = Forward;
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawRay(center, forward * 3f);
+        if (reverseBulletDirection) forward = -forward;
 
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(center, -forward * 3f);
+        Gizmos.DrawRay(center, forward * 3f);
 
         Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
         int segments = 30;
         float halfAngleRad = attackAngle * 0.5f * Mathf.Deg2Rad;
-        Vector3 checkDir = -forward;
-        Vector3 startDir = Quaternion.Euler(0, 0, -halfAngleRad * Mathf.Rad2Deg) * checkDir;
-        Vector3 endDir = Quaternion.Euler(0, 0, halfAngleRad * Mathf.Rad2Deg) * checkDir;
+        Vector3 startDir = Quaternion.Euler(0, 0, -halfAngleRad * Mathf.Rad2Deg) * forward;
+        Vector3 endDir = Quaternion.Euler(0, 0, halfAngleRad * Mathf.Rad2Deg) * forward;
 
         Vector3 prevPoint = center + startDir * attackRange;
         for (int i = 1; i <= segments; i++)
         {
             float t = (float)i / segments;
             float a = Mathf.Lerp(-halfAngleRad, halfAngleRad, t);
-            Vector3 dir = Quaternion.Euler(0, 0, a * Mathf.Rad2Deg) * checkDir;
+            Vector3 dir = Quaternion.Euler(0, 0, a * Mathf.Rad2Deg) * forward;
             Vector3 point = center + dir * attackRange;
             Gizmos.DrawLine(prevPoint, point);
             prevPoint = point;
         }
         Gizmos.DrawLine(center, center + startDir * attackRange);
         Gizmos.DrawLine(center, center + endDir * attackRange);
-
-#if UNITY_EDITOR
-        UnityEditor.Handles.Label(center + Vector3.up * 2f,
-            "蓝=发射方向  绿=检测方向  红=检测范围");
-#endif
     }
 }

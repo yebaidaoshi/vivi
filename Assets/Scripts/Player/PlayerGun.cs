@@ -1148,9 +1148,9 @@ namespace Player
                 }
 
                 mover.SetOwner(transform);
+                mover.Damage = _settings.bulletDamage;   
                 mover.Launch(dir, _settings.bulletSpeed);
             }
-
             if (muzzleFlashPrefab != null)
             {
                 var flash = Instantiate(muzzleFlashPrefab, muzzle.position, Quaternion.identity);

@@ -190,7 +190,7 @@ namespace Player
 
             _hasOverrideVx = false;
 
-            Debug.Log($"Tick - 当前状态: {_state}");
+            
 
             if (onAir)
 

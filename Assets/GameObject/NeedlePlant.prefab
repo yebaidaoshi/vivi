@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 5.506916, y: -6.552951, z: 1.8472606}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3359, y: 1.3359, z: 1.3359}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5025974635179531446}
@@ -133,7 +133,8 @@ MonoBehaviour:
   damageBurst: 25
   needPrefab: {fileID: 2806995974662856136, guid: d6ca3352e01b25d45afb0987b53f1941, type: 3}
   firePoint: {fileID: 5025974635179531446}
-  maxHealth: 500
+  maxHealth: 100
+  reverseBulletDirection: 1
 --- !u!114 &1615265572590002507
 MonoBehaviour:
   m_ObjectHideFlags: 0

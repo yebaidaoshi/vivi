@@ -36,7 +36,7 @@ TagManager:
   - 
   - Characters
   - Ground
-  - HitBox
+  - Enemy
   - MouseArea
   - Projectile
   - Invincible
@@ -100,4 +100,7 @@ TagManager:
     locked: 0
   - name: FrontUILayer
     uniqueID: 2165362101
+    locked: 0
+  - name: FogLayer
+    uniqueID: 2348524641
     locked: 0

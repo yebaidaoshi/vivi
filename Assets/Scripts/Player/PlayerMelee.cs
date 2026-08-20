@@ -120,9 +120,9 @@ namespace Player
 
         [Header("扩大剑气")]
         [Tooltip("圆形扭曲半径乘法因子。1 = 原作，0 = 关闭，2 = 两倍。Attack1–4 只动子物体，Melee4After 乘余斩球。")]
-        [SerializeField] [Min(0f)] private float expandRadiusMultiplier = 1f;
+        [SerializeField][Min(0f)] private float expandRadiusMultiplier = 1f;
         [Tooltip("屏幕折射强度乘法因子。1 = 原作 DistortionTest Strength (10,10)，0 = 无折射。")]
-        [SerializeField] [Min(0f)] private float expandRefractionMultiplier = 1f;
+        [SerializeField][Min(0f)] private float expandRefractionMultiplier = 1f;
         private static readonly int DistortionStrengthId = Shader.PropertyToID("Strength");
 
         [Tooltip("生成父节点。floor.unity CreateObject 使用 _Heroine 根；留空即如此。")]
@@ -182,7 +182,6 @@ namespace Player
 
         public void Init(PlayerContext context)
         {
-            Debug.Log("=== PlayerMelee.Init 被调用 ===");
             _ctx = context;
             context.Bind(out _motor, out _anim, out _audio, out _settings);
             ResolveVfx();
@@ -190,7 +189,7 @@ namespace Player
             _dash.Init(context);
             AutoFindColliders();
             LoadHitEffect();
-            damageLayerMask = LayerMask.GetMask("HitBox");
+            damageLayerMask = LayerMask.GetMask("Enemy");
         }
 
         private void ResolveVfx()
@@ -580,6 +579,15 @@ namespace Player
         private void BeginJumpAttack()
         {
             DisableAllColliders();
+
+            // ★ 启用跳跃攻击碰撞体并立即检测
+            if (jumpAttackCollider != null)
+            {
+                jumpAttackCollider.enabled = true;
+                DetectHitsWithCollider(jumpAttackCollider);
+                jumpAttackCollider.enabled = false;
+            }
+
             float vy = _motor.GetVelocity().y;
             if (vy >= 0f)
             {
@@ -964,6 +972,15 @@ namespace Player
         private void DoCrouchAttack()
         {
             DisableAllColliders();
+
+            // ★ 启用下蹲攻击碰撞体并立即检测
+            if (slideAttackCollider != null)
+            {
+                slideAttackCollider.enabled = true;
+                DetectHitsWithCollider(slideAttackCollider);
+                slideAttackCollider.enabled = false;
+            }
+
             _isCrouchAttack = true;
             _hasSpawnedCrouchSlash = false;
             _activeState = "Crouch_Attack";
@@ -1121,7 +1138,7 @@ namespace Player
 
         private void DetectHitsWithCollider(Collider2D col)
         {
-            if (attackColliders == null) return;
+            if (col == null) return;
             var hits = new List<Collider2D>();
             var filter = new ContactFilter2D();
             filter.layerMask = damageLayerMask;

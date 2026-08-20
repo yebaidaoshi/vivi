@@ -88,6 +88,8 @@ namespace Player
         public float reloadDuration = 1.3333f;
         [Tooltip("_Bullet PlayMaker 飞行速度（SetVelocity）。")]
         public float bulletSpeed = 75f;
+        [Tooltip("子弹伤害")]
+        public int bulletDamage = 5;
         public float jumpAttackDownYVelocity = 5f;
         public float meleeComboWindow = 0.45f;
         public int maxMeleeCombo = 3;
@@ -95,7 +97,7 @@ namespace Player
         public float meleeLungeSpeed = 0f;
 
         [Tooltip("受击")]
-        public int maxHealth = 100;
+        public int maxHealth = 500;
         public float invincibleTime = 0.2f;
     }
 }
