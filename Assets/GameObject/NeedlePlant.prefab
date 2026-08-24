@@ -134,7 +134,7 @@ MonoBehaviour:
   needPrefab: {fileID: 2806995974662856136, guid: d6ca3352e01b25d45afb0987b53f1941, type: 3}
   firePoint: {fileID: 5025974635179531446}
   maxHealth: 100
-  reverseBulletDirection: 1
+  reverseBulletDirection: 0
 --- !u!114 &1615265572590002507
 MonoBehaviour:
   m_ObjectHideFlags: 0

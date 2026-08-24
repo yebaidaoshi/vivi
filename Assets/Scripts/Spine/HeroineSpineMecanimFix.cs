@@ -43,11 +43,11 @@ public class HeroineSpineMecanimFix : MonoBehaviour
 			Spine.SkeletonData data = mecanim.skeletonDataAsset != null
 				? mecanim.skeletonDataAsset.GetSkeletonData(true)
 				: null;
-			Debug.Log("[HeroineSpineMecanimFix] GetSkeletonData = " + (data != null ? data.Name : "NULL"));
+			
 		}
 		catch (Exception e)
 		{
-			Debug.LogError("[HeroineSpineMecanimFix] GetSkeletonData threw: " + e.Message);
+			
 		}
 
 		try
@@ -67,16 +67,12 @@ public class HeroineSpineMecanimFix : MonoBehaviour
 		}
 		catch (Exception e)
 		{
-			Debug.LogError("[HeroineSpineMecanimFix] repair threw: " + e.Message);
+			
 		}
 
 		bool afterTranslatorNull = mecanim.Translator == null;
 		bool afterAnimatorNull = afterTranslatorNull || mecanim.Translator.Animator == null;
-		Debug.Log(string.Format(
-			"[HeroineSpineMecanimFix] after: valid={0}, skeleton={1}, translator.Animator={2}",
-			mecanim.valid,
-			mecanim.skeleton != null,
-			!afterAnimatorNull));
+		
 
 		AuditClipNames(mecanim, animator);
 	}
@@ -94,7 +90,7 @@ public class HeroineSpineMecanimFix : MonoBehaviour
 				: null;
 			if (data == null || animator == null || animator.runtimeAnimatorController == null)
 			{
-				Debug.LogWarning("[HeroineSpineMecanimFix] AuditClipNames: missing skeleton data or controller.");
+				
 				return;
 			}
 
@@ -123,9 +119,8 @@ public class HeroineSpineMecanimFix : MonoBehaviour
 				}
 			}
 
-			Debug.Log(string.Format(
-				"[HeroineSpineMecanimFix] clip audit: spineAnims={0}, controllerClips={1}, matched={2}, missing={3}",
-				spineNames.Count, clips.Length, matched, missing.Count));
+			
+				
 
 			if (missing.Count > 0)
 			{
@@ -134,19 +129,19 @@ public class HeroineSpineMecanimFix : MonoBehaviour
 				{
 					sb.Append("\n    '").Append(m).Append('\'');
 				}
-				Debug.LogWarning(sb.ToString());
+				
 			}
 
 			foreach (var probe in new[] {
 				"Jump_Jump", "Jump_Jump_Attack_Up", "Jump_Jump_Attack_Down",
 				"Aim_Aim_SMG", "Crouch_Crouching" })
 			{
-				Debug.Log(string.Format("[HeroineSpineMecanimFix] skeleton has '{0}' ? {1}", probe, spineNames.Contains(probe)));
+				
 			}
 		}
 		catch (Exception e)
 		{
-			Debug.LogError("[HeroineSpineMecanimFix] AuditClipNames threw: " + e.Message);
+			
 		}
 	}
 }

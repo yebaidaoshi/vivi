@@ -64,7 +64,7 @@ public class FogManagerV2 : MonoBehaviour
         {
             SpawnFog(forceOutsideCamera: false);
         }
-        Debug.Log($"[FogManagerV2] 初始生成 {fogInstances.Count} 个雾团");
+        
     }
 
     private void Update()

@@ -97,7 +97,7 @@ namespace Player
         public float meleeLungeSpeed = 0f;
 
         [Tooltip("受击")]
-        public int maxHealth = 500;
+        public int maxHealth = 200;
         public float invincibleTime = 0.2f;
     }
 }

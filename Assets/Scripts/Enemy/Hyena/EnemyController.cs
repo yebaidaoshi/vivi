@@ -50,5 +50,14 @@ namespace Enemy
         {
             health.TakeDamage(damage, knockback, attacker);
         }
+
+        // ---- 动画事件桥接 ----
+        public void SendEvent(string eventName)
+        {
+            if (ai != null)
+            {
+                ai.OnJumpHighEvent();
+            }
+        }
     }
 }

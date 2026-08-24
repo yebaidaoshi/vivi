@@ -202,7 +202,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 10
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -261,6 +261,14 @@ MonoBehaviour:
   idleAnim: Idle
   movementState: Movement
   clawAnim: Claw
+  climbCheckDistance: 1.5
+  climbCheckHeight: 2.5
+  climbForce: 12
+  climbHorizontalForce: 3
+  climbObstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
+  jumpAnim: Jump_High
 --- !u!60 &8936365408137205116
 PolygonCollider2D:
   m_ObjectHideFlags: 0

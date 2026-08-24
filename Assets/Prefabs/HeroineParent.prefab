@@ -419,7 +419,7 @@ Transform:
   m_GameObject: {fileID: 395580998910922815}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.6444006, y: 6.1891, z: 0}
+  m_LocalPosition: {x: 1.6443996, y: 6.1890993, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1404,7 +1404,7 @@ GameObject:
   - component: {fileID: 8426752828916242994}
   - component: {fileID: 1656964228210004273}
   - component: {fileID: 4165688901589901693}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: HitBox_Leg_L
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2470,7 +2470,7 @@ GameObject:
   - component: {fileID: 7526798358028591760}
   - component: {fileID: 5046315966819811610}
   - component: {fileID: 7956742520659408213}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: HitBox_Head
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2964,7 +2964,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1877083187179648907}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: HitBox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -3301,6 +3301,11 @@ MonoBehaviour:
   setMagazine: {fileID: 8300000, guid: ef8380916a99f0a438143096f7fca99b, type: 3}
   cocking: {fileID: 8300000, guid: b8876548475734242ab81e7a29133df4, type: 3}
   windMagic: {fileID: 8300000, guid: 257eb0bb34e023d4fb9c59da3e72d8bb, type: 3}
+  damageB: {fileID: 0}
+  damageB2: {fileID: 0}
+  damageADead: {fileID: 0}
+  specialTag: 
+  specialDamageSound: {fileID: 0}
 --- !u!1 &4774711991564831510
 GameObject:
   m_ObjectHideFlags: 0
@@ -4326,6 +4331,7 @@ GameObject:
   - component: {fileID: 897233173176899270}
   - component: {fileID: 392793875939677696}
   - component: {fileID: 7336585275533452021}
+  - component: {fileID: 6773082326232641233}
   - component: {fileID: 7336585275533452022}
   m_Layer: 8
   m_Name: Heroine
@@ -4343,7 +4349,7 @@ Transform:
   m_GameObject: {fileID: 5831746344741512789}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4729,6 +4735,29 @@ MonoBehaviour:
   health: {fileID: 0}
   controlLocomotion: 1
   locked: 0
+--- !u!114 &6773082326232641233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831746344741512789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1646b4d46d3349f43bf3eb2494f25a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHealth: 200
+  invincibleDuration: 1.5
+  hitStunDuration: 0.667
+  typeMappings:
+  - type: Enemy_Small
+    animationName: Damage_A
+    audioClips: []
+  hitEffectImage: {fileID: 0}
+  effectDuration: 0.667
+  idleDamageAnim: Idle_Damage_A
+  idleEnterThreshold: 2
 --- !u!114 &7336585275533452022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5385,7 +5414,7 @@ GameObject:
   - component: {fileID: 4499551442102834888}
   - component: {fileID: 4210311492890710868}
   - component: {fileID: 7875747394277951856}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: HitBox_Leg_R
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -7155,7 +7184,7 @@ GameObject:
   - component: {fileID: 4139860451036359555}
   - component: {fileID: 2356882656033174707}
   - component: {fileID: 8510925093737199092}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: HitBox_Torso
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -7171,7 +7200,7 @@ Transform:
   m_GameObject: {fileID: 9170897699315694013}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.67629755, w: 0.73662853}
-  m_LocalPosition: {x: -0.30319977, y: 5.1987996, z: 0}
+  m_LocalPosition: {x: -0.30319977, y: 5.198799, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
