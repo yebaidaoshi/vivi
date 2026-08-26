@@ -40,10 +40,10 @@ namespace Player
         private string _landingState;
         private bool _landToRun;
         private float _landToRunElapsed;
-        private int _backFlipTakeoffDir;       
+        private int _backFlipTakeoffDir;
         private float _prevMove;
 
-      
+
         public PlayerAirState State => _state;
         public bool OnAir => _state == PlayerAirState.Rising || _state == PlayerAirState.Falling
             || _state == PlayerAirState.BackFlip;
@@ -71,12 +71,12 @@ namespace Player
         private void ResolveVfx()
         {
 #if UNITY_EDITOR
-			// 模块在运行时组合且无序列化引用；按路径拉取预制体。
-			if (jumpSmokePrefab == null)
-			{
-				jumpSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-					"Assets/GameObject/JumpEffect.prefab");
-			}
+            // 模块在运行时组合且无序列化引用；按路径拉取预制体。
+            if (jumpSmokePrefab == null)
+            {
+                jumpSmokePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/GameObject/JumpEffect.prefab");
+            }
 #endif
         }
 
@@ -522,12 +522,12 @@ namespace Player
         private void BeginBackFlip()
         {
             _state = PlayerAirState.BackFlip;
-            _jumpConsumed = true;          
+            _jumpConsumed = true;
             _jumpBuffer = 0f;
             _backFlipAir = _settings.backFlipMinAir;
             _landLock = 0f;
             _takeoffLock = _settings.backFlipMinAir;
-            _backFlipTakeoffDir = -_motor.Facing;   
+            _backFlipTakeoffDir = -_motor.Facing;
 
             float fx = -_settings.backFlipForce * _motor.Facing;
             _motor.SetVelocity(Vector2.zero);
@@ -542,7 +542,7 @@ namespace Player
             _state = PlayerAirState.BackFlipLand;
             _landingState = PlayerAnimDriver.States.BackFlipLand;
             _landLock = PlayerAnimTimings.BackFlipLand.ClipLength + 0.05f;
-            
+
             _motor.SetImmediateVelocityX(0f);
             _anim.SetAirFloat(0f, 0f);
             _anim.ForcePlay(_landingState);
@@ -571,18 +571,18 @@ namespace Player
             bool oppositeNow = _backFlipTakeoffDir > 0
                 ? intent.Move < -0.1f
                 : intent.Move > 0.1f;
-            bool oppositePressed = oppositeNow && !(_prevMove < -0.1f || _prevMove > 0.1f); 
-           
+            bool oppositePressed = oppositeNow && !(_prevMove < -0.1f || _prevMove > 0.1f);
+
             if (!takeoffDirHeld && oppositePressed)
             {
-                FinishLanding();            
-                BeginOppositeBackFlip();   
+                FinishLanding();
+                BeginOppositeBackFlip();
                 return;
             }
             bool staleBackFlipHold = takeoffDirHeld && intent.Jump;
             if (!staleBackFlipHold)
             {
-               
+
                 bool realActionInterrupt = Mathf.Abs(intent.Move) > 0.1f
                     || intent.JumpPressed
                     || intent.SlashPressed

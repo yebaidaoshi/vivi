@@ -1,14 +1,17 @@
 using UnityEngine;
 
-/// <summary>
-/// 挂载到 World Space Canvas 上，使其始终跟随摄像机
-/// </summary>
 public class FollowCamera : MonoBehaviour
 {
-    [Header("摄像机（留空自动取主摄像机）")]
     public Camera targetCamera;
-    [Tooltip("Canvas 与摄像机的距离")]
-    public float distanceFromCamera = 10f;
+    public float distanceFromCamera = 5f;
+
+    public enum RotationMode
+    {
+        FullBillboard,      // 完全面对摄像机（可能倾斜）
+        YAxisBillboard,     // 仅绕Y轴面对摄像机（保持竖直）
+        FixedDirection      // 固定朝向（完全不旋转）
+    }
+    public RotationMode rotationMode = RotationMode.YAxisBillboard;
 
     private Canvas canvas;
 
@@ -21,7 +24,11 @@ public class FollowCamera : MonoBehaviour
         if (canvas != null)
             canvas.renderMode = RenderMode.WorldSpace;
 
-        // 如果 Canvas 是 World Space，自动调整大小以匹配摄像机视野
+        // 重置变换
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+
+        // 自动适应摄像机视野（仅正交模式）
         if (targetCamera != null && canvas != null && targetCamera.orthographic)
         {
             float height = targetCamera.orthographicSize * 2f;
@@ -39,14 +46,32 @@ public class FollowCamera : MonoBehaviour
     {
         if (targetCamera == null) return;
 
-        // 位置放在摄像机正前方
+        // 1. 位置始终在摄像机前方
         transform.position = targetCamera.transform.position
                            + targetCamera.transform.forward * distanceFromCamera;
-        // 朝向摄像机
-        transform.LookAt(targetCamera.transform);
-        // 或者只旋转 Z 轴保持水平？根据需求调整
-        // 如果您想要 Canvas 始终平行于屏幕（而不是旋转），可以改为：
-        // transform.rotation = Quaternion.identity;
-        // 但最好正面朝向摄像机，否则 UI 可能倾斜
+
+        // 2. 根据模式设置旋转
+        switch (rotationMode)
+        {
+            case RotationMode.FullBillboard:
+                // 完全面对摄像机（可能倾斜）
+                Vector3 dirFull = targetCamera.transform.position - transform.position;
+                transform.rotation = Quaternion.LookRotation(dirFull, Vector3.up);
+                break;
+
+            case RotationMode.YAxisBillboard:
+                // 仅绕Y轴面对摄像机（保持竖直）
+                Vector3 dirY = targetCamera.transform.position - transform.position;
+                dirY.y = 0f; // 忽略垂直差异，只计算水平方向
+                if (dirY.sqrMagnitude > 0.001f)
+                    transform.rotation = Quaternion.LookRotation(dirY, Vector3.up);
+                break;
+
+            case RotationMode.FixedDirection:
+                // 固定方向（完全不旋转）
+                // 保持你设定的初始旋转，或者显式设为 (0,0,0)
+                // 这里保持当前旋转不变
+                break;
+        }
     }
 }

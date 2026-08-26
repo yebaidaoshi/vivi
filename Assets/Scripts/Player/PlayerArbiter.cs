@@ -56,10 +56,8 @@ namespace Player
                 ? PlayerVelocityOwner.ImmediateOverride
                 : PlayerVelocityOwner.LocomotionRamp;
 
-            // 软 A_to_B（Crouch_To_Idle / Run_to_Idle / ADS 收枪 / BackStep 恢复）
-            // 不得阻止 loco —— Locomotion 软保持片段直到被打断。
-            // Idle Landing 软保持仍用 JumpLandingLocked（打断当帧清除）。
-            c.BlockLocomotionAnim = s.MeleeIsAttacking || s.GunIsBusy || s.CrouchIsBusy
+            // ★ 修改：移除 s.GunIsBusy，使瞄准/射击/换弹不阻止 Base 层行走动画
+            c.BlockLocomotionAnim = s.MeleeIsAttacking || s.CrouchIsBusy
                 || s.JumpOnAir || s.JumpLandingLocked || s.JumpLandToRunLocksActions
                 || s.JumpIsBackFlipping || backStepHard || s.MagicBusy;
 

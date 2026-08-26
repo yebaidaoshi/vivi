@@ -336,6 +336,9 @@ namespace Player
             public const string Damage_A_Dead = "Damage_A_Dead";
 
             public const string Idle_Damage_A = "Idle_Damage_A";
+
+            public const string AimWalk = "Aim_Walk";
+            public const string AimWalkBackward = "Aim_Walk_Backward";
         }
     }
 }

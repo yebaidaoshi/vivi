@@ -163,7 +163,8 @@ namespace Player
                 CancelMeleeAndCrouch();
             }
 
-            HandleReloadBackStep(intent);
+            // ★ 修改：注释掉换弹时触发后撤步的调用
+            // HandleReloadBackStep(intent);
             ResolveCaps(setAnimGate: true);
 
             bool actionInterrupt = melee.LocksActions || backStep.IsActive || jump.OnAir
@@ -248,6 +249,7 @@ namespace Player
             backStep.TryStart();
         }
 
+        // 此方法已不再被调用（已注释），保留以防后续可能使用
         private void HandleReloadBackStep(PlayerIntent intent)
         {
             if (!gun.IsReloading || crouch.State != PlayerCrouchState.Standing

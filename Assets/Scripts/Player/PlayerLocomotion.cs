@@ -47,7 +47,7 @@ namespace Player
                 _state = PlayerLocoState.Idle;
                 return;
             }
-            
+
 
             if (!motor.IsGrounded)
             {
@@ -210,7 +210,7 @@ namespace Player
                 return PlayerAnimDriver.States.RunToIdle;
             }
             return null;
-            
+
         }
 
         private static string LandToRunState(PlayerAnimDriver anim)

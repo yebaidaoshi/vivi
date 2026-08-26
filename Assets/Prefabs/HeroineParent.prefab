@@ -3269,41 +3269,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seSource: {fileID: 2751771040555380359}
-  jump: {fileID: 8300000, guid: 6e9debab1ba900d44bff704199a4f908, type: 3}
-  jumpTakeoff: {fileID: 8300000, guid: 6fac24cbcceb41544bf89f87569371f9, type: 3}
-  landing: {fileID: 8300000, guid: 754afb83f58a658479a7098868f86c88, type: 3}
-  backFlip: {fileID: 8300000, guid: ed12d6c4d2027734f957bd3312c61dfc, type: 3}
-  backFlipLand: {fileID: 8300000, guid: 1c44d155a0e341646a07a411bb07fdea, type: 3}
-  hardLanding: {fileID: 8300000, guid: 7c2b5fc07b07834449c65f481fe71777, type: 3}
-  run1: {fileID: 8300000, guid: 1a23927ed982f0349a583734a2d5c138, type: 3}
-  run2: {fileID: 8300000, guid: e058b246458022447a81da482b988eb0, type: 3}
-  backStep: {fileID: 8300000, guid: 67a2b7b43fb77184b85ecaa984c795eb, type: 3}
-  slide: {fileID: 8300000, guid: e3ef3547b43d63d44bbf164c15a243bb, type: 3}
+  jump: {fileID: 8300000, guid: e8e730877cb9a4a4ab05d5f266ba573e, type: 3}
+  jumpTakeoff: {fileID: 8300000, guid: c14e7dc0de2859249be46123cf8b38a3, type: 3}
+  landing: {fileID: 8300000, guid: f15c22d0e8600d343a9eccfd4bbb651c, type: 3}
+  backFlip: {fileID: 8300000, guid: 10895189144e127438e88c10dfe96b40, type: 3}
+  backFlipLand: {fileID: 8300000, guid: 929993aaaa8b5cf43990c18dcb69bf66, type: 3}
+  hardLanding: {fileID: 8300000, guid: cbad06e27723fa74fbcd9306cc721c1c, type: 3}
+  run1: {fileID: 8300000, guid: e0f1bc1212669974698230a02b58db43, type: 3}
+  run2: {fileID: 8300000, guid: e89cbd61bc72a2f46a3e6c826c5c186b, type: 3}
+  backStep: {fileID: 8300000, guid: b329d3cc8d35fb44cb642add0a69f006, type: 3}
+  slide: {fileID: 8300000, guid: a5011a5e8c6ad2a4aa615f61983e0e22, type: 3}
   dashStepSound: {fileID: 0}
-  swordSwing: {fileID: 8300000, guid: 34915ada6930f5f46959bbfcb45eb656, type: 3}
-  melee2: {fileID: 8300000, guid: 3727c0f46526cdc4aa1d3c1c1fc01759, type: 3}
-  melee3: {fileID: 8300000, guid: fa7fa923829a6f44192a444c844f1138, type: 3}
-  meleePlus: {fileID: 8300000, guid: 54d2143da9191764ca5a60b528a424fd, type: 3}
-  attack1: {fileID: 8300000, guid: 41043577f46733348b8836d9bc577b4a, type: 3}
-  attack2: {fileID: 8300000, guid: 89d4e21d56f639244bbb85270e9439bb, type: 3}
-  attack3: {fileID: 8300000, guid: cff8b19bc4718974f9fe91359a616b84, type: 3}
-  melee4: {fileID: 8300000, guid: 1e4b3ca46cb15fe499514f9e5673431f, type: 3}
-  melee4Afterwind: {fileID: 8300000, guid: 75e259f255b5c5e4d9f062510050c51c, type: 3}
-  melee4After: {fileID: 8300000, guid: 61aa2e646d830394d9dccb45f3d9510a, type: 3}
-  swordSheathe1: {fileID: 8300000, guid: 76935e1320a86564a9a538826651fb9f, type: 3}
-  swordSheathe: {fileID: 8300000, guid: 986ef511f27d05148b4b6af7bb98d523, type: 3}
-  melee4Sheathe: {fileID: 8300000, guid: 5a650489e0850bc488719bd5a261fce4, type: 3}
-  jumpAttackDown: {fileID: 8300000, guid: ef0abf31d2dea3344bcd0a69a4407cbb, type: 3}
-  aiming: {fileID: 8300000, guid: f42c597371e7b3a48a0153a5fb1772b2, type: 3}
-  gunFire: {fileID: 8300000, guid: 93412eb980cabe9469599e67bc89bb62, type: 3}
-  reload: {fileID: 8300000, guid: ef8380916a99f0a438143096f7fca99b, type: 3}
-  removeMagazine: {fileID: 8300000, guid: ca9b4ba913f33994d81daf3db6a4c54d, type: 3}
-  setMagazine: {fileID: 8300000, guid: ef8380916a99f0a438143096f7fca99b, type: 3}
-  cocking: {fileID: 8300000, guid: b8876548475734242ab81e7a29133df4, type: 3}
+  swordSwing: {fileID: 8300000, guid: 7ccb80b61d3bc00408f194aa259c11d7, type: 3}
+  melee2: {fileID: 8300000, guid: ffffa42b0498eaf468af5b130e12f719, type: 3}
+  melee3: {fileID: 8300000, guid: a316a01af0a77e4459b88f7e8fa2a655, type: 3}
+  meleePlus: {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3}
+  attack1: {fileID: 8300000, guid: c4f77fb65a3bb854fbe2928a60719ecd, type: 3}
+  attack2: {fileID: 8300000, guid: 640dc038518373046b0489551e09a2ff, type: 3}
+  attack3: {fileID: 8300000, guid: 21a9cb9efc9da7e45beb4df32fa561d2, type: 3}
+  attack4: {fileID: 8300000, guid: 63ef1162a740fa14f9f2d1c76e7516a7, type: 3}
+  melee4: {fileID: 8300000, guid: a6a7a9546b4ebe347bc8ffe16bca0afe, type: 3}
+  melee4Afterwind: {fileID: 8300000, guid: 04cc455697adc384491ef4c5f2834573, type: 3}
+  melee4After: {fileID: 8300000, guid: 6512695b449542049b99c9e6a39378d2, type: 3}
+  swordSheathe1: {fileID: 8300000, guid: 00ef62b65e7ff84488fd8edfce330eeb, type: 3}
+  swordSheathe: {fileID: 8300000, guid: 4266a3c78d539ed4d82c072aadda94b2, type: 3}
+  melee4Sheathe: {fileID: 8300000, guid: 21858975181c6804ab8593faa4c32400, type: 3}
+  jumpAttackDown: {fileID: 8300000, guid: 7a26e5d0c2368ee4192c73289650365b, type: 3}
+  aiming: {fileID: 8300000, guid: c29060c626bd0e443ab649812b4a04dd, type: 3}
+  gunFire: {fileID: 8300000, guid: e03d0bc70ebd37949a1895427d2b100e, type: 3}
+  reload: {fileID: 8300000, guid: 3f88003461f4c574b85178c63b0eefa3, type: 3}
+  removeMagazine: {fileID: 8300000, guid: 593f0604a870a0d4b8fd0c1d1e165414, type: 3}
+  setMagazine: {fileID: 8300000, guid: 3f88003461f4c574b85178c63b0eefa3, type: 3}
+  cocking: {fileID: 8300000, guid: 8bc709dd164ef9249a42bdcfb074e63e, type: 3}
   windMagic: {fileID: 8300000, guid: 257eb0bb34e023d4fb9c59da3e72d8bb, type: 3}
-  damageB: {fileID: 0}
-  damageB2: {fileID: 0}
-  damageADead: {fileID: 0}
+  damageB: {fileID: 8300000, guid: e6bf1d322b3759c4b9072c2aa92a68b2, type: 3}
+  damageB2: {fileID: 8300000, guid: c8f728a4f0f298943a13afdd3a8899af, type: 3}
+  damageADead: {fileID: 8300000, guid: 7a881d43c80127443bb04b2f4349928a, type: 3}
   specialTag: 
   specialDamageSound: {fileID: 0}
 --- !u!1 &4774711991564831510
@@ -3385,7 +3386,7 @@ Transform:
   m_GameObject: {fileID: 4797111468620256701}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.00052359875, w: 0.9999999}
-  m_LocalPosition: {x: 2.7601004, y: 6.1917, z: -1}
+  m_LocalPosition: {x: 2.7600994, y: 6.1917, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4333,6 +4334,7 @@ GameObject:
   - component: {fileID: 7336585275533452021}
   - component: {fileID: 6773082326232641233}
   - component: {fileID: 7336585275533452022}
+  - component: {fileID: 1078425776871141442}
   m_Layer: 8
   m_Name: Heroine
   m_TagString: PlayerPresence
@@ -4349,7 +4351,7 @@ Transform:
   m_GameObject: {fileID: 5831746344741512789}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.25, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4758,6 +4760,8 @@ MonoBehaviour:
   effectDuration: 0.667
   idleDamageAnim: Idle_Damage_A
   idleEnterThreshold: 2
+  deathUIPanel: {fileID: 0}
+  mainMenuSceneName: MainMenu
 --- !u!114 &7336585275533452022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4810,6 +4814,35 @@ MonoBehaviour:
   slashSpawn: {fileID: 0}
   slashOffset: {x: 0.7, y: 4}
   slashLifetime: 1.2
+--- !u!114 &1078425776871141442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831746344741512789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d83595bc41664714ea0d31d8c8b961ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 1709254077376921, guid: 4cef1fcf246dacf468c4d770f8ab96dd, type: 3}
+  muzzleFlashPrefab: {fileID: 1709254077376921, guid: f3d5b992a707e9448973b4328fd75aa7, type: 3}
+  cartridgePrefab: {fileID: 1709254077376921, guid: 44f04ad101479914f8d60e2f0ac1a7ac, type: 3}
+  gunMuzzle: {fileID: 6932054021954506725}
+  ejectionPort: {fileID: 4471399228083892597}
+  aimTarget: {fileID: 8417156142913228869}
+  aimPivot: {fileID: 7411761563123596251}
+  aimLookSpeed: 12
+  aimTargetSmoothing: 0.35
+  faceFlipSlop: 0.15
+  showAimLaser: 1
+  laserColor: {r: 1, g: 0.12, b: 0.12, a: 0.85}
+  laserWidth: 0.04
+  laserMaxLength: 30
+  laserBlockMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &6034404638238936429
 GameObject:
   m_ObjectHideFlags: 0
@@ -7200,7 +7233,7 @@ Transform:
   m_GameObject: {fileID: 9170897699315694013}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.67629755, w: 0.73662853}
-  m_LocalPosition: {x: -0.30319977, y: 5.198799, z: 0}
+  m_LocalPosition: {x: -0.30319977, y: 5.1987996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

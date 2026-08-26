@@ -280,6 +280,7 @@ namespace Player
             UpdateAimLaser();
         }
 
+        // ★ 修改：TickReloading 中移除 moving 分支，统一显示换弹动画
         private void TickReloading(PlayerIntent intent, bool allowFaceFlip,
             bool actionInterrupt, bool sliding)
         {
@@ -307,29 +308,20 @@ namespace Player
             _anim.SetCrouch(_aimCrouch);
             UpdateReloadAimLocomotion(intent);
 
-            bool moving = !_aimCrouch && Mathf.Abs(intent.Move) > 0.1f;
-            bool onReload;
-            if (moving)
+            // ★ 核心修改：换弹时始终保持 Aim 层权重为 1，播放换弹动画
+            SetAimWeightImmediate(1f);
+            bool onReload = _anim.IsPlayingAim(PlayerAnimDriver.States.AimSmgReload);
+            if (onReload)
             {
-                SetAimWeightImmediate(1f);
-                ParkBaseSmgHold();
-                onReload = true;
                 _reloadClipSeen = true;
+                _anim.SyncAim(PlayerAnimDriver.States.AimSmgReload);
             }
-            else
+            else if (!_reloadClipSeen && _reloadElapsed < 0.12f)
             {
-                SetAimWeightImmediate(0f);
-                onReload = _anim.IsPlayingAim(PlayerAnimDriver.States.AimSmgReload);
-                if (onReload)
-                {
-                    _reloadClipSeen = true;
-                    _anim.SyncAim(PlayerAnimDriver.States.AimSmgReload);
-                }
-                else if (!_reloadClipSeen && _reloadElapsed < 0.12f)
-                {
-                    _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgReload);
-                }
+                _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgReload);
             }
+            // 移除了原有的 moving 分支，不再根据移动切换为 Hold 动画
+            // 物理移动速度由 PlayerController 使用 adsWalkSpeed 控制
 
             float minPlay = PlayerAnimTimings.AimSmgReload.ClipLength * 0.85f;
             bool finished = _phaseTimer <= 0f
