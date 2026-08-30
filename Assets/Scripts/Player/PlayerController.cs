@@ -24,6 +24,9 @@ namespace Player
         [SerializeField] private bool controlLocomotion = true;
         [SerializeField] private bool locked;
 
+        // ★ 过场模式开关
+        public bool cutsceneMode = false;
+
         private bool _initialized = false;
         private PlayerContext _ctx;
         private PlayerLocomotion _loco;
@@ -106,22 +109,19 @@ namespace Player
             health.SetController(this);
         }
 
+        // ★ Update - 过场模式下完全返回
         private void Update()
         {
             health.Tick();
 
-            if (!_initialized || locked)
+            if (!_initialized || locked || cutsceneMode)
                 return;
-
-            // ★ 核心：硬直/受击动画/Idle_Damage_A 期间跳过所有逻辑，只更新意图
-            if (health.IsInHitStun || health.IsHitAnimationPlaying || health.IsInIdleDamage)
-            {
-                _ctx.Intent = inputReader.Intent;
-                return;
-            }
 
             var intent = inputReader.Intent;
             _ctx.Intent = intent;
+
+            if (health.IsInHitStun || health.IsHitAnimationPlaying || health.IsInIdleDamage)
+                return;
 
             backStep.Tick();
             _loco.TickTimers(motor.DeltaTime);
@@ -163,8 +163,6 @@ namespace Player
                 CancelMeleeAndCrouch();
             }
 
-            // ★ 修改：注释掉换弹时触发后撤步的调用
-            // HandleReloadBackStep(intent);
             ResolveCaps(setAnimGate: true);
 
             bool actionInterrupt = melee.LocksActions || backStep.IsActive || jump.OnAir
@@ -185,9 +183,10 @@ namespace Player
             }
         }
 
+        // ★ FixedUpdate - 过场模式下完全返回
         private void FixedUpdate()
         {
-            if (!_initialized || locked || !controlLocomotion) return;
+            if (!_initialized || locked || !controlLocomotion || cutsceneMode) return;
 
             motor.ProbeEnvironment();
             ResolveCaps();
@@ -245,17 +244,6 @@ namespace Player
                 jump.TryStartBackFlip();
                 return;
             }
-
-            backStep.TryStart();
-        }
-
-        // 此方法已不再被调用（已注释），保留以防后续可能使用
-        private void HandleReloadBackStep(PlayerIntent intent)
-        {
-            if (!gun.IsReloading || crouch.State != PlayerCrouchState.Standing
-                || !motor.IsGrounded || jump.OnAir || backStep.IsBusy) return;
-
-            if (!PlayerJump.IsMoveBehind(intent.Move, motor.Facing)) return;
 
             backStep.TryStart();
         }
