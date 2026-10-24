@@ -27,11 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2561546880855102280}
   serializedVersion: 2
-<<<<<<< Updated upstream
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-=======
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
->>>>>>> Stashed changes
   m_LocalPosition: {x: 11.83638, y: -3.9560838, z: -0.23967391}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -84,15 +80,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-<<<<<<< Updated upstream
-  m_SortingLayerID: -2115991573
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-=======
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 8
->>>>>>> Stashed changes
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8845331028306210144
 MonoBehaviour:

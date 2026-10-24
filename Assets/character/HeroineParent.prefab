@@ -348,11 +348,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: -0.00000018626451, y: 0, z: 0}
-=======
   m_ConnectedAnchor: {x: 0.0000007674098, y: 0.00000047683716, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -600,13 +596,8 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-<<<<<<< Updated upstream
-  m_SortingLayerID: -2115991573
-  m_SortingLayer: 2
-=======
   m_SortingLayerID: 1397525999
   m_SortingLayer: 1
->>>>>>> Stashed changes
   m_SortingOrder: 10
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!95 &5334693058038147478
@@ -1092,11 +1083,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 0.77879983, y: -0.112400055, z: 0}
-=======
   m_ConnectedAnchor: {x: 0.77880174, y: -0.11239958, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -1239,11 +1226,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 0.6035996, y: 0.08899987, z: 0}
-=======
   m_ConnectedAnchor: {x: 0.6036015, y: 0.089000344, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -1968,11 +1951,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 1.7217996, y: 0.18469995, z: 0}
-=======
   m_ConnectedAnchor: {x: 1.7217996, y: 0.18470043, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -2115,11 +2094,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: -1.9018996, y: 0.96970016, z: 0}
-=======
   m_ConnectedAnchor: {x: -1.9018996, y: 0.96970063, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -2316,11 +2291,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 3.0615249, y: -0.81746775, z: 0}
-=======
   m_ConnectedAnchor: {x: 3.0615268, y: -0.8174672, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -2918,11 +2889,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 1.1830001, y: 0.11170012, z: 0}
-=======
   m_ConnectedAnchor: {x: 1.1829982, y: 0.11169964, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -3570,11 +3537,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 1.3249996, y: -0.50360066, z: 0}
-=======
   m_ConnectedAnchor: {x: 1.3250015, y: -0.5036002, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -3721,11 +3684,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-<<<<<<< Updated upstream
-  m_IsActive: 1
-=======
   m_IsActive: 0
->>>>>>> Stashed changes
 --- !u!4 &8987751591308700417
 Transform:
   m_ObjectHideFlags: 0
@@ -4913,11 +4872,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: -1.5662997, y: 0.8142003, z: 0}
-=======
   m_ConnectedAnchor: {x: -1.5663016, y: 0.8141998, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -5060,11 +5015,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 0.0026337018, y: -0.0022077695, z: 0}
-=======
   m_ConnectedAnchor: {x: 0.0026377167, y: -0.0022072631, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -5582,11 +5533,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 14.9047, y: 8.4796, z: 0}
-=======
   m_ConnectedAnchor: {x: 61.9947, y: 13.9596, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -5729,11 +5676,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: 0.053799838, y: -0.027299583, z: 0}
-=======
   m_ConnectedAnchor: {x: 0.05380079, y: -0.02730006, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -6411,11 +6354,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 1
-<<<<<<< Updated upstream
-  m_ConnectedAnchor: {x: -2.2709239, y: -0.7927998, z: 0}
-=======
   m_ConnectedAnchor: {x: -2.2709239, y: -0.79280025, z: 0}
->>>>>>> Stashed changes
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:

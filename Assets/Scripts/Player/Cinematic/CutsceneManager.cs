@@ -1,17 +1,4 @@
 using System.Collections;
-<<<<<<< Updated upstream
-using UnityEngine;
-using UnityEngine.Playables;
-using Player;
-using Chronos; // 引入 Chronos 命名空间
-
-public class CutsceneManager : MonoBehaviour
-{
-    public PlayableDirector director;
-    public GameObject gameplayPlayer;
-    public GameObject cinematicPlayer;
-
-=======
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -73,16 +60,11 @@ public class CutsceneManager : MonoBehaviour
     public DialogueActorAnimConfig[] npcDialogueAnims;
 
     // 内部引用
->>>>>>> Stashed changes
     private PlayerController playerController;
     private Animator gameplayAnimator;
     private Rigidbody2D gameplayRigidbody;
     private Renderer[] gameplayRenderers;
-<<<<<<< Updated upstream
-    private LocalClock localClock; // Chronos Local Clock 引用
-    private bool isCutscenePlaying = false;
 
-=======
     private ScoutCameraFinal cameraScript;
 
     // 对话期间 Spine 驱动
@@ -116,7 +98,6 @@ public class CutsceneManager : MonoBehaviour
     private Quaternion _cinematicInitialRotation;
     private Vector3 _cinematicInitialScale;
 
->>>>>>> Stashed changes
     void Start()
     {
         gameplayAnimator = gameplayPlayer.GetComponent<Animator>();
@@ -124,21 +105,6 @@ public class CutsceneManager : MonoBehaviour
         playerController = gameplayPlayer.GetComponent<PlayerController>();
         gameplayRenderers = gameplayPlayer.GetComponentsInChildren<Renderer>();
 
-<<<<<<< Updated upstream
-        // 获取 Local Clock 组件
-        localClock = gameplayPlayer.GetComponent<LocalClock>();
-        if (localClock == null)
-            Debug.LogWarning("未找到 LocalClock，Chronos 暂停功能将不可用。");
-
-        if (playerController == null)
-            Debug.LogError("未找到 PlayerController！");
-
-        SetGameplayVisible(true);
-        cinematicPlayer.SetActive(false);
-        director.stopped += OnCutsceneStopped;
-    }
-
-=======
         if (playerController == null)
             Debug.LogError("[CutsceneManager] 未找到 PlayerController！");
 
@@ -273,7 +239,6 @@ public class CutsceneManager : MonoBehaviour
     // ============================================================
     // 触发过场
     // ============================================================
->>>>>>> Stashed changes
     public void TriggerCutscene()
     {
         if (playerController == null) return;
@@ -281,53 +246,22 @@ public class CutsceneManager : MonoBehaviour
         playerController.cutsceneMode = true;
         isCutscenePlaying = true;
 
-<<<<<<< Updated upstream
-        // ★ 暂停 Chronos Local Clock：将时间流速设为 0
-        if (localClock != null)
-            localClock.localTimeScale = 0f;
-
-        // 清零物理速度
-        if (gameplayRigidbody != null)
-        {
-            gameplayRigidbody.velocity = Vector2.zero;
-            gameplayRigidbody.angularVelocity = 0f;
-            // 保险：关闭物理模拟，防止任何残留物理
-            gameplayRigidbody.simulated = false;
-        }
-=======
         if (cameraScript != null)
             cameraScript.enabled = false;
->>>>>>> Stashed changes
 
         StartCoroutine(WaitForIdleAndSwitch());
     }
 
-<<<<<<< Updated upstream
-=======
     // ============================================================
     // 等待自然 Idle → 切换到电影体
     // ============================================================
->>>>>>> Stashed changes
     IEnumerator WaitForIdleAndSwitch()
     {
         while (true)
         {
             if (gameplayAnimator == null) yield break;
             AnimatorStateInfo stateInfo = gameplayAnimator.GetCurrentAnimatorStateInfo(0);
-<<<<<<< Updated upstream
-            if (stateInfo.IsName("Idle")) break;
-            yield return null;
-        }
 
-        // 同步初始位置
-        cinematicPlayer.transform.position = gameplayPlayer.transform.position;
-        cinematicPlayer.transform.rotation = gameplayPlayer.transform.rotation;
-        cinematicPlayer.transform.localScale = gameplayPlayer.transform.localScale;
-
-        // ★ 关键：不隐藏游戏体，只禁用渲染
-        SetGameplayVisible(false);
-        cinematicPlayer.SetActive(true);
-=======
             if (stateInfo.IsName("Idle"))
                 break;
             yield return null;
@@ -363,37 +297,18 @@ public class CutsceneManager : MonoBehaviour
         if (hiddenDuringCutscene != null && hiddenDuringCutscene.Length > 0)
             StartCoroutine(FadeUI(0f, uiFadeDuration));
 
->>>>>>> Stashed changes
         director.Play();
 
         StartCoroutine(SyncPositionDuringCutscene());
     }
 
-<<<<<<< Updated upstream
-=======
     // ============================================================
     // 过场期间同步位置
     // ============================================================
->>>>>>> Stashed changes
     IEnumerator SyncPositionDuringCutscene()
     {
         while (isCutscenePlaying)
         {
-<<<<<<< Updated upstream
-            // 游戏体仍处于激活状态，Transform 可正常修改
-            gameplayPlayer.transform.position = cinematicPlayer.transform.position;
-            gameplayPlayer.transform.rotation = cinematicPlayer.transform.rotation;
-            gameplayPlayer.transform.localScale = cinematicPlayer.transform.localScale;
-
-            if (gameplayRigidbody != null)
-            {
-                gameplayRigidbody.position = cinematicPlayer.transform.position;
-                gameplayRigidbody.rotation = cinematicPlayer.transform.rotation.eulerAngles.z;
-                gameplayRigidbody.velocity = Vector2.zero;
-                gameplayRigidbody.angularVelocity = 0f;
-            }
-
-=======
             if (!_isInDialogue && cinematicVisual != null)
             {
                 _lastCinematicPosition = cinematicVisual.position;
@@ -411,34 +326,10 @@ public class CutsceneManager : MonoBehaviour
                     gameplayRigidbody.angularVelocity = 0f;
                 }
             }
->>>>>>> Stashed changes
             yield return null;
         }
     }
 
-<<<<<<< Updated upstream
-    private void SetGameplayVisible(bool visible)
-    {
-        foreach (var r in gameplayRenderers)
-        {
-            if (r != null)
-                r.enabled = visible;
-        }
-    }
-
-    private void OnCutsceneStopped(PlayableDirector obj)
-    {
-        isCutscenePlaying = false;
-
-        // 最终位置同步
-        Vector3 finalPos = cinematicPlayer.transform.position;
-        Quaternion finalRot = cinematicPlayer.transform.rotation;
-        Vector3 finalScale = cinematicPlayer.transform.localScale;
-
-        gameplayPlayer.transform.position = finalPos;
-        gameplayPlayer.transform.rotation = finalRot;
-        gameplayPlayer.transform.localScale = finalScale;
-=======
     // ============================================================
     // 对话入口
     // ============================================================
@@ -734,7 +625,6 @@ public class CutsceneManager : MonoBehaviour
 
         gameplayPlayer.transform.position = finalPos;
         gameplayPlayer.transform.rotation = finalRot;
->>>>>>> Stashed changes
 
         if (gameplayRigidbody != null)
         {
@@ -742,26 +632,6 @@ public class CutsceneManager : MonoBehaviour
             gameplayRigidbody.rotation = finalRot.eulerAngles.z;
             gameplayRigidbody.velocity = Vector2.zero;
             gameplayRigidbody.angularVelocity = 0f;
-<<<<<<< Updated upstream
-            // 恢复物理模拟
-            gameplayRigidbody.simulated = true;
-            Physics2D.SyncTransforms();
-        }
-
-        // 恢复渲染
-        SetGameplayVisible(true);
-        cinematicPlayer.SetActive(false);
-
-        // ★ 恢复 Chronos Local Clock：将时间流速设回 1
-        if (localClock != null)
-            localClock.localTimeScale = 1f;
-
-        // 恢复输入
-        if (playerController != null)
-            playerController.cutsceneMode = false;
-
-        director.stopped -= OnCutsceneStopped;
-=======
             gameplayRigidbody.bodyType = _originalBodyType;
             Physics2D.SyncTransforms();
         }
@@ -871,6 +741,5 @@ public class CutsceneManager : MonoBehaviour
         {
             if (npc != null) npc.SetActive(false);
         }
->>>>>>> Stashed changes
     }
 }

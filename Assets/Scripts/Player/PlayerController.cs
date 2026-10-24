@@ -25,7 +25,6 @@ namespace Player
         [Header("选项")]
         [SerializeField] private bool controlLocomotion = true;
         [SerializeField] private bool locked;
-        public bool cutsceneMode = false;
 
         // ★ 过场模式开关
         public bool cutsceneMode = false;
@@ -116,14 +115,6 @@ namespace Player
         // ★ Update - 过场模式下完全返回
         private void Update()
         {
-<<<<<<< Updated upstream
-            health.Tick();
-
-            if (!_initialized || locked || cutsceneMode)
-                return;
-
-            var intent = inputReader.Intent;
-=======
             if (binding != null && binding.IsActive)
             {
                 var bIntent = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
@@ -143,7 +134,7 @@ namespace Player
             }
 
             var intent = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
->>>>>>> Stashed changes
+
             _ctx.Intent = intent;
 
             if (health.IsInHitStun || health.IsHitAnimationPlaying || health.IsInIdleDamage)
