@@ -1,0 +1,66 @@
+📄 1. HUDManager.cs
+类型：HUD 数据绑定脚本（子弹显示）
+
+作用：把 PlayerGun 里的弹药数据，实时显示到 HUD 的 TMP 文字上。
+
+核心功能：
+
+功能	说明
+自动查找 PlayerGun	FindObjectOfType<PlayerGun>()，不需要手动拖引用
+事件订阅	订阅 PlayerGun.OnAmmoChanged，弹药变化时自动刷新 UI
+格式化显示	用 string.Format 把 {0}/{1} 替换成「当前/最大子弹」
+手动刷新（右键菜单）	[ContextMenu("强制刷新子弹显示")] 右键脚本可以强制刷新
+挂在：HUD 的 Canvas 或任意 UI 管理物体上。
+
+配合：PlayerGun.cs（里面定义了 OnAmmoChanged 事件和 Ammo、MaxAmmo 属性）。
+
+何时用：游戏里有 HUD 显示子弹数时。
+
+📄 2. FollowCamera.cs
+类型：UI 跟随相机（Billboard）
+
+作用：让一个 World Space Canvas 始终跟随相机，并面向相机（Billboard 效果）。
+
+核心功能：
+
+功能	说明
+位置跟随	UI 始终保持在相机前方 distanceFromCamera 距离
+三种朝向模式	FullBillboard（完全朝向相机）/ YAxisBillboard（只绕 Y 轴）/ FixedDirection（固定朝向）
+自动匹配视口	正交相机下，自动把 Canvas 尺寸设为相机视野大小
+挂在：一个 World Space Canvas 上（比如血条、名字牌、伤害数字）。
+
+何时用：
+
+你有一个 World Space 的 UI（比如敌人头顶的血条）
+
+需要它永远正对相机（Billboard）
+
+需要它铺满相机视野（比如全屏渐变滤镜）
+
+⚠️ 注意：这个脚本名字叫 FollowCamera，容易和 ScoutCameraFinal（相机跟随玩家）混淆。
+
+FollowCamera = UI 跟随相机
+
+ScoutCameraFinal = 相机跟随玩家
+
+📄 3. HUDController.cs
+类型：HUD 显隐控制（极简版）
+
+作用：确保 HUD 底部栏在游戏运行时被显示。
+
+核心功能：
+
+在 Awake() 中，把 bottomBar（比如底部操作栏）SetActive(true)
+
+只有这一点逻辑，非常轻量
+
+挂在：HUD 相关的管理物体上。
+
+何时用：
+
+你在编辑器里故意隐藏了某些 HUD（便于编辑场景），
+
+运行时自动激活它们。
+
+💡 其实这个功能非常小，可以直接用 CutsceneManager 里的 FadeUI 或 CanvasGroup 代替。但如果你只是单纯想初始化时显示，用它也够了。
+

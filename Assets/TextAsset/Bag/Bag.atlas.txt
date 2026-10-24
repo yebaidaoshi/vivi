@@ -1,0 +1,7 @@
+Bag.png
+size:512,128
+filter:Linear,Linear
+Bag
+bounds:2,2,178,101
+Bag_Cover
+bounds:182,12,142,91

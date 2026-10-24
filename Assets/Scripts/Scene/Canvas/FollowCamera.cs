@@ -54,23 +54,18 @@ public class FollowCamera : MonoBehaviour
         switch (rotationMode)
         {
             case RotationMode.FullBillboard:
-                // 完全面对摄像机（可能倾斜）
                 Vector3 dirFull = targetCamera.transform.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(dirFull, Vector3.up);
                 break;
 
             case RotationMode.YAxisBillboard:
-                // 仅绕Y轴面对摄像机（保持竖直）
                 Vector3 dirY = targetCamera.transform.position - transform.position;
-                dirY.y = 0f; // 忽略垂直差异，只计算水平方向
+                dirY.y = 0f;
                 if (dirY.sqrMagnitude > 0.001f)
                     transform.rotation = Quaternion.LookRotation(dirY, Vector3.up);
                 break;
 
             case RotationMode.FixedDirection:
-                // 固定方向（完全不旋转）
-                // 保持你设定的初始旋转，或者显式设为 (0,0,0)
-                // 这里保持当前旋转不变
                 break;
         }
     }

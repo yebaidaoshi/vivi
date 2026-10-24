@@ -1,0 +1,16 @@
+BlanketGirl.png
+size:2048,1024
+filter:Linear,Linear
+pma:true
+Bottom
+bounds:1572,485,338,440
+Bottom_Stand
+bounds:2,155,318,996
+rotate:90
+Head
+bounds:2,2,85,151
+Top
+bounds:1073,474,497,451
+Top_Stand
+bounds:2,475,450,1069
+rotate:90

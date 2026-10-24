@@ -167,6 +167,9 @@ namespace Player
         private bool _isCrouchAttack;
         private bool _hasSpawnedCrouchSlash;  // 防止下蹲攻击每帧重复触发特效
 
+        /// <summary>★ 预输入：Attackable 之前按下的 SlashPressed 被记下，
+        /// 到 Attackable 时自动衔接下一段（无需精确卡帧，连点两下即可连出）。</summary>
+        private bool _comboInputBuffered;
 
         public PlayerMeleePhase Phase => _phase;
         public bool IsAttacking => _phase != PlayerMeleePhase.Idle;
@@ -777,16 +780,29 @@ namespace Player
                 && _combo < _settings.maxMeleeCombo
                 && _ctx.IsGrounded && !_ctx.IsSliding;
 
-            // 无缓冲：Attackable 之前的输入无效。从 Attackable 事件到片段结束，
-            // 任意一帧攻击键按下（该窗口内按住或新按下）都会推进连招（1→2 / 2→3）。
-            // Attackable 前松开的单击无法衔接，故一次点击 = 一次攻击。
-            if (!canChain || _elapsed < _attackableAt)
+            if (!canChain)
             {
                 return false;
             }
 
-            if (intent.Slash)
+            // ── 预输入窗口：Attackable 之前 ──
+            // 任意一帧按下 SlashPressed 都会被记住；到 Attackable 时自动衔接。
+            // 玩家无需精确卡帧，连点两下左键即可顺畅出两刀。
+            if (_elapsed < _attackableAt)
             {
+                if (intent.SlashPressed)
+                {
+                    _comboInputBuffered = true;
+                }
+
+                return false;
+            }
+
+            // ── Attackable 之后 ──
+            // 缓冲的输入 OR 按住 Slash（保留原有"按住自动连"行为）都触发衔接。
+            if (_comboInputBuffered || intent.Slash)
+            {
+                _comboInputBuffered = false;
                 DoGroundCombo(_combo + 1);
                 return true;
             }
@@ -1013,6 +1029,9 @@ namespace Player
             _overrideVx = 0f;
             _hasOverrideVx = true;
             _motor.SetImmediateVelocityX(0f);
+
+            // ★ 新攻击开始 — 清空连招预输入缓冲，避免上一段的残留输入误触发衔接。
+            _comboInputBuffered = false;
         }
 
         private void EndAttack()
@@ -1036,6 +1055,9 @@ namespace Player
             _pendingAttack3Katana4 = false;
             _isCrouchAttack = false;
             _dashInputBuffered = false;
+
+            // ★ 攻击结束 — 清空连招预输入缓冲。
+            _comboInputBuffered = false;
         }
         private void BeginDash(int nextCombo)
         {

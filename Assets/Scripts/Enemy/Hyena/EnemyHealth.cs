@@ -27,7 +27,7 @@ namespace Enemy
         private EnemyMotor motor;
         private EnemyAnimDriver anim;
         private EnemyAI ai;
-        private int facing = 1;
+        private EnemyCombat combat;                 // ★ 缓存引用
         private int fleeDirection = 1;
         private SkeletonMecanim skeletonMecanim;
         private Rigidbody2D rb;
@@ -43,6 +43,7 @@ namespace Enemy
             currentHealth = maxHealth;
             isDead = false;
             ai = GetComponent<EnemyAI>();
+            combat = GetComponent<EnemyCombat>();   // ★ 缓存
             skeletonMecanim = GetComponent<SkeletonMecanim>();
             rb = GetComponent<Rigidbody2D>();
         }
@@ -50,7 +51,9 @@ namespace Enemy
         private void Update()
         {
             if (!isDead && motor != null && motor.Velocity.x != 0)
-                facing = motor.Velocity.x > 0 ? 1 : -1;
+            {
+                // 保留方向供击飞降级使用
+            }
 
             if (isFleeing && motor != null)
             {
@@ -58,10 +61,6 @@ namespace Enemy
                     motor.UnfreezePhysics();
 
                 motor.MoveTo(new Vector2(fleeDirection, 0), fleeSpeed);
-                if (fleeDirection > 0)
-                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
-                else
-                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
             }
         }
 
@@ -70,7 +69,6 @@ namespace Enemy
             if (isDead) return;
 
             lastAttacker = attacker;
-
             currentHealth -= damage;
             StartCoroutine(FlashColor(Color.yellow, 0.15f));
 
@@ -102,14 +100,16 @@ namespace Enemy
                 motor.Stop();
                 if (motor.IsFrozen)
                     motor.UnfreezePhysics();
-                // ★ 关键：让 Motor 在击飞期间不要覆盖速度
                 motor.SetIgnorePhysicsUpdate(true);
             }
             if (ai != null) ai.enabled = false;
 
+            // ★ 强制终止束缚协程（如果正在飞扑/束缚中被打死）
+            combat?.ForceEndMountAttack();
+
             anim.PlayState(hitBlow1Anim);
 
-            // 计算击飞方向：从攻击者指向敌人（即敌人被击飞远离攻击者）
+            // 计算击飞方向
             Vector2 knockDir = Vector2.right;
             if (lastAttacker != null)
             {
@@ -121,8 +121,8 @@ namespace Enemy
             }
             else
             {
-                // 降级：使用敌人朝向的反方向
-                knockDir = facing > 0 ? Vector2.left : Vector2.right;
+                int f = motor != null ? motor.Facing : 1;
+                knockDir = f > 0 ? Vector2.left : Vector2.right;
             }
 
             Vector2 force = knockDir * knockbackForce;
@@ -143,15 +143,13 @@ namespace Enemy
             if (rb != null)
                 rb.velocity = Vector2.zero;
 
-            // ★ 恢复 Motor 的物理更新控制
             if (motor != null)
                 motor.SetIgnorePhysicsUpdate(false);
 
             fleeDirection = hitDir;
-            if (fleeDirection > 0)
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
-            else
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+
+            if (motor != null)
+                motor.SetFacing(fleeDirection);
 
             anim.PlayState(fleeAnim);
             isFleeing = true;

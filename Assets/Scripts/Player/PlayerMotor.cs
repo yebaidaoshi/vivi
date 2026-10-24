@@ -223,20 +223,20 @@ namespace Player
         }
 
 #if UNITY_EDITOR
-		private void OnDrawGizmosSelected()
-		{
-			int facing = Application.isPlaying ? _facing : 1;
-			Vector2 g = (Vector2)transform.position
-				+ new Vector2(settings.groundCheckOffset.x * facing, settings.groundCheckOffset.y);
-			Gizmos.color = Application.isPlaying && _grounded ? Color.green : Color.yellow;
-			Gizmos.DrawWireSphere(g, settings.groundCastRadius);
-			Gizmos.DrawLine(g, g + Vector2.down * settings.groundCastDistance);
+        private void OnDrawGizmosSelected()
+        {
+            int facing = Application.isPlaying ? _facing : 1;
+            Vector2 g = (Vector2)transform.position
+                + new Vector2(settings.groundCheckOffset.x * facing, settings.groundCheckOffset.y);
+            Gizmos.color = Application.isPlaying && _grounded ? Color.green : Color.yellow;
+            Gizmos.DrawWireSphere(g, settings.groundCastRadius);
+            Gizmos.DrawLine(g, g + Vector2.down * settings.groundCastDistance);
 
-			Vector2 w = (Vector2)transform.position + settings.wallCheckOffset;
-			Gizmos.color = Color.cyan;
-			Gizmos.DrawLine(w, w + Vector2.right * settings.wallCastDistance);
-			Gizmos.DrawLine(w, w + Vector2.left * settings.wallCastDistance);
-		}
+            Vector2 w = (Vector2)transform.position + settings.wallCheckOffset;
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(w, w + Vector2.right * settings.wallCastDistance);
+            Gizmos.DrawLine(w, w + Vector2.left * settings.wallCastDistance);
+        }
 #endif
     }
 }

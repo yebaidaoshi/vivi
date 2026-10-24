@@ -1,0 +1,12 @@
+Axe_Broke.png
+size:512,256
+filter:Linear,Linear
+pma:true
+Axe_Broken_1
+bounds:2,2,209,191
+Axe_Broken_2
+bounds:213,54,52,264
+rotate:90
+Axe_Broken_3
+bounds:213,108,85,287
+rotate:90

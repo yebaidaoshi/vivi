@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Player;
 
 namespace Enemy
 {
@@ -20,7 +21,13 @@ namespace Enemy
 
         [Header("距离阈值")]
         [SerializeField] private float attackRange = 2.5f;
-        [SerializeField] private float runThreshold = 4f;
+        [SerializeField] private float minMountAttackRange = 3.0f;
+        [SerializeField] private float mountAttackRange = 6.5f;
+        [SerializeField] private float runThreshold = 9f;
+
+        [Header("飞扑距离可视化（只读）")]
+        [SerializeField] private float gizmoLeapSpeedX = 5.0f;
+        [SerializeField] private float gizmoLeapDuration = 65f / 60f;
 
         [Header("视野")]
         [SerializeField] private float viewAngle = 60f;
@@ -36,7 +43,6 @@ namespace Enemy
         [SerializeField] private string movementState = "Movement";
         [SerializeField] private string clawAnim = "Claw";
 
-        // ---- 攀爬检测参数 ----
         [Header("攀爬检测")]
         [SerializeField] private float climbCheckDistance = 2.5f;
         [SerializeField] private float climbCheckHeight = 2.5f;
@@ -53,11 +59,13 @@ namespace Enemy
         private float attackCooldownTimer;
         private bool isMoving = false;
 
-        // ---- 攀爬状态 ----
         private bool isClimbing = false;
         private float climbCooldownTimer = 0f;
         private Coroutine climbCoroutine;
         private bool jumpEventTriggered = false;
+
+        // ★ 本地冻结标志，避免重复调用 FreezeAnimator
+        private bool _frozenByGlobal = false;
 
         public void Init(EnemyMotor motor, EnemyAnimDriver anim, EnemyCombat combat, EnemyHealth health)
         {
@@ -76,17 +84,41 @@ namespace Enemy
             anim.PlayState(idleAnim);
             timer = Random.Range(3f, 5f);
             isMoving = false;
+            _frozenByGlobal = false;
         }
 
         public void Tick()
         {
             if (target == null || health.IsDead) return;
 
-            if (attackCooldownTimer > 0f)
-                attackCooldownTimer -= Time.deltaTime;
+            // ★★ 全局时间冻结：击杀者播完 Mount_Kill，所有敌人停在当前帧
+            if (EnemyCombat.GlobalTimeFrozen)
+            {
+                if (!_frozenByGlobal)
+                {
+                    _frozenByGlobal = true;
+                    motor.Stop();
+                    if (motor.IsFrozen) motor.UnfreezePhysics();
+                    anim.FreezeAnimator();   // 冻结在当前帧
+                }
+                return;
+            }
 
-            if (climbCooldownTimer > 0f)
-                climbCooldownTimer -= Time.deltaTime;
+            // 自己正在束缚玩家 → 全权交给 EnemyCombat
+            if (combat != null && combat.IsMountAttacking) return;
+
+            // 已击杀玩家并冻结在 Mount_Kill 最后一帧 → AI 不干预
+            if (combat != null && combat.IsPostKillFrozen) return;
+
+            // 玩家死亡 / 被其他敌人束缚 → 自己停下播 Idle
+            if (IsPlayerDead() || IsPlayerBound())
+            {
+                ForcePassiveIdle();
+                return;
+            }
+
+            if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
+            if (climbCooldownTimer > 0f) climbCooldownTimer -= Time.deltaTime;
 
             float distX = Mathf.Abs(target.position.x - transform.position.x);
             bool playerDetected = CheckPlayerDetected();
@@ -105,8 +137,7 @@ namespace Enemy
                     timer -= Time.deltaTime;
                     if (timer <= 0f)
                     {
-                        if (isChasing)
-                            currentState = State.Chase;
+                        if (isChasing) currentState = State.Chase;
                         else
                         {
                             currentState = State.Patrol;
@@ -140,16 +171,12 @@ namespace Enemy
                     break;
 
                 case State.Chase:
-                    if (combat.IsAttacking)
-                        break;
-
-                    if (isClimbing)
-                        break;
+                    if (combat.IsAttacking) break;
+                    if (isClimbing) break;
 
                     if (isChasing && target != null)
                     {
                         bool canClimb = CanClimbUp();
-
                         if (canClimb && climbCooldownTimer <= 0f)
                         {
                             StartClimb();
@@ -159,114 +186,156 @@ namespace Enemy
                         if (!combat.IsAttacking && motor.IsFrozen)
                             motor.UnfreezePhysics();
 
-                        if (distX <= attackRange)
-                        {
-                            motor.Stop();
-                            if (!combat.IsAttacking && attackCooldownTimer <= 0f)
-                                StartAttack();
-                        }
-                        else
-                        {
-                            float dir = Mathf.Sign(target.position.x - transform.position.x);
-                            motor.FaceDirection(new Vector2(dir, 0));
-
-                            float targetSpeed = distX > runThreshold ? runSpeed : walkSpeed;
-                            motor.MoveTo(new Vector2(dir, 0), targetSpeed);
-
-                            if (!isMoving)
-                            {
-                                isMoving = true;
-                                anim.PlayState(movementState);
-                            }
-                        }
+                        Chase(distX);
                     }
                     break;
             }
         }
 
-        // ---- 检测是否可以攀爬 ----
-        private bool CanClimbUp()
+        private bool IsPlayerDead()
         {
             if (target == null) return false;
 
+            var damageable = target.GetComponentInParent<IDamageable>();
+            if (damageable != null && damageable.IsDead) return true;
+
+            var pb = PlayerBinding.Instance;
+            if (pb != null && pb.Phase == BindingPhase.Dead) return true;
+
+            return false;
+        }
+
+        private bool IsPlayerBound()
+        {
+            var pb = PlayerBinding.Instance;
+            if (pb == null) return false;
+            return pb.IsActive;
+        }
+
+        private void ForcePassiveIdle()
+        {
+            if (combat != null && combat.IsAttacking && !combat.IsMountAttacking)
+                combat.CancelAttack();
+
+            if (motor.IsFrozen) motor.UnfreezePhysics();
+            motor.Stop();
+
+            isMoving = false;
+            isChasing = false;
+            currentState = State.Idle;
+            timer = Random.Range(3f, 5f);
+
+            if (!anim.IsPlaying(idleAnim))
+                anim.PlayState(idleAnim);
+        }
+
+        private void Chase(float distX)
+        {
+            if (distX <= attackRange)
+            {
+                motor.Stop();
+
+                if (!combat.IsAttacking && attackCooldownTimer <= 0f)
+                    StartAttack();
+                return;
+            }
+
+            if (distX <= mountAttackRange && distX >= minMountAttackRange)
+            {
+                if (combat.CanMountAttack)
+                {
+                    motor.Stop();
+                    float d = Mathf.Sign(target.position.x - transform.position.x);
+                    motor.FaceDirection(new Vector2(d, 0));
+                    combat.PerformMountAttack();
+                    isMoving = false;
+                    return;
+                }
+
+                MoveToward(distX, walkSpeed);
+                return;
+            }
+
+            float speed = distX > runThreshold ? runSpeed : walkSpeed;
+            MoveToward(distX, speed);
+        }
+
+        private void MoveToward(float distX, float speed)
+        {
+            float dir = Mathf.Sign(target.position.x - transform.position.x);
+            motor.FaceDirection(new Vector2(dir, 0));
+            motor.MoveTo(new Vector2(dir, 0), speed);
+
+            if (!isMoving)
+            {
+                isMoving = true;
+                anim.PlayState(movementState);
+            }
+        }
+
+        private bool CanClimbUp()
+        {
+            if (target == null) return false;
             int dirSign = target.position.x > transform.position.x ? 1 : -1;
             Vector2 direction = Vector2.right * dirSign;
             Vector2 origin = (Vector2)transform.position + Vector2.up * 0.5f;
 
             RaycastHit2D hit = Physics2D.Raycast(origin, direction, climbCheckDistance, climbObstacleMask);
-
             if (hit.collider != null)
             {
                 Vector2 topOrigin = (Vector2)hit.point + Vector2.up * climbCheckHeight;
                 RaycastHit2D topHit = Physics2D.Raycast(topOrigin, direction, 0.5f, climbObstacleMask);
-
-                if (topHit.collider == null)
-                    return true;
+                if (topHit.collider == null) return true;
             }
-
             return false;
         }
 
-        // ---- 开始攀爬 ----
         private void StartClimb()
         {
             if (isClimbing || climbCooldownTimer > 0f) return;
-
             isClimbing = true;
             climbCooldownTimer = 2.5f;
             jumpEventTriggered = false;
-
             motor.FreezePhysics();
             motor.Stop();
             anim.PlayState(jumpAnim);
-
-            if (climbCoroutine != null)
-                StopCoroutine(climbCoroutine);
+            if (climbCoroutine != null) StopCoroutine(climbCoroutine);
             climbCoroutine = StartCoroutine(ClimbRoutine());
         }
 
-        // ---- 攀爬协程 ----
         private IEnumerator ClimbRoutine()
         {
-            // 1. 解冻并施加向上力（起跳）
             motor.UnfreezePhysics();
             motor.SetIgnorePhysicsUpdate(true);
             motor.ApplyKnockback(Vector2.up * climbForce);
 
-            // 2. 等待动画事件触发（大约到第36帧，约0.6秒）
             float waitForEvent = 0.6f;
             float elapsed = 0f;
             while (elapsed < waitForEvent)
             {
                 elapsed += Time.deltaTime;
-                if (jumpEventTriggered)
-                    break;
+                if (jumpEventTriggered) break;
                 yield return null;
             }
 
-            // 如果事件未触发，作为保险也施加水平力
             if (!jumpEventTriggered)
             {
                 int dirSign = target != null && target.position.x > transform.position.x ? 1 : -1;
                 motor.ApplyKnockback(Vector2.right * dirSign * climbHorizontalForce);
             }
 
-            // 3. 等待动画播放完毕（剩余时间 ≈ 2.233秒）
             yield return new WaitForSeconds(2.233f);
 
-            // 4. 强制重置所有状态
             motor.SetIgnorePhysicsUpdate(false);
             motor.Stop();
             isClimbing = false;
             climbCoroutine = null;
             climbCooldownTimer = 0f;
 
-            // 5. 恢复移动状态，继续追击
             anim.PlayState(movementState);
             isMoving = true;
         }
 
-        // ---- 接收动画事件（第36帧触发） ----
         public void OnJumpHighEvent()
         {
             if (isClimbing && motor != null && !jumpEventTriggered)
@@ -277,7 +346,6 @@ namespace Enemy
             }
         }
 
-        // ---- 检查玩家是否被检测到 ----
         private bool CheckPlayerDetected()
         {
             if (target == null) return false;
@@ -303,10 +371,15 @@ namespace Enemy
             return false;
         }
 
-        // ---- 开始攻击 ----
         private void StartAttack()
         {
             if (combat.IsAttacking || attackCooldownTimer > 0f) return;
+
+            if (target != null)
+            {
+                float d = Mathf.Sign(target.position.x - transform.position.x);
+                motor.FaceDirection(new Vector2(d, 0));
+            }
 
             attackCooldownTimer = attackCooldown;
             motor.FreezePhysics();
@@ -316,19 +389,15 @@ namespace Enemy
             isMoving = false;
         }
 
-        // ---- 可视化调试（保留原有视野绘制） ----
         private void OnDrawGizmosSelected()
         {
-            if (target == null) return;
-
             Vector3 start = transform.position;
 
-            // 视野扇形
-            Gizmos.color = new Color(0, 1, 0, 0.3f);
             Vector3 forward = transform.right;
             float halfAngle = viewAngle * 0.5f * Mathf.Deg2Rad;
             Vector3 leftDir = Quaternion.Euler(0, 0, -halfAngle) * forward;
             Vector3 rightDir = Quaternion.Euler(0, 0, halfAngle) * forward;
+            Gizmos.color = new Color(0, 1, 0, 0.15f);
             Gizmos.DrawLine(start, start + leftDir * viewDistance);
             Gizmos.DrawLine(start, start + rightDir * viewDistance);
             int segments = 20;
@@ -343,9 +412,55 @@ namespace Enemy
                 prev = next;
             }
 
-            // 背后检测圈
-            Gizmos.color = new Color(1, 0, 0, 0.3f);
+            Gizmos.color = new Color(1, 0, 0, 0.2f);
             Gizmos.DrawWireSphere(start, backDetectDistance);
+
+            DrawCircleAt(start, attackRange, new Color(1f, 0.3f, 0.3f));
+            DrawCircleAt(start, minMountAttackRange, new Color(0.5f, 0.5f, 1f));
+            DrawCircleAt(start, mountAttackRange, new Color(1f, 0.85f, 0f));
+            float leapDistance = gizmoLeapSpeedX * gizmoLeapDuration;
+            DrawCircleAt(start, leapDistance, new Color(0f, 0.8f, 1f));
+
+            DrawLeapArrow(start, -1, leapDistance);
+            DrawLeapArrow(start, +1, leapDistance);
+
+#if UNITY_EDITOR
+            UnityEditor.Handles.color = Color.white;
+            UnityEditor.Handles.Label(start + Vector3.up * 4.5f,
+                $"红:攻击 {attackRange:F1}m\n" +
+                $"蓝:最小飞扑 {minMountAttackRange:F1}m\n" +
+                $"黄:最大飞扑 {mountAttackRange:F1}m\n" +
+                $"青:飞扑距离 {leapDistance:F2}m",
+                new GUIStyle
+                {
+                    normal = { textColor = Color.white },
+                    fontSize = 11,
+                    fontStyle = FontStyle.Bold
+                });
+#endif
+        }
+
+        private void DrawCircleAt(Vector3 center, float radius, Color c)
+        {
+            Gizmos.color = c;
+            int seg = 48;
+            Vector3 prev = center + Vector3.right * radius;
+            for (int i = 1; i <= seg; i++)
+            {
+                float a = i / (float)seg * Mathf.PI * 2f;
+                Vector3 next = center + new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * radius;
+                Gizmos.DrawLine(prev, next);
+                prev = next;
+            }
+        }
+
+        private void DrawLeapArrow(Vector3 origin, int dirSign, float distance)
+        {
+            Gizmos.color = new Color(0f, 0.8f, 1f, 0.9f);
+            Vector3 end = origin + new Vector3(dirSign * distance, 0f, 0f);
+            Gizmos.DrawLine(origin, end);
+            Gizmos.DrawLine(end, end + new Vector3(-dirSign * 0.3f, 0.3f, 0f));
+            Gizmos.DrawLine(end, end + new Vector3(-dirSign * 0.3f, -0.3f, 0f));
         }
     }
 }

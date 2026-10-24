@@ -8,6 +8,10 @@ namespace Enemy
         [Header("移动参数")]
         [SerializeField] private float maxSpeed = 50f;
 
+        [Header("击退")]
+        [Tooltip("击退后多少秒内不覆盖水平速度（让冲量自然衰减）。")]
+        [SerializeField] private float knockbackIgnoreDuration = 1.5f;
+
         [Header("地面探测")]
         [SerializeField] private float groundCheckRadius = 0.2f;
         [SerializeField] private float groundCheckDistance = 0.3f;
@@ -19,11 +23,17 @@ namespace Enemy
         private RigidbodyType2D originalBodyType;
         private RigidbodyConstraints2D originalConstraints;
         private bool isFrozen = false;
-        private bool ignorePhysicsUpdate = false;  // ★ 新增
+        private bool ignorePhysicsUpdate = false;
+        private float knockbackTimer = 0f;
+
+        private int facing = 1;
+        public int Facing => facing;
+        public Rigidbody2D Rb => rb;
 
         public bool IsGrounded => grounded;
         public Vector2 Velocity => rb.velocity;
         public float Speed => Mathf.Abs(rb.velocity.x);
+        public bool IsFrozen => isFrozen;
 
         public void FreezePhysics()
         {
@@ -48,9 +58,6 @@ namespace Enemy
             transform.position = rb.position;
         }
 
-        public bool IsFrozen => isFrozen;
-
-        // ★ 新增：控制是否跳过物理更新
         public void SetIgnorePhysicsUpdate(bool ignore)
         {
             ignorePhysicsUpdate = ignore;
@@ -63,16 +70,24 @@ namespace Enemy
             originalBodyType = rb.bodyType;
             originalConstraints = rb.constraints;
             rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
+
+            facing = transform.localScale.x >= 0f ? 1 : -1;
         }
 
         public void PhysicsUpdate()
         {
             grounded = CheckGrounded();
-            if (isFrozen) return;
 
-            // ★ 如果忽略物理更新，不覆盖速度
-            if (ignorePhysicsUpdate)
+            if (isFrozen) return;
+            if (ignorePhysicsUpdate) return;
+
+            // ★ 击退期间不覆盖速度，让 AddForce 的冲量自然衰减
+            if (knockbackTimer > 0f)
+            {
+                knockbackTimer -= Time.fixedDeltaTime;
+                transform.position = rb.position;
                 return;
+            }
 
             rb.velocity = new Vector2(targetVelocityX, rb.velocity.y);
             transform.position = rb.position;
@@ -100,19 +115,60 @@ namespace Enemy
             targetVelocityX = 0f;
         }
 
+        /// <summary>
+        /// 施加击退冲量。会在 knockbackIgnoreDuration 秒内禁止 PhysicsUpdate 覆盖速度，
+        /// 让冲量自然衰减。
+        /// </summary>
         public void ApplyKnockback(Vector2 force)
         {
             if (isFrozen) return;
             rb.WakeUp();
             rb.AddForce(force, ForceMode2D.Impulse);
+            knockbackTimer = knockbackIgnoreDuration;
+        }
+
+        public void SetVelocityX(float vx)
+        {
+            if (isFrozen) return;
+            rb.WakeUp();
+            rb.velocity = new Vector2(vx, rb.velocity.y);
+            targetVelocityX = vx;
+        }
+
+        public void SetVelocity(Vector2 v)
+        {
+            if (isFrozen) return;
+            rb.WakeUp();
+            rb.velocity = v;
+            targetVelocityX = v.x;
+        }
+
+        public void SetRigidbodyPositionX(float x)
+        {
+            if (rb == null) return;
+            Vector2 p = rb.position;
+            p.x = x;
+            rb.position = p;
+        }
+
+        public void SetInterpolation(RigidbodyInterpolation2D mode)
+        {
+            if (rb != null) rb.interpolation = mode;
         }
 
         public void FaceDirection(Vector2 dir)
         {
-            if (dir.x > 0.1f)
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
-            else if (dir.x < -0.1f)
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            if (dir.x > 0.1f) SetFacing(1);
+            else if (dir.x < -0.1f) SetFacing(-1);
+        }
+
+        public void SetFacing(int dir)
+        {
+            if (dir == 0 || dir == facing) return;
+            facing = dir;
+            var s = transform.localScale;
+            s.x = Mathf.Abs(s.x) * dir;
+            transform.localScale = s;
         }
     }
 }

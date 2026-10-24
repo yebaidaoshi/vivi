@@ -1,0 +1,116 @@
+📄 1. TextHoverColor.cs
+类型：UI 文字悬停变色
+
+作用：让 UI 文字在鼠标悬停、按下、禁用等状态下自动变色，不依赖 Button 组件，可以和 Button 共存。
+
+核心功能：
+
+功能	说明
+悬停变色	鼠标进入变 highlightedColor，离开恢复 normalColor
+按下变色	鼠标按下变 pressedColor
+禁用变色	Button 不可交互时变 disabledColor
+平滑过渡	用 CrossFadeColor 做 0.1 秒渐变，比瞬间变色自然
+挂在：需要变色效果的 UI 文字物体上（必须手动拖入 textGraphic）。
+
+何时用：
+
+菜单按钮文字、设置项文字、可点击列表项
+
+用 Button 自带的 Transition 也能做到，但这个脚本更灵活（可以独立控制文字颜色，而 Button 的 Transition 是整体变色）
+
+📄 2. GameCompleteTrigger.cs
+类型：通关触发器
+
+作用：玩家走到终点触发区域时，淡出 → 显示通关 UI → 等待 3 秒 → 返回主菜单。
+
+核心功能：
+
+功能	说明
+触发检测	玩家（Tag = PlayerPresence）进入触发器时触发
+禁用玩家	禁用 PlayerJump、PlayerGun，清零刚体速度
+淡出过渡	调用 ScreenFader.Instance.FadeOut()
+显示通关面板	激活 victoryPanel，并设置文字内容
+自动返回主菜单	等待 3 秒后 SceneManager.LoadScene(mainMenuSceneName)
+挂在：终点触发区域的 GameObject 上（Box Collider 2D，勾选 Is Trigger）。
+
+配合：ScreenFader.cs（做淡出）。
+
+何时用：游戏有明确“通关”或“章节结束”节点。
+
+📄 3. MainMenuManager.cs
+类型：主菜单管理器
+
+作用：主菜单按钮事件绑定，处理「开始游戏」和「退出游戏」。
+
+核心功能：
+
+功能	说明
+开始游戏	调用 ScreenFader.FadeOutWithLoading()，异步加载游戏场景
+退出游戏	编辑器里停止播放，发布版退出程序
+依赖 ScreenFader	淡出和加载提示由 ScreenFader 处理
+挂在：主菜单场景的 MainMenuManager 物体上。
+
+配合：ScreenFader.cs（淡出 + 加载中提示）。
+
+何时用：任何有主菜单的游戏。
+
+📄 4. ScreenFader.cs
+类型：跨场景黑幕管理器（核心基础设施）
+
+作用：全局单例，负责场景切换时的黑幕淡入淡出 + 加载提示，并跨场景保留。
+
+核心功能：
+
+功能	说明
+单例 + DontDestroyOnLoad	全局唯一，跨场景保留
+FadeOut()	屏幕从透明变黑（1 秒）
+FadeIn()	屏幕从黑变透明（1 秒）
+FadeOutWithLoading()	变黑 + 显示「加载中...」
+FadeInAndHideLoading()	隐藏「加载中...」+ 变透明
+自动淡入	订阅 SceneManager.sceneLoaded 事件，场景加载完成后自动淡入（这是关键）
+挂在：主菜单场景（会自动 DontDestroyOnLoad）。
+
+何时用：任何需要场景切换过渡的游戏。
+
+⚠️ 注意：这个脚本和你之前写的 SceneFadeIn.cs（挂在黑幕 Image 上，只负责新场景淡出）功能重叠。如果你用了 ScreenFader，就不需要 SceneFadeIn。反之亦然。
+
+📄 5. CutsceneTrigger_01.cs（你之前问过的，这里就不重复）
+🎯 五者对照表
+脚本	类型	作用	关键依赖
+TextHoverColor.cs	UI 交互	文字悬停/按下变色	无
+GameCompleteTrigger.cs	游戏流程	通关触发 → 返回菜单	ScreenFader
+MainMenuManager.cs	菜单流程	开始/退出游戏	ScreenFader
+ScreenFader.cs	场景过渡	全局黑幕 + 加载提示	无（单例）
+🔗 它们如何配合
+text
+主菜单场景：
+  MainMenuManager.StartGame()
+    → ScreenFader.FadeOutWithLoading()（变黑 + 显示"加载中"）
+    → SceneManager.LoadSceneAsync("GameScene")
+    → 场景加载完成 → ScreenFader.OnSceneLoaded() → 自动 FadeIn（变透明）
+  
+游戏中：
+  玩家走到终点 → GameCompleteTrigger.OnTriggerEnter2D()
+    → ScreenFader.FadeOut()（变黑）
+    → 显示 victoryPanel
+    → 等待 3 秒
+    → SceneManager.LoadScene("MainMenu")
+    → 场景加载完成 → ScreenFader 自动 FadeIn
+⚠️ 注意点
+ScreenFader 和 SceneFadeIn 功能冲突：
+
+ScreenFader：单例、跨场景、订阅 sceneLoaded 自动淡入 —— 推荐用它
+
+SceneFadeIn：挂在每个新场景的黑幕上，手动淡出 —— 如果用了 ScreenFader 就别用这个
+
+ScreenFader 的淡入是自动的：
+
+只要调用过 FadeOutWithLoading()，场景加载完就会自动 FadeIn
+
+MainMenuManager 里不需要再手动调用 FadeInAndHideLoading()（注释里也说了）
+
+GameCompleteTrigger 没有用 FadeOutWithLoading：
+
+它只用 FadeOut()，没显示"加载中"
+
+因为通关面板会先显示，不需要 loading 提示

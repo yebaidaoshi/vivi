@@ -4332,9 +4332,12 @@ GameObject:
   - component: {fileID: 897233173176899270}
   - component: {fileID: 392793875939677696}
   - component: {fileID: 7336585275533452021}
+  - component: {fileID: 4652812698363603045}
   - component: {fileID: 6773082326232641233}
   - component: {fileID: 7336585275533452022}
   - component: {fileID: 1078425776871141442}
+  - component: {fileID: 7966433353679111935}
+  - component: {fileID: 4256857287638180149}
   m_Layer: 8
   m_Name: Heroine
   m_TagString: PlayerPresence
@@ -4513,10 +4516,10 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 4
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!114 &5850605043074629289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4729,14 +4732,32 @@ MonoBehaviour:
   jump: {fileID: 0}
   crouch: {fileID: 0}
   melee: {fileID: 7336585275533452022}
-  gun: {fileID: 0}
+  gun: {fileID: 1078425776871141442}
   backStep: {fileID: 0}
   magic: {fileID: 0}
   anim: {fileID: 0}
   audioPlayer: {fileID: 5395958746365876602}
-  health: {fileID: 0}
+  health: {fileID: 6773082326232641233}
+  binding: {fileID: 0}
+  evade: {fileID: 4652812698363603045}
   controlLocomotion: 1
   locked: 0
+  cutsceneMode: 0
+--- !u!114 &4652812698363603045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831746344741512789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a650391aeec86a449c8e6aab66574e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overlayMaterial: {fileID: 2100000, guid: c0c0f863c224b384181aa586c5a60c7b, type: 2}
+  sortingOrderOffset: 1
+  cancelableAt: 0.78333336
 --- !u!114 &6773082326232641233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4843,6 +4864,51 @@ MonoBehaviour:
   laserBlockMask:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &7966433353679111935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831746344741512789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2497dc48c84cdd04b835d17c3ad3a414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  struggleUIPrefab: {fileID: 0}
+--- !u!114 &4256857287638180149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831746344741512789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa5be5832e2bd24bbc335d376780d75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  left: 97
+  right: 100
+  up: 119
+  down: 115
+  jump: 32
+  evade: 32
+  reload: 114
+  skill: 304
+  berserk: 113
+  items: 101
+  menu: 27
+  keyFire: 110
+  keyAds: 109
+  slashKey: 106
+  useMouseFire: 1
+  useMouseAds: 1
+  useMouseSlash: 1
+  useArrowKeys: 1
+  arrowLeft: 276
+  arrowRight: 275
 --- !u!1 &6034404638238936429
 GameObject:
   m_ObjectHideFlags: 0

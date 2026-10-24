@@ -1,0 +1,390 @@
+SlamLeader.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Arm_Front_1
+  rotate: false
+  xy: 1825, 1681
+  size: 207, 365
+  orig: 207, 365
+  offset: 0, 0
+  index: -1
+Belt
+  rotate: false
+  xy: 1423, 11
+  size: 528, 571
+  orig: 528, 571
+  offset: 0, 0
+  index: -1
+Blood1
+  rotate: true
+  xy: 1953, 508
+  size: 102, 91
+  orig: 102, 91
+  offset: 0, 0
+  index: -1
+Blood2
+  rotate: false
+  xy: 1046, 1247
+  size: 14, 163
+  orig: 14, 163
+  offset: 0, 0
+  index: -1
+Blood3
+  rotate: true
+  xy: 326, 481
+  size: 17, 220
+  orig: 17, 220
+  offset: 0, 0
+  index: -1
+Blood4
+  rotate: true
+  xy: 2, 35
+  size: 14, 109
+  orig: 14, 109
+  offset: 0, 0
+  index: -1
+Bone_Necklace_1
+  rotate: false
+  xy: 1831, 1239
+  size: 48, 49
+  orig: 48, 49
+  offset: 0, 0
+  index: -1
+Bone_Necklace_2
+  rotate: false
+  xy: 1953, 450
+  size: 41, 56
+  orig: 41, 56
+  offset: 0, 0
+  index: -1
+Bone_Necklace_3
+  rotate: true
+  xy: 2, 2
+  size: 31, 55
+  orig: 31, 55
+  offset: 0, 0
+  index: -1
+Bone_Necklace_String
+  rotate: true
+  xy: 1308, 82
+  size: 187, 103
+  orig: 187, 103
+  offset: 0, 0
+  index: -1
+Chain_I
+  rotate: false
+  xy: 1423, 592
+  size: 107, 21
+  orig: 107, 21
+  offset: 0, 0
+  index: -1
+Chain_O
+  rotate: false
+  xy: 1308, 9
+  size: 104, 71
+  orig: 104, 71
+  offset: 0, 0
+  index: -1
+ChestPlate
+  rotate: false
+  xy: 637, 32
+  size: 336, 237
+  orig: 336, 237
+  offset: 0, 0
+  index: -1
+Feather_Shade
+  rotate: true
+  xy: 1898, 612
+  size: 242, 86
+  orig: 242, 86
+  offset: 0, 0
+  index: -1
+Front_Arm_1_C
+  rotate: false
+  xy: 1640, 584
+  size: 256, 623
+  orig: 256, 623
+  offset: 0, 0
+  index: -1
+Front_Arm_1_D
+  rotate: false
+  xy: 1073, 1608
+  size: 750, 438
+  orig: 750, 438
+  offset: 0, 0
+  index: -1
+Front_Arm_2_B
+  rotate: false
+  xy: 1898, 856
+  size: 142, 258
+  orig: 142, 258
+  offset: 0, 0
+  index: -1
+Front_Arm_2_C
+  rotate: true
+  xy: 1831, 1368
+  size: 311, 185
+  orig: 311, 185
+  offset: 0, 0
+  index: -1
+GreatSowrd
+  rotate: false
+  xy: 2, 439
+  size: 322, 1607
+  orig: 322, 1607
+  offset: 0, 0
+  index: -1
+HandAxe
+  rotate: true
+  xy: 326, 500
+  size: 910, 341
+  orig: 910, 341
+  offset: 0, 0
+  index: -1
+Horn1
+  rotate: true
+  xy: 1831, 1290
+  size: 76, 65
+  orig: 76, 65
+  offset: 0, 0
+  index: -1
+Horn_2
+  rotate: true
+  xy: 1898, 1116
+  size: 250, 148
+  orig: 250, 148
+  offset: 0, 0
+  index: -1
+IronBall_SwingTrail
+  rotate: false
+  xy: 1046, 615
+  size: 592, 592
+  orig: 592, 592
+  offset: 0, 0
+  index: -1
+Leg_Front_3
+  rotate: true
+  xy: 975, 36
+  size: 233, 331
+  orig: 233, 331
+  offset: 0, 0
+  index: -1
+Leg_Rear_1
+  rotate: true
+  xy: 2, 51
+  size: 386, 633
+  orig: 386, 633
+  offset: 0, 0
+  index: -1
+NeckGuard_R
+  rotate: true
+  xy: 1986, 790
+  size: 64, 53
+  orig: 64, 53
+  offset: 0, 0
+  index: -1
+Outer_Back
+  rotate: false
+  xy: 326, 1412
+  size: 745, 634
+  orig: 745, 634
+  offset: 0, 0
+  index: -1
+Outer_F_1
+  rotate: true
+  xy: 1073, 1209
+  size: 397, 756
+  orig: 397, 756
+  offset: 0, 0
+  index: -1
+Outer_F_2
+  rotate: false
+  xy: 669, 615
+  size: 375, 795
+  orig: 375, 795
+  offset: 0, 0
+  index: -1
+Outer_R_2
+  rotate: true
+  xy: 669, 271
+  size: 342, 752
+  orig: 342, 752
+  offset: 0, 0
+  index: -1
+
+SlamLeader_2.png
+size: 2048, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Arm_Front_2
+  rotate: true
+  xy: 1103, 492
+  size: 152, 289
+  orig: 152, 289
+  offset: 0, 0
+  index: -1
+Arm_Front_3
+  rotate: true
+  xy: 849, 36
+  size: 146, 130
+  orig: 146, 130
+  offset: 0, 0
+  index: -1
+Arm_Rear_1
+  rotate: false
+  xy: 1468, 469
+  size: 259, 213
+  orig: 259, 213
+  offset: 0, 0
+  index: -1
+Arm_Rear_2
+  rotate: false
+  xy: 1729, 433
+  size: 203, 249
+  orig: 203, 249
+  offset: 0, 0
+  index: -1
+Arm_Rear_3
+  rotate: true
+  xy: 981, 42
+  size: 159, 135
+  orig: 159, 135
+  offset: 0, 0
+  index: -1
+Arm_Rear_3_2
+  rotate: true
+  xy: 1311, 383
+  size: 107, 97
+  orig: 107, 97
+  offset: 0, 0
+  index: -1
+Arm_Rear_4
+  rotate: false
+  xy: 1934, 650
+  size: 106, 97
+  orig: 106, 97
+  offset: 0, 0
+  index: -1
+BoneHelm
+  rotate: true
+  xy: 1091, 331
+  size: 158, 115
+  orig: 158, 115
+  offset: 0, 0
+  index: -1
+Face
+  rotate: true
+  xy: 314, 2
+  size: 155, 151
+  orig: 155, 151
+  offset: 0, 0
+  index: -1
+Feather
+  rotate: true
+  xy: 672, 184
+  size: 287, 248
+  orig: 287, 248
+  offset: 0, 0
+  index: -1
+Front_Arm_1_B
+  rotate: false
+  xy: 1468, 684
+  size: 385, 338
+  orig: 385, 338
+  offset: 0, 0
+  index: -1
+Front_Arm_3_B
+  rotate: true
+  xy: 672, 50
+  size: 132, 175
+  orig: 132, 175
+  offset: 0, 0
+  index: -1
+Front_Arm_3_D
+  rotate: false
+  xy: 1118, 98
+  size: 103, 107
+  orig: 103, 107
+  offset: 0, 0
+  index: -1
+Front_Arm_4_B
+  rotate: true
+  xy: 1091, 207
+  size: 122, 103
+  orig: 122, 103
+  offset: 0, 0
+  index: -1
+IronBall
+  rotate: true
+  xy: 357, 159
+  size: 312, 313
+  orig: 312, 313
+  offset: 0, 0
+  index: -1
+Leg_Front_1
+  rotate: false
+  xy: 806, 491
+  size: 295, 531
+  orig: 295, 531
+  offset: 0, 0
+  index: -1
+Leg_Rear_3
+  rotate: true
+  xy: 2, 66
+  size: 241, 310
+  orig: 241, 310
+  offset: 0, 0
+  index: -1
+Neck
+  rotate: false
+  xy: 1208, 366
+  size: 101, 124
+  orig: 101, 124
+  offset: 0, 0
+  index: -1
+NeckGuard_F
+  rotate: false
+  xy: 467, 27
+  size: 182, 130
+  orig: 182, 130
+  offset: 0, 0
+  index: -1
+Outer_R_1
+  rotate: false
+  xy: 2, 309
+  size: 353, 713
+  orig: 353, 713
+  offset: 0, 0
+  index: -1
+Shoulder_Rear_1
+  rotate: false
+  xy: 922, 203
+  size: 167, 286
+  orig: 167, 286
+  offset: 0, 0
+  index: -1
+Shoulder_Rear_2
+  rotate: false
+  xy: 1855, 749
+  size: 188, 273
+  orig: 188, 273
+  offset: 0, 0
+  index: -1
+Torso
+  rotate: false
+  xy: 357, 473
+  size: 447, 549
+  orig: 447, 549
+  offset: 0, 0
+  index: -1
+VampireVine
+  rotate: false
+  xy: 1103, 646
+  size: 363, 376
+  orig: 363, 376
+  offset: 0, 0
+  index: -1
+

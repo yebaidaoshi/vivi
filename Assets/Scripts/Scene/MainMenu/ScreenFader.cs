@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class ScreenFader : MonoBehaviour
@@ -14,6 +15,8 @@ public class ScreenFader : MonoBehaviour
     public bool fadeInOnStart = false;
 
     private static ScreenFader _instance;
+    private bool _pendingFadeIn = false;
+
     public static ScreenFader Instance
     {
         get
@@ -45,36 +48,48 @@ public class ScreenFader : MonoBehaviour
             return;
         }
 
-        // ★ 获取或创建 Image
         if (fadeImage == null)
             fadeImage = GetComponentInChildren<Image>();
         if (fadeImage == null)
         {
-            // 如果还是没有，自己创建一个 Image
             GameObject imgObj = new GameObject("FadeImage");
             imgObj.transform.SetParent(transform);
             fadeImage = imgObj.AddComponent<Image>();
         }
 
-        // ★ 强制 Image 铺满父 Canvas
         RectTransform rt = fadeImage.rectTransform;
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.one;
         rt.sizeDelta = Vector2.zero;
         rt.anchoredPosition = Vector2.zero;
 
-        // ★ 设置颜色为黑色，完全不透明
-        fadeImage.color = Color.black;
+        // 初始全透明
+        fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
-        // ★ 将本物体移到 Canvas 的最底部（渲染顺序最后，即在最上层）
         transform.SetAsLastSibling();
 
-        // 隐藏加载文字
         if (loadingText != null)
             loadingText.gameObject.SetActive(false);
 
-        // 初始关闭射线检测
         EnableRaycast(false);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"[ScreenFader] OnSceneLoaded 触发 | 场景: {scene.name} | pendingFadeIn: {_pendingFadeIn}");
+
+        if (_pendingFadeIn)
+        {
+            _pendingFadeIn = false;
+            StartCoroutine(FadeInAndHideLoading());
+        }
     }
 
     void Start()
@@ -86,25 +101,38 @@ public class ScreenFader : MonoBehaviour
         }
     }
 
+    // ============================================================
+    // ★ 调试版：FadeOutWithLoading
+    // ============================================================
     public IEnumerator FadeOutWithLoading()
     {
+        Debug.LogWarning($"[ScreenFader] FadeOutWithLoading 被调用！\n调用堆栈:\n{System.Environment.StackTrace}");
+
         yield return StartCoroutine(FadeOut());
         if (loadingText != null)
         {
             loadingText.gameObject.SetActive(true);
             loadingText.text = "加载中...";
         }
+        _pendingFadeIn = true;
     }
 
     public IEnumerator FadeInAndHideLoading()
     {
+        Debug.Log($"[ScreenFader] FadeInAndHideLoading 被调用");
+
         if (loadingText != null)
             loadingText.gameObject.SetActive(false);
         yield return StartCoroutine(FadeIn());
     }
 
+    // ============================================================
+    // ★ 调试版：FadeOut
+    // ============================================================
     public IEnumerator FadeOut()
     {
+        Debug.LogWarning($"[ScreenFader] FadeOut 被调用！\n调用堆栈:\n{System.Environment.StackTrace}");
+
         EnableRaycast(true);
         float timer = 0f;
         Color color = fadeImage.color;
@@ -118,10 +146,14 @@ public class ScreenFader : MonoBehaviour
         }
         color.a = 1f;
         fadeImage.color = color;
+
+        Debug.Log("[ScreenFader] FadeOut 完成（屏幕全黑）");
     }
 
     public IEnumerator FadeIn()
     {
+        Debug.Log("[ScreenFader] FadeIn 开始");
+
         float timer = 0f;
         Color color = fadeImage.color;
         color.a = 1f;
@@ -138,6 +170,8 @@ public class ScreenFader : MonoBehaviour
         color.a = 0f;
         fadeImage.color = color;
         EnableRaycast(false);
+
+        Debug.Log("[ScreenFader] FadeIn 完成（屏幕透明）");
     }
 
     private void EnableRaycast(bool enable)

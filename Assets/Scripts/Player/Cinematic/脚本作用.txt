@@ -1,0 +1,310 @@
+============================================================
+过场动画系统 - 脚本作用说明
+============================================================
+
+本系统分为两大类：
+  📦 系统一：场景内触发式过场（有玩家）
+  📦 系统二：纯过场场景（无玩家，自动播放并切场景）
+
+============================================================
+📦 系统一：场景内触发式过场
+============================================================
+
+------------------------------------------------------------
+1. CutsceneManager.cs
+------------------------------------------------------------
+作用：过场总控。
+
+核心功能：
+  • 等待玩家自然过渡到 Idle（不强制切换，让玩家系统自己收招）
+  • 游戏体（SkeletonMecanim）↔ 电影体（SkeletonAnimation）切换
+  • 位置同步（防止瞬移）
+  • 动画进度同步（切换回游戏体时，Idle 从电影体的进度接着播）
+  • 黑幕过渡、上下黑边、UI 淡入淡出
+  • 相机切换（禁用跟随 → Timeline 接管 → 恢复跟随）
+  • NPC 电影体激活 / 隐藏
+  • 电影体重置（为下次复用）
+  • 对话系统入口（暂停 Timeline → 播放对话 → 恢复 Timeline）
+  • 对话期间默认动画（玩家和 NPC 各自播放各自的动画）
+  • 对话期间位置锁定（防止 Spine 根骨骼位移推走角色）
+
+挂在：
+  场景中的 CutsceneManager 空物体上。
+
+触发方式：
+  由 CutsceneTrigger_01 调用 TriggerCutscene()。
+
+依赖：
+  - PlayableDirector（Timeline 资源）
+  - 玩家：gameplayPlayer + cinematicPlayer
+  - 对话系统：DialogueManager（可选）
+
+------------------------------------------------------------
+2. CutsceneTrigger_01.cs
+------------------------------------------------------------
+作用：触发区域。
+
+核心功能：
+  • 玩家进入 Box Collider 2D（勾选 Is Trigger）时，
+    调用 CutsceneManager.TriggerCutscene()
+  • 支持只触发一次（triggerOnce）
+  • 支持自定义玩家 Tag（playerTag）
+
+挂在：
+  触发区域的 GameObject 上（必须有 BoxCollider2D，勾选 Is Trigger）。
+
+配合：
+  和 CutsceneManager 一起用。
+
+------------------------------------------------------------
+3. DialogueLine.cs
+------------------------------------------------------------
+作用：对话数据结构（纯数据类，不挂任何物体）。
+
+核心功能：
+  • 定义一句对话的内容：
+      - speakerName（说话人名字）
+      - text（对话内容，支持多行）
+      - minDisplayTime（最短显示时长，防止秒点跳过）
+
+使用：
+  在 CutsceneDialogueTrigger 的 Inspector 中以列表形式填写。
+
+------------------------------------------------------------
+4. DialogueActorAnimConfig.cs
+------------------------------------------------------------
+作用：对话期间某个角色的动画配置（纯数据类）。
+
+核心功能：
+  • 定义对话期间一个角色播放的动画：
+      - actor（角色 GameObject，含 SkeletonAnimation）
+      - idleAnimName（对话期间播放的动画名）
+
+使用：
+  在 CutsceneManager / CutscenePlayer 的 Inspector 中，
+  以数组形式配置每个角色在对话期间的动画。
+
+------------------------------------------------------------
+5. DialogueManager.cs
+------------------------------------------------------------
+作用：对话 UI 与逻辑管理。
+
+核心功能：
+  • 显示对话 UI（说话人、内容、继续提示）
+  • 打字机效果（逐字显示）
+  • 支持点击 / 空格 / 回车继续下一句
+  • 点击时若正在打字，先跳过打字机，再点才进入下一句
+  • 全部对话结束后自动隐藏 UI，并调用回调
+
+挂在：
+  对话 UI 的 Canvas（DialogueCanvas）上。
+
+依赖：
+  - DialogueRoot（对话面板根物体）
+  - SpeakerNameText（TMP，说话人名字）
+  - DialogueText（TMP，对话内容）
+  - ContinueHint（TMP/Image，"点击继续" 提示）
+  - ClickCatcher（Button，全屏透明点击区域）
+
+配合：
+  由 CutsceneManager / CutscenePlayer 调用。
+
+------------------------------------------------------------
+6. CutsceneDialogueTrigger.cs
+------------------------------------------------------------
+作用：Timeline Signal 接收器（对话触发点）。
+
+核心功能：
+  • 定义多个对话段落（dialogue1、dialogue2、dialogue3...）
+  • 提供对应的方法（PlayDialogue1、PlayDialogue2...）
+  • 这些方法由 Timeline 的 Signal Receiver 调用
+  • 收到信号时，自动判断使用哪个管理器：
+      - 如果绑定了 CutsceneManager → 走场景内触发式流程
+      - 如果绑定了 CutscenePlayer → 走纯过场场景流程
+
+挂在：
+  场景中一个独立的空物体上（例如 CutsceneDialoguePoints）。
+
+配合：
+  - CutsceneManager 或 CutscenePlayer（二选一）
+  - Timeline 的 Signal Track
+
+============================================================
+📦 系统二：纯过场场景（无玩家）
+============================================================
+
+适用场景：
+  独立的过场场景（如片头、章节开场、片尾），
+  进入就自动播放，播完切到下一个场景。
+
+------------------------------------------------------------
+7. CutscenePlayer.cs
+------------------------------------------------------------
+作用：纯过场场景的管理器。
+
+核心功能：
+  • 进入场景后自动播放 Timeline
+  • 黑幕过渡、上下黑边
+  • 跳过功能（可选，按键跳过当前过场）
+  • 接近结尾时提前淡入黑幕，实现无缝切场景
+  • 播完自动加载下一个场景（支持同步 / 异步加载）
+  • 跨场景保留（DontDestroyOnLoad），在新场景淡出黑幕后再销毁自己
+  • 对话系统入口（暂停 Timeline → 播放对话 → 恢复 Timeline）
+  • 对话期间默认动画（每个角色独立配置动画名）
+  • 对话期间手动驱动 Spine（因为 Timeline 暂停不会自动更新）
+
+挂在：
+  过场场景中的任意物体上（建议挂在独立物体上，不要挂在被 Timeline 控制的物体上）。
+
+不需要：
+  玩家、游戏体、触发器。
+
+依赖：
+  - PlayableDirector（Timeline 资源）
+  - FadeImage（黑幕 Image）
+  - LetterboxRoot / Top / Bottom（上下黑边）
+  - DialogueManager（可选，用于对话）
+
+配合：
+  SceneFadeIn.cs（在新场景里淡出黑幕）。
+
+------------------------------------------------------------
+8. SceneFadeIn.cs
+------------------------------------------------------------
+作用：新场景开场时的黑幕淡出。
+
+核心功能：
+  • 挂在新场景里的黑色 Image 上
+  • 进入场景后，先保持全黑（holdDuration 秒）
+  • 然后自动从黑淡出到透明（fadeDuration 秒）
+  • 淡出完成后自动禁用自己
+
+挂在：
+  新场景中那个 Alpha = 1 的黑色 Image 上。
+
+配合：
+  通常和 CutscenePlayer 一起用：
+    过场结束时变黑 → 新场景加载 → SceneFadeIn 淡出黑幕。
+
+============================================================
+📊 完整流程示意
+============================================================
+
+【系统一：场景内触发式过场】
+
+  玩家走进触发区域
+      ↓
+  CutsceneTrigger_01.OnTriggerEnter2D()
+      ↓
+  CutsceneManager.TriggerCutscene()
+      ↓
+  ├─ 禁用玩家输入（cutsceneMode = true）
+  ├─ 等待 Animator 自然过渡到 Idle
+  ├─ 切换到电影体（隐藏游戏体渲染）
+  ├─ 启用黑边 + UI 淡出
+  └─ Timeline 开始播放
+      ↓
+  ┌─ 到达对话 Signal →
+  │    CutsceneDialogueTrigger.PlayDialogue1()
+  │        ↓
+  │    CutsceneManager.StartDialogueAndPause()
+  │        ↓
+  │    director.Pause() + DialogueManager 显示对话
+  │        ↓
+  │    对话期间：玩家 + NPC 各自播放默认动画
+  │            每帧在 LateUpdate 中恢复位置
+  │        ↓
+  │    玩家点击 → 下一句 → ... → 全部结束
+  │        ↓
+  │    director.Resume()，Timeline 继续播放
+  └─ ...
+      ↓
+  Timeline 播放结束
+      ↓
+  CutsceneManager.OnCutsceneStopped()
+      ↓
+  ├─ 黑幕淡入 → 切换回游戏体 → 黑幕淡出
+  ├─ 恢复相机跟随
+  ├─ 重置电影体（为下次准备）
+  └─ 恢复玩家控制
+
+【系统二：纯过场场景】
+
+  进入过场场景
+      ↓
+  CutscenePlayer.Start() → PlayRoutine()
+      ↓
+  ├─ 黑幕淡出
+  ├─ 启用黑边
+  └─ Timeline 开始播放
+      ↓
+  WaitAndFadeInRoutine() 监控播放进度
+      ↓
+  ┌─ 到达对话 Signal →
+  │    CutsceneDialogueTrigger.PlayDialogue1()
+  │        ↓
+  │    CutscenePlayer.StartDialogueAndPause()
+  │        ↓
+  │    director.Pause() + DialogueManager 显示对话
+  │        ↓
+  │    对话期间：所有角色播放默认动画（手动驱动 Spine）
+  │        ↓
+  │    director.Resume()，Timeline 继续播放
+  └─ ...
+      ↓
+  接近结尾时提前淡入黑幕
+      ↓
+  Timeline 结束 → OnCutsceneStopped()
+      ↓
+  LoadNextSceneAndFadeOut()
+      ↓
+  加载新场景 → 等待初始化 → 淡出黑幕 → 销毁自己
+      ↓
+  新场景中的 SceneFadeIn 也同时工作（双保险）
+
+============================================================
+📁 文件存放结构
+============================================================
+
+Assets/
+└── Scripts/
+    └── Player/
+        └── Cinematic/
+            ├── CutsceneManager.cs             （过场总控）
+            ├── CutsceneTrigger_01.cs          （触发区域）
+            ├── DialogueLine.cs                （对话数据）
+            ├── DialogueActorAnimConfig.cs     （对话动画配置）
+            ├── DialogueManager.cs             （对话管理）
+            ├── CutsceneDialogueTrigger.cs     （对话 Signal 接收器）
+            ├── CutscenePlayer.cs              （纯过场场景管理器）
+            └── SceneFadeIn.cs                 （新场景黑幕淡出）
+
+============================================================
+🔗 脚本依赖关系
+============================================================
+
+【系统一】
+  CutsceneTrigger_01  ──→  CutsceneManager
+                                ↑
+                                │（StartDialogueAndPause）
+                                │
+  CutsceneDialogueTrigger ──────┘
+                                ↓
+                          DialogueManager
+                                ↓
+                          DialogueLine（数据）
+                                ↓
+                          DialogueActorAnimConfig（配置）
+
+【系统二】
+  CutscenePlayer ──→ Timeline ──→ 加载下一场景
+                        ↑                 ↓
+                        │           SceneFadeIn（新场景淡出黑幕）
+                        │
+  CutsceneDialogueTrigger ──→ CutscenePlayer.StartDialogueAndPause()
+                        ↓
+                  DialogueManager
+                        ↓
+                  DialogueLine（数据）
+                        ↓
+                  DialogueActorAnimConfig（配置）

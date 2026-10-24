@@ -10,20 +10,18 @@ namespace Player
         {
             /// <summary>Attack.anim SendEvent E_Katana1 — 第一刀斩击 VFX。</summary>
             public const float E_Katana1 = 0.0667f;
-            /// <summary>解锁 ADS / 后撤（PlayerMelee）。</summary>
-            public const float Cancelable = 0.25f;
-            /// <summary>连招 1→2 提交点（PlayerMelee）。Attack.anim SendEvent 与 Movable
-            /// 同一时刻触发（0.6667）——曾被误抄成其一半（0.3333）；已修正为与片段一致，
-            /// 使 Movable 的蹲/跑打断（在 PlayerMelee 每帧检查顺序中优先）始终比连招衔接
-            /// 先获得否决权，同一帧内生效。</summary>
-            public const float Attackable = 0.6667f;
-            /// <summary>解锁奔跑 / 蹲下 / 跳跃（PlayerMelee）。</summary>
-            public const float Movable = 0.6667f;
+            /// <summary>解锁 ADS / 后撤（PlayerMelee）。帧7 @60fps。</summary>
+            public const float Cancelable = 0.1167f;
+            /// <summary>连招 1→2 提交点（PlayerMelee）。帧16 @60fps。
+            /// 修正前为 0.6667（帧40）——出刀时间过慢影响手感；已提前至 16 帧。</summary>
+            public const float Attackable = 0.2667f;
+            /// <summary>解锁奔跑 / 蹲下 / 跳跃（PlayerMelee）。帧36 @60fps。</summary>
+            public const float Movable = 0.6f;
             public const float SeNoutou = 1.75f;
             public const float SeNoutou2 = 3.0f;
-            public const float ClipLength = 4.0833f;
+            /// <summary>Attack.anim 总长 241 帧 @60fps。</summary>
+            public const float ClipLength = 4.0167f;
         }
-
         public static class Attack2
         {
             /// <summary>Attack2.anim SendEvent E_Katana2 — 第一刀斩击 VFX。</summary>

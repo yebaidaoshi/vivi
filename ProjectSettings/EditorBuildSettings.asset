@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 8c095059de6fa8b4bb438cfc7725dabb
   - enabled: 1
-    path: Assets/Scenes/forest.unity
+    path: Assets/Scenes/Game/Timelines/beach/Cutscene_Stage.unity
+    guid: 77967f92892c55049b58996fcb276606
+  - enabled: 1
+    path: Assets/Scenes/Game/forest.unity
     guid: d4a26307bcc8994438bac1149dacc986
   m_configObjects: {}

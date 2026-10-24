@@ -112,7 +112,7 @@ namespace Player
             || _state == PlayerCrouchState.SlideToCrouch;
 
         public bool IsSliding => _state == PlayerCrouchState.Sliding;
-
+        public int SlideDirection => _slideDir;
         /// <summary>蹲着 / 滑铲时为真 — 可打断的起身过程中不为真。</summary>
 
         public bool IsBusy => IsCrouching;
@@ -263,7 +263,7 @@ namespace Player
                     break;
 
                 case PlayerCrouchState.Crouching:
-                    Debug.Log($"Tick - 进入 Crouching 分支");
+                    
                     TickCrouching(intent, adsActive, gunOwnsBaseAnim, yieldBaseAnim);
 
                     break;

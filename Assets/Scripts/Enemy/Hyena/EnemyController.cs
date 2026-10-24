@@ -38,7 +38,8 @@ namespace Enemy
 
         private void Update()
         {
-            ai.Tick();
+            if (ai != null && ai.enabled && (health == null || !health.IsDead))
+                ai.Tick();
         }
 
         private void FixedUpdate()
@@ -51,12 +52,21 @@ namespace Enemy
             health.TakeDamage(damage, knockback, attacker);
         }
 
-        // ---- 动画事件桥接 ----
+        // ---- 动画事件桥接（Spine → Unity）----
         public void SendEvent(string eventName)
         {
-            if (ai != null)
+            switch (eventName)
             {
-                ai.OnJumpHighEvent();
+                case "Jump_High":
+                    ai?.OnJumpHighEvent();
+                    break;
+
+                // ★ 挂在 Spine 动画 Jump_Attack1 的判定帧
+                case "Mount_Hit":
+                    combat?.OnMountHit();
+                    break;
+
+                // 后续如有更多事件，继续在这里 dispatch
             }
         }
     }

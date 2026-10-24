@@ -19,10 +19,13 @@ namespace Player
         [SerializeField] private PlayerAnimDriver anim;
         [SerializeField] private PlayerAudio audioPlayer;
         [SerializeField] private PlayerHealth health;
+        [SerializeField] private PlayerBinding binding;
+        [SerializeField] private PlayerEvade evade;
 
         [Header("选项")]
         [SerializeField] private bool controlLocomotion = true;
         [SerializeField] private bool locked;
+        public bool cutsceneMode = false;
 
         // ★ 过场模式开关
         public bool cutsceneMode = false;
@@ -36,11 +39,8 @@ namespace Player
         public PlayerMotor Motor => motor;
         public PlayerCapabilities Caps => _caps;
         public PlayerContext Context => _ctx;
-        public bool Locked
-        {
-            get => locked;
-            set => locked = value;
-        }
+        public bool Locked { get => locked; set => locked = value; }
+        public bool ControlLocomotion { get => controlLocomotion; set => controlLocomotion = value; }
 
         private void Awake()
         {
@@ -64,6 +64,8 @@ namespace Player
             backStep = backStep ?? GetComponent<PlayerBackStep>() ?? gameObject.AddComponent<PlayerBackStep>();
             magic = magic ?? GetComponent<PlayerMagic>() ?? gameObject.AddComponent<PlayerMagic>();
             health = health ?? GetComponent<PlayerHealth>() ?? gameObject.AddComponent<PlayerHealth>();
+            binding = binding ?? GetComponent<PlayerBinding>() ?? gameObject.AddComponent<PlayerBinding>();
+            evade = evade ?? GetComponent<PlayerEvade>() ?? gameObject.AddComponent<PlayerEvade>();
         }
 
         private PlayerAudio ResolveAudioModule()
@@ -86,10 +88,7 @@ namespace Player
             return audioRoot.gameObject.AddComponent<PlayerAudio>();
         }
 
-        public void SendEvent(string eventName)
-        {
-            audioPlayer?.SendEvent(eventName);
-        }
+        public void SendEvent(string eventName) => audioPlayer?.SendEvent(eventName);
 
         private void WireModules()
         {
@@ -107,17 +106,44 @@ namespace Player
             magic.Init(_ctx);
             health.Init(_ctx);
             health.SetController(this);
+
+            binding.Init(_ctx, health);
+            health.SetBindingControl(binding);
+
+            evade.Init(_ctx, health);
         }
 
         // ★ Update - 过场模式下完全返回
         private void Update()
         {
+<<<<<<< Updated upstream
             health.Tick();
 
             if (!_initialized || locked || cutsceneMode)
                 return;
 
             var intent = inputReader.Intent;
+=======
+            if (binding != null && binding.IsActive)
+            {
+                var bIntent = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
+                binding.Tick(bIntent);
+                health.Tick();
+                return;
+            }
+
+            health.Tick();
+
+            if (!_initialized || locked) return;
+
+            if (!controlLocomotion)
+            {
+                _ctx.Intent = default;
+                return;
+            }
+
+            var intent = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
+>>>>>>> Stashed changes
             _ctx.Intent = intent;
 
             if (health.IsInHitStun || health.IsHitAnimationPlaying || health.IsInIdleDamage)
@@ -128,7 +154,49 @@ namespace Player
 
             ResolveCaps(setAnimGate: true);
 
-            crouch.Tick(intent, jump.OnAir, _caps.CanCrouch,
+            bool jumpConsumed = false;
+
+            if (!evade.IsActive && intent.JumpPressed && _caps.CanJump && !crouch.IsSliding)
+            {
+                if (evade.TryGetThreat(out Transform attacker))
+                {
+                    CancelMeleeAndCrouch();
+                    int dir = attacker.position.x >= transform.position.x ? 1 : -1;
+                    if (evade.TryStart(dir))
+                    {
+                        jump.NotifyEvadeStart();
+                        jumpConsumed = true;
+                    }
+                }
+            }
+
+            if (!jumpConsumed && !evade.IsActive && crouch.IsSliding && intent.JumpPressed)
+            {
+                int dir = crouch.SlideDirection;
+                crouch.ForceStand();
+                ResolveCaps();
+                jump.DoSlideJump(dir);
+                jumpConsumed = true;
+            }
+
+            if (evade.IsActive)
+            {
+                evade.Tick(motor.DeltaTime);
+
+                if (evade.CanCancel)
+                {
+                    evade.End();
+                    jump.ForceLandAfterEvade(intent.Move);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var jumpIntent = jumpConsumed ? SuppressJumpInput(intent) : intent;
+
+            crouch.Tick(jumpIntent, jump.OnAir, _caps.CanCrouch,
                 adsActive: gun.IsAds, gunOwnsBaseAnim: gun.OwnsCrouchBaseAnim,
                 yieldBaseAnim: melee.IsAttacking || magic.IsBusy);
             if (crouch.State == PlayerCrouchState.SlideToCrouch && melee.IsAttacking)
@@ -137,7 +205,7 @@ namespace Player
             }
             ResolveCaps();
 
-            jump.Tick(intent, _caps.JumpLocked, actionOwnsAnim: magic.IsBusy);
+            jump.Tick(jumpIntent, _caps.JumpLocked, actionOwnsAnim: magic.IsBusy);
             ResolveCaps();
 
             melee.Tick(intent, _caps.CanMelee);
@@ -156,28 +224,22 @@ namespace Player
             HandleMeleeBackStepable(intent);
             ResolveCaps(setAnimGate: true);
 
-            if (!_caps.JumpLocked && intent.Jump
-                && PlayerJump.IsMoveBehind(intent.Move, motor.Facing)
-                && jump.CanBackFlip)
+            if (!_caps.JumpLocked && intent.Jump && PlayerJump.IsMoveBehind(intent.Move, motor.Facing) && jump.CanBackFlip)
             {
                 CancelMeleeAndCrouch();
             }
 
             ResolveCaps(setAnimGate: true);
 
-            bool actionInterrupt = melee.LocksActions || backStep.IsActive || jump.OnAir
-                || magic.LocksActions;
+            bool actionInterrupt = melee.LocksActions || backStep.IsActive || jump.OnAir || magic.LocksActions;
             bool allowGunFlip = _caps.FacingOwner == PlayerFacingOwner.Gun;
             bool canAds = _caps.CanAds && !backStep.IsBusy;
-            gun.Tick(intent, canAds, actionInterrupt, crouch.IsSliding, allowGunFlip,
-                crouched: crouch.IsCrouching);
+            gun.Tick(intent, canAds, actionInterrupt, crouch.IsSliding, allowGunFlip, crouched: crouch.IsCrouching);
             ResolveCaps(setAnimGate: true);
 
             _loco.Tick(intent, _ctx, _caps);
 
-            if (backStep.IsBusy && !backStep.IsActive
-                && _caps.AnimOwner != PlayerAnimOwner.BackStep
-                && !anim.IsPlaying(PlayerAnimDriver.States.BackStep))
+            if (backStep.IsBusy && !backStep.IsActive && _caps.AnimOwner != PlayerAnimOwner.BackStep && !anim.IsPlaying(PlayerAnimDriver.States.BackStep))
             {
                 backStep.Interrupt();
             }
@@ -188,10 +250,32 @@ namespace Player
         {
             if (!_initialized || locked || !controlLocomotion || cutsceneMode) return;
 
+            if (binding != null && binding.IsActive)
+            {
+                // 束缚期间完全禁止玩家自己的物理移动，由 EnemyCombat 接管
+                motor.SetVelocity(Vector2.zero);
+                return;
+            }
+
+            if (evade != null && evade.IsActive)
+            {
+                motor.ProbeEnvironment();
+
+                var intentNow = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
+                float axis = intentNow.Move;
+                if (Mathf.Abs(axis) > 0.1f)
+                {
+                    motor.SetImmediateVelocityX(axis * motor.Settings.runSpeed);
+                }
+
+                motor.ClampFallSpeed();
+                return;
+            }
+
             motor.ProbeEnvironment();
             ResolveCaps();
 
-            var intent = inputReader.Intent;
+            var intent = cutsceneMode ? default(PlayerIntent) : inputReader.Intent;
             _ctx.Intent = intent;
 
             if (crouch.State == PlayerCrouchState.SlideToCrouch)
@@ -230,11 +314,8 @@ namespace Player
 
         private void HandleMeleeBackStepable(PlayerIntent intent)
         {
-            if (melee.Phase != PlayerMeleePhase.ActionCancelable
-                && melee.Phase != PlayerMeleePhase.MovableSheath) return;
-
+            if (melee.Phase != PlayerMeleePhase.ActionCancelable && melee.Phase != PlayerMeleePhase.MovableSheath) return;
             if (!motor.IsGrounded || jump.OnAir || backStep.IsBusy) return;
-
             if (!PlayerJump.IsMoveBehind(intent.Move, motor.Facing)) return;
 
             CancelMeleeAndCrouch();
@@ -261,6 +342,13 @@ namespace Player
             melee.Cancel();
             crouch.ForceStand();
             magic.Cancel();
+        }
+
+        private static PlayerIntent SuppressJumpInput(PlayerIntent intent)
+        {
+            intent.Jump = false;
+            intent.JumpPressed = false;
+            return intent;
         }
 
         private float ComputeLocomotionSpeed(float axis)

@@ -260,6 +260,32 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!1102 &-4433546623242319850
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Jump/Jump_Dash
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: -7766570065373076861, guid: 051a2787fa658b34690014cd0aed9fbc, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1102 &-2932789768759912899
 AnimatorState:
   serializedVersion: 6
@@ -6101,7 +6127,7 @@ AnimatorStateMachine:
     m_Position: {x: 250, y: 0, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102592460329389196}
-    m_Position: {x: 500, y: 0, z: 0}
+    m_Position: {x: 500, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102570723408815475}
     m_Position: {x: 750, y: 0, z: 0}
@@ -6255,6 +6281,9 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 3098825866825659754}
     m_Position: {x: 3070, y: -150, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -4433546623242319850}
+    m_Position: {x: 1676.5203, y: 431.29578, z: 0}
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: 1107730242686860875}

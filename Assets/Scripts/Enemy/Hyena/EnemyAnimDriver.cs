@@ -35,5 +35,20 @@ namespace Enemy
             if (animator != null)
                 animator.SetFloat(name, value);
         }
+
+        // =========================================================
+        // ★ 动画冻结（停在最后一帧）
+        // =========================================================
+        public void FreezeAnimator()
+        {
+            if (animator != null)
+                animator.speed = 0f;
+        }
+
+        public void ResumeAnimator()
+        {
+            if (animator != null)
+                animator.speed = 1f;
+        }
     }
 }

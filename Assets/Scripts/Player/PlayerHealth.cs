@@ -63,9 +63,10 @@ namespace Player
         private Coroutine _hitAnimationCoroutine;
         private string _currentHitAnimation = "";
         private float _idleTimer = 0f;
-
-        // ★ 新增：防止重复触发返回菜单
         private bool _returningToMenu = false;
+
+        private PlayerBinding _binding;
+        private bool _evadeInvincible;
 
         public int CurrentHealth => _currentHealth;
         public int MaxHealth => _maxHealth;
@@ -74,6 +75,7 @@ namespace Player
         public bool IsInHitStun => _isInHitStun;
         public bool IsInIdleDamage => _isInIdleDamage;
         public bool IsHitAnimationPlaying => _isHitAnimationPlaying;
+        public bool IsEvadeInvincible => _evadeInvincible;
 
         public System.Action<int, int> OnHealthChanged;
         public System.Action OnDeath;
@@ -92,6 +94,7 @@ namespace Player
             _isHitAnimationPlaying = false;
             _idleTimer = 0f;
             _returningToMenu = false;
+            _evadeInvincible = false;
 
             if (_audio != null)
             {
@@ -125,9 +128,13 @@ namespace Player
                 deathUIPanel.SetActive(false);
         }
 
-        public void SetController(PlayerController controller)
+        public void SetController(PlayerController controller) => _controller = controller;
+
+        public void SetBindingControl(PlayerBinding binding) => _binding = binding;
+
+        public void SetEvadeInvincible(bool on)
         {
-            _controller = controller;
+            _evadeInvincible = on;
         }
 
         public void RegisterAttacker(GameObject attacker, string type)
@@ -167,12 +174,8 @@ namespace Player
             if (_controller == null) return false;
             var intent = _controller.Intent;
             return Mathf.Abs(intent.Move) > 0.1f
-                || intent.Jump
-                || intent.Slash
-                || intent.WantsAds
-                || intent.Evade
-                || intent.Reload
-                || intent.Skill;
+                || intent.Jump || intent.Slash || intent.WantsAds
+                || intent.Evade || intent.Reload || intent.Skill;
         }
 
         private bool IsHalfHealth() => _currentHealth <= _maxHealth / 2;
@@ -182,11 +185,10 @@ namespace Player
             if (_invincibleTimer > 0f)
                 _invincibleTimer -= Time.deltaTime;
 
-            // 受击动画打断
+            if (_binding != null && _binding.IsActive) return;
+
             if (_isHitAnimationPlaying && HasPlayerInput())
-            {
                 InterruptHitAnimation();
-            }
 
             if (_isInIdleDamage && HasPlayerInput())
             {
@@ -195,16 +197,13 @@ namespace Player
                 return;
             }
 
-            if (_isInHitStun || _isHitAnimationPlaying)
-                return;
+            if (_isInHitStun || _isHitAnimationPlaying) return;
 
             bool isIdle = _anim != null && _anim.IsPlaying(PlayerAnimDriver.States.Idle);
             bool hasInput = HasPlayerInput();
 
-            if (isIdle && !hasInput)
-                _idleTimer += Time.deltaTime;
-            else
-                _idleTimer = 0f;
+            if (isIdle && !hasInput) _idleTimer += Time.deltaTime;
+            else _idleTimer = 0f;
 
             if (IsHalfHealth() && !_isInHitStun && !_isInIdleDamage && isIdle && _idleTimer >= idleEnterThreshold)
             {
@@ -213,7 +212,6 @@ namespace Player
                 _idleTimer = 0f;
             }
 
-            // ★★★ 死亡后按任意键返回主菜单 ★★★
             if (_isDead && deathUIPanel != null && deathUIPanel.activeSelf && !_returningToMenu)
             {
                 if (Input.anyKeyDown)
@@ -244,26 +242,41 @@ namespace Player
 
         public void TakeDamage(int damage, Vector2 knockback, GameObject attacker)
         {
-            if (_isDead || IsInvincible) return;
+            if (_isDead) return;
+            if (_evadeInvincible) return;
+
+            IBindingSource bindingSource = attacker != null
+                ? attacker.GetComponent<IBindingSource>() : null;
+
+            if (bindingSource != null && bindingSource.IsBinding)
+            {
+                if (_binding == null) return;
+                _binding.HandleBindingHit(bindingSource, damage, attacker);
+                return;
+            }
+
+            if (_binding != null && _binding.IsActive)
+            {
+                _binding.HandleBindingHit(_binding.Source, damage, attacker);
+                return;
+            }
+
+            if (IsInvincible) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
             _invincibleTimer = invincibleDuration;
 
-            if (_isInIdleDamage)
-                ExitIdleDamage();
-
+            if (_isInIdleDamage) ExitIdleDamage();
             _idleTimer = 0f;
 
-            if (_motor != null)
-                _motor.SetVelocity(Vector2.zero);
+            if (_motor != null) _motor.SetVelocity(Vector2.zero);
 
             if (_controller != null)
             {
                 _controller.Locked = true;
                 _isInHitStun = true;
                 _isHitAnimationPlaying = true;
-                if (_hitStunCoroutine != null)
-                    StopCoroutine(_hitStunCoroutine);
+                if (_hitStunCoroutine != null) StopCoroutine(_hitStunCoroutine);
                 _hitStunCoroutine = StartCoroutine(UnlockAfterHitStun());
                 _controller.ResetCombo();
             }
@@ -279,25 +292,49 @@ namespace Player
             if (_audio != null && mapping != null)
             {
                 AudioClip clip = GetRandomAudio(mapping);
-                if (clip != null)
-                    _audio.Play(clip);
-                else
-                    _audio.PlayDamageB();
+                if (clip != null) _audio.Play(clip);
+                else _audio.PlayDamageB();
             }
 
-            if (hitEffectImage != null)
-            {
-                Color c = hitEffectImage.color;
-                c.a = 1f;
-                hitEffectImage.color = c;
-                StopCoroutine(nameof(HideEffect));
-                StartCoroutine(HideEffect());
-            }
-
+            ShowHitFlash();
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
 
-            if (_currentHealth <= 0)
-                Die();
+            if (_currentHealth <= 0) Die();
+        }
+
+        public void TakeBindingDamage(int damage, GameObject attacker)
+        {
+            if (_isDead) return;
+            if (_evadeInvincible) return;
+
+            _currentHealth = Mathf.Max(0, _currentHealth - damage);
+            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+            ShowHitFlash();
+
+            if (_currentHealth <= 0 && !_isDead)
+            {
+                _isDead = true;
+                OnDeath?.Invoke();
+
+                if (_controller != null)
+                    _controller.Locked = true;
+            }
+        }
+
+        public void LockControllerForDeath()
+        {
+            if (_controller != null)
+                _controller.Locked = true;
+        }
+
+        private void ShowHitFlash()
+        {
+            if (hitEffectImage == null) return;
+            Color c = hitEffectImage.color;
+            c.a = 1f;
+            hitEffectImage.color = c;
+            StopCoroutine(nameof(HideEffect));
+            StartCoroutine(HideEffect());
         }
 
         private IEnumerator UnlockAfterHitStun()
@@ -309,14 +346,14 @@ namespace Player
             _hitStunCoroutine = null;
 
             if (_anim != null && !_isDead && !string.IsNullOrEmpty(_currentHitAnimation))
-            {
                 _hitAnimationCoroutine = StartCoroutine(WaitForHitAnimationEnd());
-            }
         }
 
         private IEnumerator WaitForHitAnimationEnd()
         {
-            while (_isHitAnimationPlaying && _anim != null && !_isDead && !string.IsNullOrEmpty(_currentHitAnimation) && _anim.IsPlaying(_currentHitAnimation))
+            while (_isHitAnimationPlaying && _anim != null && !_isDead
+                && !string.IsNullOrEmpty(_currentHitAnimation)
+                && _anim.IsPlaying(_currentHitAnimation))
             {
                 yield return null;
             }
@@ -330,14 +367,19 @@ namespace Player
             _isDead = true;
             OnDeath?.Invoke();
 
-            if (_controller != null)
-                _controller.Locked = true;
+            if (_controller != null) _controller.Locked = true;
+
+            if (_binding != null && _binding.IsActive) return;
 
             if (_anim != null)
                 _anim.ForcePlay(PlayerAnimDriver.States.Shirimochi_Dead);
 
             _audio?.PlayDamageADead();
+            ShowDeathUI();
+        }
 
+        public void NotifyBindingDeathComplete()
+        {
             ShowDeathUI();
         }
 
@@ -345,13 +387,10 @@ namespace Player
         {
             if (deathUIPanel != null)
                 deathUIPanel.SetActive(true);
-            // 若需暂停游戏，取消注释下一行：
-            // Time.timeScale = 0f;
         }
 
         public void ReturnToMainMenu()
         {
-            // Time.timeScale = 1f; // 若暂停则恢复
             StartCoroutine(LoadMainMenuCoroutine());
         }
 
@@ -363,13 +402,11 @@ namespace Player
                 yield return null;
 
             AsyncOperation async = SceneManager.LoadSceneAsync(mainMenuSceneName);
-            while (!async.isDone)
-                yield return null;
+            while (!async.isDone) yield return null;
 
             if (ScreenFader.Instance != null)
                 yield return StartCoroutine(ScreenFader.Instance.FadeInAndHideLoading());
 
-            // 重置标志（场景切换后物体销毁，无需重置，但保留以防）
             _returningToMenu = false;
         }
 

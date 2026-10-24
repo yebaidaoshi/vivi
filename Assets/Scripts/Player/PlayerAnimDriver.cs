@@ -20,19 +20,12 @@ namespace Player
             _aimLayer = FindLayer("Aim");
         }
 
-        public void SetOwnerGate(PlayerAnimOwner owner)
-        {
-            _ownerGate = owner;
-        }
+        public void SetOwnerGate(PlayerAnimOwner owner) => _ownerGate = owner;
 
         public void PlayBase(string stateName, float normalizedTime = 0f)
         {
-            if (_animator == null || string.IsNullOrEmpty(stateName))
-                return;
-
-            if (_currentBase == stateName && IsPlaying(stateName))
-                return;
-
+            if (_animator == null || string.IsNullOrEmpty(stateName)) return;
+            if (_currentBase == stateName && IsPlaying(stateName)) return;
             _currentBase = stateName;
             TryPlay(stateName, normalizedTime);
         }
@@ -45,17 +38,12 @@ namespace Player
 
         public void CrossFade(string stateName, float transitionDuration = 0.15f, float normalizedTime = 0f)
         {
-            if (_animator == null || string.IsNullOrEmpty(stateName))
-                return;
-
+            if (_animator == null || string.IsNullOrEmpty(stateName)) return;
             _currentBase = stateName;
             _animator.CrossFade(stateName, transitionDuration, 0, normalizedTime);
         }
 
-        public void SyncCurrent(string stateName)
-        {
-            _currentBase = stateName;
-        }
+        public void SyncCurrent(string stateName) => _currentBase = stateName;
 
         public bool IsInSmgAim()
         {
@@ -90,9 +78,7 @@ namespace Player
 
         public bool IsPlayingAim(string stateName)
         {
-            if (_animator == null || string.IsNullOrEmpty(stateName))
-                return false;
-
+            if (_animator == null || string.IsNullOrEmpty(stateName)) return false;
             var info = _animator.GetCurrentAnimatorStateInfo(0);
             return info.IsName(stateName)
                 || info.IsName("SMG." + stateName)
@@ -104,12 +90,8 @@ namespace Player
         {
             get
             {
-                if (_animator == null)
-                    return true;
-
-                if (!string.IsNullOrEmpty(_currentAim) && !IsPlayingAim(_currentAim))
-                    return false;
-
+                if (_animator == null) return true;
+                if (!string.IsNullOrEmpty(_currentAim) && !IsPlayingAim(_currentAim)) return false;
                 var info = _animator.GetCurrentAnimatorStateInfo(0);
                 return info.normalizedTime >= 1f && !_animator.IsInTransition(0) && !info.loop;
             }
@@ -122,8 +104,7 @@ namespace Player
 
         private void TryPlayOnLayer(int layer, string stateName, float normalizedTime)
         {
-            if (_animator == null)
-                return;
+            if (_animator == null) return;
 
             int hash = Animator.StringToHash(stateName);
             if (_animator.HasState(layer, hash))
@@ -149,9 +130,7 @@ namespace Player
 
         public bool IsPlaying(string stateName)
         {
-            if (_animator == null)
-                return false;
-
+            if (_animator == null) return false;
             var info = _animator.GetCurrentAnimatorStateInfo(0);
             return info.IsName(stateName) || IsPlayingPath(stateName);
         }
@@ -160,8 +139,7 @@ namespace Player
         {
             get
             {
-                if (_animator == null)
-                    return 0f;
+                if (_animator == null) return 0f;
                 return _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
             }
         }
@@ -170,12 +148,8 @@ namespace Player
         {
             get
             {
-                if (_animator == null)
-                    return true;
-
-                if (!string.IsNullOrEmpty(_currentBase) && !IsPlaying(_currentBase))
-                    return false;
-
+                if (_animator == null) return true;
+                if (!string.IsNullOrEmpty(_currentBase) && !IsPlaying(_currentBase)) return false;
                 var info = _animator.GetCurrentAnimatorStateInfo(0);
                 return info.normalizedTime >= 1f && !_animator.IsInTransition(0) && !info.loop;
             }
@@ -183,26 +157,22 @@ namespace Player
 
         public void SetBool(string name, bool value)
         {
-            if (_animator != null && HasParam(name))
-                _animator.SetBool(name, value);
+            if (_animator != null && HasParam(name)) _animator.SetBool(name, value);
         }
 
         public void SetFloat(string name, float value)
         {
-            if (_animator != null && HasParam(name))
-                _animator.SetFloat(name, value);
+            if (_animator != null && HasParam(name)) _animator.SetFloat(name, value);
         }
 
         public void SetTrigger(string name)
         {
-            if (_animator != null && HasParam(name))
-                _animator.SetTrigger(name);
+            if (_animator != null && HasParam(name)) _animator.SetTrigger(name);
         }
 
         public void SetAimLayerWeight(float weight)
         {
-            if (_aimLayer >= 0)
-                _animator.SetLayerWeight(_aimLayer, Mathf.Clamp01(weight));
+            if (_aimLayer >= 0) _animator.SetLayerWeight(_aimLayer, Mathf.Clamp01(weight));
         }
 
         public void SetCrouch(bool crouch)
@@ -216,15 +186,11 @@ namespace Player
             SetFloat("crouching", Mathf.Clamp01(weight));
         }
 
-        public void SetAiming(bool aiming)
-        {
-            SetBool("aiming", aiming);
-        }
+        public void SetAiming(bool aiming) => SetBool("aiming", aiming);
 
         public void SetAirFloat(float value, float dampTime = 0.12f)
         {
-            if (_animator == null || !HasParam("airfloat"))
-                return;
+            if (_animator == null || !HasParam("airfloat")) return;
 
             if (dampTime <= 0f)
             {
@@ -237,14 +203,17 @@ namespace Player
             _animator.SetFloat("airfloat", value, dampTime, dt);
         }
 
-        public void SetAimDir(float value)
+        public void SetAimDir(float value) => SetFloat("aimDir", value);
+        public void SetAxis(float value) => SetFloat("axis", value);
+
+        public void FreezeAnimator()
         {
-            SetFloat("aimDir", value);
+            if (_animator != null) _animator.speed = 0f;
         }
 
-        public void SetAxis(float value)
+        public void ResumeAnimator()
         {
-            SetFloat("axis", value);
+            if (_animator != null) _animator.speed = 1f;
         }
 
         private bool IsPlayingPath(string path)
@@ -255,24 +224,16 @@ namespace Player
 
         private int FindLayer(string name)
         {
-            if (_animator == null)
-                return -1;
-
+            if (_animator == null) return -1;
             for (int i = 0; i < _animator.layerCount; i++)
-            {
-                if (_animator.GetLayerName(i) == name)
-                    return i;
-            }
+                if (_animator.GetLayerName(i) == name) return i;
             return -1;
         }
 
         private bool HasParam(string name)
         {
             foreach (var p in _animator.parameters)
-            {
-                if (p.name == name)
-                    return true;
-            }
+                if (p.name == name) return true;
             return false;
         }
 
@@ -294,6 +255,10 @@ namespace Player
             public const string Landing = "Landing";
             public const string LandingToRun = "Landing_to_Run";
             public const string LandingToRunForward = "Landing_to_Run_Forward";
+
+            // ★ 新增：滑铲跳 / 越敌跳
+            public const string JumpDash = "Jump_Dash";
+            public const string JumpEvade = "Jump_Evade";
 
             public const string BackStep = "BackStep";
             public const string StepForward2 = "Step_Forward2";

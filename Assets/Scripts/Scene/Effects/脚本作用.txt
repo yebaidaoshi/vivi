@@ -1,0 +1,54 @@
+📄 FogManagerV2.cs（脚本名 FogManagerV2）
+类型：2D 动态雾气系统
+
+作用：以相机为中心，不断生成雾气精灵（Sprite），让它们随风飘动、逐渐淡出，营造动态雾气/烟尘氛围。
+
+🎯 核心功能
+功能	说明
+跟随相机生成	在相机周围一个矩形范围内随机生成雾团
+固定数量维持	始终保持场景中有 maxCount（默认 300）个雾团
+视野外补充	当雾团飘出视野或消失时，在视野外生成新的（不会突然出现）
+随机速度飘动	每个雾团有随机的水平/垂直速度，缓慢飘动
+距离淡出	离相机远的雾团逐渐变透明，避免突兀消失
+随机大小和透明度	每个雾团的缩放和最大透明度随机，看起来更自然
+🎬 效果
+屏幕上会出现缓慢飘动的半透明雾气，像场景里弥漫着烟尘、薄雾、水汽等，通常用于：
+
+战场、废墟、地下城等氛围场景
+
+恐怖游戏的迷雾
+
+雨后的湿地蒸汽
+
+火山口的烟尘
+
+由于雾气是 2D Sprite 渲染，性能开销可控（由 maxCount 控制上限）。
+
+📋 Inspector 参数说明
+参数	说明
+targetCamera	以哪台相机为中心生成雾（留空用主相机）
+fogPrefab	必填，雾团的预制体（一张雾气 Sprite）
+halfWidth / halfHeight	生成范围，比相机视野大一些
+maxCount	场景中最多同时存在多少个雾团
+maxLifetimeDistance	离相机超过这个距离的雾团会销毁
+horizontalSpeedRange / verticalSpeedRange	雾团的飘动速度范围
+fogColor	雾的颜色
+startAlpha / maxAlpha	起始/最大透明度
+fadeInDuration	雾团淡入所需时间
+fadeStartDistance	超过这个距离开始淡出
+fadeSpeed	淡出速度
+sortingLayerName / sortingOrder	渲染层级，需要比角色低（让角色在雾上）
+instantVisible	是否一开始就完全可见（否则从 0 淡入）
+🔧 使用方法
+准备一张雾气 Sprite（.png，带透明通道，柔和的云雾图案）。
+
+把它做成 Prefab（GameObject + SpriteRenderer）。
+
+在场景中创建一个空物体，挂上 FogManagerV2。
+
+把 Prefab 拖到 fogPrefab 字段。
+
+调整 fogColor、maxAlpha、maxCount 等参数达到想要的效果。
+
+注意：sortingOrder 要设得比角色低，否则雾会盖住角色。
+

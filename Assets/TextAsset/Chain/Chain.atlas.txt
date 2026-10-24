@@ -1,0 +1,12 @@
+Chain.png
+size:512,256
+filter:Linear,Linear
+pma:true
+Chain1_1
+bounds:259,12,127,200
+Chain1_2
+bounds:129,10,128,202
+Chain2_1
+bounds:388,2,82,210
+Chain2_2
+bounds:2,2,125,210
