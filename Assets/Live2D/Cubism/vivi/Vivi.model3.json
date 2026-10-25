@@ -1,0 +1,12 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Vivi.moc3",
+    "Textures": [
+      "texture_00_12.png",
+      "texture_01_9.png"
+    ],
+    "Physics": "",
+    "Motions": {}
+  }
+}

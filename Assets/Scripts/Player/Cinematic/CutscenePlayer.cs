@@ -97,9 +97,6 @@ public class CutscenePlayer : MonoBehaviour
         StartCoroutine(PlayRoutine());
     }
 
-    // ============================================================
-    // 收集所有对话期间需要驱动的 Spine
-    // ============================================================
     private void RebuildDialogueSpineList()
     {
         _allDialogueSpines.Clear();
@@ -116,9 +113,6 @@ public class CutscenePlayer : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // Update：对话期间手动驱动 Spine
-    // ============================================================
     void Update()
     {
         if (allowSkip && isPlaying && !isEnding && Input.GetKeyDown(skipKey))
@@ -140,9 +134,6 @@ public class CutscenePlayer : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // 对话入口
-    // ============================================================
     public void StartDialogueAndPause(List<DialogueLine> lines)
     {
         if (dialogueManager == null)
@@ -164,9 +155,6 @@ public class CutscenePlayer : MonoBehaviour
         });
     }
 
-    // ============================================================
-    // 播放所有角色的对话动画
-    // ============================================================
     private void PlayAllDialogueAnimations()
     {
         if (dialogueAnims == null) return;
@@ -194,9 +182,6 @@ public class CutscenePlayer : MonoBehaviour
         spine.Skeleton.UpdateWorldTransform();
     }
 
-    // ============================================================
-    // 播放流程
-    // ============================================================
     IEnumerator PlayRoutine()
     {
         yield return new WaitForSecondsRealtime(startDelay);
@@ -221,9 +206,6 @@ public class CutscenePlayer : MonoBehaviour
         StartCoroutine(WaitAndFadeInRoutine());
     }
 
-    // ============================================================
-    // 等待接近结尾时淡入黑幕
-    // ============================================================
     IEnumerator WaitAndFadeInRoutine()
     {
         float waitTimeout = 3f;
@@ -234,8 +216,7 @@ public class CutscenePlayer : MonoBehaviour
             yield return null;
         }
 
-        if (director.state != PlayState.Playing)
-            yield break;
+        if (director.state != PlayState.Playing) yield break;
 
         while (director.time <= 0.01 && !isEnding && director.state == PlayState.Playing)
         {
@@ -244,8 +225,7 @@ public class CutscenePlayer : MonoBehaviour
 
         double targetTime = director.duration - fadeDuration;
 
-        if (targetTime <= 0.1)
-            yield break;
+        if (targetTime <= 0.1) yield break;
 
         while (director.time < targetTime && !isEnding)
         {
@@ -254,7 +234,6 @@ public class CutscenePlayer : MonoBehaviour
             {
                 yield break;
             }
-
             yield return null;
         }
 
@@ -265,13 +244,13 @@ public class CutscenePlayer : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // 过场结束
-    // ============================================================
     private void OnCutsceneStopped(PlayableDirector obj)
     {
         if (isEnding) return;
         director.stopped -= OnCutsceneStopped;
+
+        if (this == null || !gameObject.activeInHierarchy) return;
+
         StartCoroutine(EndRoutine());
     }
 
@@ -319,14 +298,9 @@ public class CutscenePlayer : MonoBehaviour
         {
             AsyncOperation async = SceneManager.LoadSceneAsync(nextSceneName);
             async.allowSceneActivation = false;
-
-            while (async.progress < 0.9f)
-                yield return null;
-
+            while (async.progress < 0.9f) yield return null;
             async.allowSceneActivation = true;
-
-            while (!async.isDone)
-                yield return null;
+            while (!async.isDone) yield return null;
         }
         else
         {
@@ -335,18 +309,24 @@ public class CutscenePlayer : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.3f);
 
-        if (useFadeOut && fadeImage != null)
+        // ★ 优先使用全局 ScreenFader 进行淡入，彻底防止死黑屏
+        if (ScreenFader.Instance != null)
+        {
+            yield return StartCoroutine(ScreenFader.Instance.FadeIn());
+        }
+        else if (useFadeOut && fadeImage != null)
         {
             yield return StartCoroutine(FadeTo(0f, fadeDuration));
         }
 
-        if (fadeImage != null && !fadeImage.transform.IsChildOf(transform))
+        if (fadeImage != null && fadeImage.transform != null && !fadeImage.transform.IsChildOf(transform))
             Destroy(fadeImage.gameObject);
 
-        if (letterboxRoot != null && !letterboxRoot.transform.IsChildOf(transform))
+        if (letterboxRoot != null && letterboxRoot.transform != null && !letterboxRoot.transform.IsChildOf(transform))
             Destroy(letterboxRoot);
 
-        Destroy(gameObject);
+        if (this != null && gameObject != null)
+            Destroy(gameObject);
     }
 
     private void SkipCutscene()

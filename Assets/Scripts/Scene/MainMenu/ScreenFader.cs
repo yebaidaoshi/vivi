@@ -63,7 +63,6 @@ public class ScreenFader : MonoBehaviour
         rt.sizeDelta = Vector2.zero;
         rt.anchoredPosition = Vector2.zero;
 
-        // 初始全透明
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
         transform.SetAsLastSibling();
@@ -83,12 +82,14 @@ public class ScreenFader : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"[ScreenFader] OnSceneLoaded 触发 | 场景: {scene.name} | pendingFadeIn: {_pendingFadeIn}");
-
         if (_pendingFadeIn)
         {
             _pendingFadeIn = false;
             StartCoroutine(FadeInAndHideLoading());
+        }
+        else if (fadeImage != null && fadeImage.color.a > 0.9f)
+        {
+            StartCoroutine(FadeIn());
         }
     }
 
@@ -101,13 +102,8 @@ public class ScreenFader : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // ★ 调试版：FadeOutWithLoading
-    // ============================================================
     public IEnumerator FadeOutWithLoading()
     {
-        Debug.LogWarning($"[ScreenFader] FadeOutWithLoading 被调用！\n调用堆栈:\n{System.Environment.StackTrace}");
-
         yield return StartCoroutine(FadeOut());
         if (loadingText != null)
         {
@@ -119,41 +115,29 @@ public class ScreenFader : MonoBehaviour
 
     public IEnumerator FadeInAndHideLoading()
     {
-        Debug.Log($"[ScreenFader] FadeInAndHideLoading 被调用");
-
         if (loadingText != null)
             loadingText.gameObject.SetActive(false);
         yield return StartCoroutine(FadeIn());
     }
 
-    // ============================================================
-    // ★ 调试版：FadeOut
-    // ============================================================
     public IEnumerator FadeOut()
     {
-        Debug.LogWarning($"[ScreenFader] FadeOut 被调用！\n调用堆栈:\n{System.Environment.StackTrace}");
-
         EnableRaycast(true);
         float timer = 0f;
         Color color = fadeImage.color;
         while (timer < fadeDuration)
         {
             timer += Time.deltaTime;
-            float alpha = Mathf.Lerp(0f, 1f, timer / fadeDuration);
-            color.a = alpha;
+            color.a = Mathf.Lerp(0f, 1f, timer / fadeDuration);
             fadeImage.color = color;
             yield return null;
         }
         color.a = 1f;
         fadeImage.color = color;
-
-        Debug.Log("[ScreenFader] FadeOut 完成（屏幕全黑）");
     }
 
     public IEnumerator FadeIn()
     {
-        Debug.Log("[ScreenFader] FadeIn 开始");
-
         float timer = 0f;
         Color color = fadeImage.color;
         color.a = 1f;
@@ -162,16 +146,13 @@ public class ScreenFader : MonoBehaviour
         while (timer < fadeDuration)
         {
             timer += Time.deltaTime;
-            float alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
-            color.a = alpha;
+            color.a = Mathf.Lerp(1f, 0f, timer / fadeDuration);
             fadeImage.color = color;
             yield return null;
         }
         color.a = 0f;
         fadeImage.color = color;
         EnableRaycast(false);
-
-        Debug.Log("[ScreenFader] FadeIn 完成（屏幕透明）");
     }
 
     private void EnableRaycast(bool enable)

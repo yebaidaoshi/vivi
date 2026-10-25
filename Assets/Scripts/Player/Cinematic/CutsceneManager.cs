@@ -10,7 +10,7 @@ public class CutsceneManager : MonoBehaviour
     [Header("Timeline 导演")]
     public PlayableDirector director;
 
-    [Header("玩家：游戏体 & 电影体")]
+    [Header("玩家：游戏体 & 电影体（纯过场可留空 Gameplay Player）")]
     public GameObject gameplayPlayer;
     public GameObject cinematicPlayer;
 
@@ -41,22 +41,15 @@ public class CutsceneManager : MonoBehaviour
     public float uiFadeDuration = 0.3f;
 
     [Header("动画进度同步")]
-    [Tooltip("是否把电影体最后一帧的动画进度同步到游戏体 Idle 上")]
     public bool syncAnimationProgress = true;
-    [Tooltip("游戏体 Idle 状态名（必须与 Animator 中的完全一致）")]
     public string gameplayIdleStateName = "Idle";
 
     [Header("对话系统")]
     public DialogueManager dialogueManager;
 
     [Header("对话期间的默认动画")]
-    [Tooltip("对话时是否让角色播放默认动画（可关闭）")]
     public bool useDialogueIdleAnimation = true;
-
-    [Tooltip("玩家电影体对话期间播放的动画名")]
     public string playerDialogueAnimName = "Idle";
-
-    [Tooltip("每个 NPC 对话期间的动画配置")]
     public DialogueActorAnimConfig[] npcDialogueAnims;
 
     // 内部引用
@@ -64,7 +57,6 @@ public class CutsceneManager : MonoBehaviour
     private Animator gameplayAnimator;
     private Rigidbody2D gameplayRigidbody;
     private Renderer[] gameplayRenderers;
-
     private ScoutCameraFinal cameraScript;
 
     // 对话期间 Spine 驱动
@@ -72,54 +64,51 @@ public class CutsceneManager : MonoBehaviour
     private List<Spine.Unity.SkeletonAnimation> _allDialogueSpines = new List<Spine.Unity.SkeletonAnimation>();
     private bool _isInDialogue = false;
 
-    // 对话期间保存玩家电影体的位置（子物体 cinematicVisual）
+    // 位置保存
     private Vector3 _dialogueSavedPosition;
     private Quaternion _dialogueSavedRotation;
     private bool _hasSavedCinematicPos = false;
-
-    // 对话期间保存玩家电影体根物体（cinematicPlayer）的位置
     private Vector3 _dialogueSavedPlayerRootPosition;
     private Quaternion _dialogueSavedPlayerRootRotation;
 
-    // 临时禁用的 RootMotion 组件（对话结束后恢复）
     private List<MonoBehaviour> _disabledRootMotions = new List<MonoBehaviour>();
 
-    // 状态
+    // 状态与缓存
     private bool isCutscenePlaying = false;
-
-    // 缓存
     private RigidbodyType2D _originalBodyType;
     private Vector3 _lastCinematicPosition;
     private Quaternion _lastCinematicRotation;
     private Vector3 _lastCinematicScale;
-
-    // 电影体初始状态
     private Vector3 _cinematicInitialPosition;
     private Quaternion _cinematicInitialRotation;
     private Vector3 _cinematicInitialScale;
 
     void Start()
     {
-        gameplayAnimator = gameplayPlayer.GetComponent<Animator>();
-        gameplayRigidbody = gameplayPlayer.GetComponent<Rigidbody2D>();
-        playerController = gameplayPlayer.GetComponent<PlayerController>();
-        gameplayRenderers = gameplayPlayer.GetComponentsInChildren<Renderer>();
+        // 玩家游戏体初始化（如果为空则自动跳过）
+        if (gameplayPlayer != null)
+        {
+            gameplayAnimator = gameplayPlayer.GetComponent<Animator>();
+            gameplayRigidbody = gameplayPlayer.GetComponent<Rigidbody2D>();
+            playerController = gameplayPlayer.GetComponent<PlayerController>();
+            gameplayRenderers = gameplayPlayer.GetComponentsInChildren<Renderer>();
 
-        if (playerController == null)
-            Debug.LogError("[CutsceneManager] 未找到 PlayerController！");
+            if (gameplayRigidbody != null)
+                _originalBodyType = gameplayRigidbody.bodyType;
+        }
 
+        // 电影体初始化
         if (cinematicVisual == null && cinematicPlayer != null)
         {
             cinematicVisual = cinematicPlayer.transform.Find("vivi_Cinematic");
-            if (cinematicVisual == null)
-                Debug.LogError("[CutsceneManager] 未找到 vivi_Cinematic！");
         }
 
         if (cinematicPlayer != null)
         {
             _playerSpine = cinematicPlayer.GetComponentInChildren<Spine.Unity.SkeletonAnimation>(true);
-            if (_playerSpine == null)
-                Debug.LogWarning("[CutsceneManager] 未找到玩家电影体的 SkeletonAnimation。");
+            _cinematicInitialPosition = cinematicPlayer.transform.position;
+            _cinematicInitialRotation = cinematicPlayer.transform.rotation;
+            _cinematicInitialScale = cinematicPlayer.transform.localScale;
         }
 
         RebuildDialogueSpineList();
@@ -127,21 +116,20 @@ public class CutsceneManager : MonoBehaviour
         if (mainCamera == null) mainCamera = Camera.main;
         if (mainCamera != null) cameraScript = mainCamera.GetComponent<ScoutCameraFinal>();
 
-        if (gameplayRigidbody != null)
-            _originalBodyType = gameplayRigidbody.bodyType;
-
-        if (cinematicPlayer != null)
-        {
-            _cinematicInitialPosition = cinematicPlayer.transform.position;
-            _cinematicInitialRotation = cinematicPlayer.transform.rotation;
-            _cinematicInitialScale = cinematicPlayer.transform.localScale;
-        }
-
+        // 初始化黑幕
         if (fadeImage != null)
         {
             Color c = fadeImage.color;
             c.a = 0f;
             fadeImage.color = c;
+        }
+
+        // ★ 强制关掉全局可能卡死的黑幕
+        if (ScreenFader.Instance != null && ScreenFader.Instance.fadeImage != null)
+        {
+            Color c = ScreenFader.Instance.fadeImage.color;
+            c.a = 0f;
+            ScreenFader.Instance.fadeImage.color = c;
         }
 
         if (letterboxTop != null) letterboxTop.sizeDelta = new Vector2(0, 0);
@@ -161,8 +149,11 @@ public class CutsceneManager : MonoBehaviour
             }
         }
 
-        SetGameplayVisible(true);
-        if (cinematicPlayer != null) cinematicPlayer.SetActive(false);
+        if (gameplayRenderers != null) SetGameplayVisible(true);
+        
+        // ★ 核心修复：不要一上来就 SetActive(false) 隐藏电影体，确保它一开始亮着
+        if (cinematicPlayer != null) cinematicPlayer.SetActive(true);
+        
         HideAllNpcActors();
 
         director.stopped += OnCutsceneStopped;
@@ -171,22 +162,16 @@ public class CutsceneManager : MonoBehaviour
             dialogueManager.gameObject.SetActive(true);
     }
 
-    // ============================================================
-    // 收集所有需要驱动的 Spine
-    // ============================================================
     private void RebuildDialogueSpineList()
     {
         _allDialogueSpines.Clear();
-
-        if (_playerSpine != null)
-            _allDialogueSpines.Add(_playerSpine);
+        if (_playerSpine != null) _allDialogueSpines.Add(_playerSpine);
 
         if (npcDialogueAnims != null)
         {
             foreach (var cfg in npcDialogueAnims)
             {
                 if (cfg == null || cfg.actor == null) continue;
-
                 var spine = cfg.actor.GetComponentInChildren<Spine.Unity.SkeletonAnimation>(true);
                 if (spine != null && !_allDialogueSpines.Contains(spine))
                     _allDialogueSpines.Add(spine);
@@ -194,9 +179,6 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // Update：对话期间手动驱动 Spine 动画
-    // ============================================================
     private void Update()
     {
         if (!_isInDialogue) return;
@@ -208,20 +190,15 @@ public class CutsceneManager : MonoBehaviour
         {
             var spine = _allDialogueSpines[i];
             if (spine == null || spine.AnimationState == null) continue;
-
             spine.AnimationState.Update(dt);
             spine.AnimationState.Apply(spine.Skeleton);
             spine.Skeleton.UpdateWorldTransform();
         }
     }
 
-    // ============================================================
-    // LateUpdate：在动画系统之后恢复位置，防止 Spine 根骨骼位移推走角色
-    // ============================================================
     private void LateUpdate()
     {
-        if (!_isInDialogue) return;
-        if (!_hasSavedCinematicPos) return;
+        if (!_isInDialogue || !_hasSavedCinematicPos) return;
 
         if (cinematicVisual != null)
         {
@@ -236,14 +213,11 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // 触发过场
-    // ============================================================
     public void TriggerCutscene()
     {
-        if (playerController == null) return;
+        if (playerController != null)
+            playerController.cutsceneMode = true;
 
-        playerController.cutsceneMode = true;
         isCutscenePlaying = true;
 
         if (cameraScript != null)
@@ -252,39 +226,38 @@ public class CutsceneManager : MonoBehaviour
         StartCoroutine(WaitForIdleAndSwitch());
     }
 
-    // ============================================================
-    // 等待自然 Idle → 切换到电影体
-    // ============================================================
     IEnumerator WaitForIdleAndSwitch()
     {
-        while (true)
+        // ★ 如果有玩家游戏体，才需要等 Idle 并隐藏；纯过场直接跳过
+        if (gameplayPlayer != null && gameplayAnimator != null)
         {
-            if (gameplayAnimator == null) yield break;
-            AnimatorStateInfo stateInfo = gameplayAnimator.GetCurrentAnimatorStateInfo(0);
+            while (true)
+            {
+                AnimatorStateInfo stateInfo = gameplayAnimator.GetCurrentAnimatorStateInfo(0);
+                if (stateInfo.IsName("Idle")) break;
+                yield return null;
+            }
 
-            if (stateInfo.IsName("Idle"))
-                break;
-            yield return null;
+            if (gameplayRigidbody != null)
+            {
+                gameplayRigidbody.velocity = Vector2.zero;
+                gameplayRigidbody.angularVelocity = 0f;
+                gameplayRigidbody.bodyType = RigidbodyType2D.Kinematic;
+            }
+
+            if (playerController != null)
+                playerController.ControlLocomotion = false;
+
+            if (cinematicPlayer != null)
+            {
+                cinematicPlayer.transform.position = gameplayPlayer.transform.position;
+                cinematicPlayer.transform.rotation = gameplayPlayer.transform.rotation;
+                cinematicPlayer.transform.localScale = gameplayPlayer.transform.localScale;
+            }
+
+            SetGameplayVisible(false);
         }
 
-        if (gameplayRigidbody != null)
-        {
-            gameplayRigidbody.velocity = Vector2.zero;
-            gameplayRigidbody.angularVelocity = 0f;
-            gameplayRigidbody.bodyType = RigidbodyType2D.Kinematic;
-        }
-
-        if (playerController != null)
-            playerController.ControlLocomotion = false;
-
-        if (cinematicPlayer != null)
-        {
-            cinematicPlayer.transform.position = gameplayPlayer.transform.position;
-            cinematicPlayer.transform.rotation = gameplayPlayer.transform.rotation;
-            cinematicPlayer.transform.localScale = gameplayPlayer.transform.localScale;
-        }
-
-        SetGameplayVisible(false);
         if (cinematicPlayer != null) cinematicPlayer.SetActive(true);
         ShowAllNpcActors();
 
@@ -302,14 +275,11 @@ public class CutsceneManager : MonoBehaviour
         StartCoroutine(SyncPositionDuringCutscene());
     }
 
-    // ============================================================
-    // 过场期间同步位置
-    // ============================================================
     IEnumerator SyncPositionDuringCutscene()
     {
         while (isCutscenePlaying)
         {
-            if (!_isInDialogue && cinematicVisual != null)
+            if (gameplayPlayer != null && !_isInDialogue && cinematicVisual != null)
             {
                 _lastCinematicPosition = cinematicVisual.position;
                 _lastCinematicRotation = cinematicVisual.rotation;
@@ -326,20 +296,20 @@ public class CutsceneManager : MonoBehaviour
                     gameplayRigidbody.angularVelocity = 0f;
                 }
             }
+            else if (cinematicVisual != null)
+            {
+                // 纯过场场景持续记录位置
+                _lastCinematicPosition = cinematicVisual.position;
+                _lastCinematicRotation = cinematicVisual.rotation;
+                _lastCinematicScale = cinematicVisual.localScale;
+            }
             yield return null;
         }
     }
 
-    // ============================================================
-    // 对话入口
-    // ============================================================
     public void StartDialogueAndPause(List<DialogueLine> lines)
     {
-        if (dialogueManager == null)
-        {
-            Debug.LogWarning("[CutsceneManager] 未绑定 DialogueManager，无法播放对话！");
-            return;
-        }
+        if (dialogueManager == null) return;
 
         if (cinematicVisual != null)
         {
@@ -366,20 +336,14 @@ public class CutsceneManager : MonoBehaviour
         {
             _isInDialogue = false;
             _hasSavedCinematicPos = false;
-
             RestoreRootMotionComponents();
-
             director.Resume();
         });
     }
 
-    // ============================================================
-    // 禁用 / 恢复 RootMotion 组件
-    // ============================================================
     private void DisableRootMotionComponents()
     {
         _disabledRootMotions.Clear();
-
         if (_playerSpine == null) return;
 
         var allComponents = _playerSpine.GetComponents<MonoBehaviour>();
@@ -404,7 +368,6 @@ public class CutsceneManager : MonoBehaviour
             {
                 if (mb == null) continue;
                 if (_disabledRootMotions.Contains(mb)) continue;
-
                 string typeName = mb.GetType().Name;
                 if (typeName.Contains("RootMotion") || typeName.Contains("SkeletonRootMotion"))
                 {
@@ -427,9 +390,6 @@ public class CutsceneManager : MonoBehaviour
         _disabledRootMotions.Clear();
     }
 
-    // ============================================================
-    // 播放对话动画
-    // ============================================================
     private void PlayAllDialogueAnimations()
     {
         if (_playerSpine != null)
@@ -440,11 +400,8 @@ public class CutsceneManager : MonoBehaviour
             foreach (var cfg in npcDialogueAnims)
             {
                 if (cfg == null || cfg.actor == null) continue;
-
                 var spine = cfg.actor.GetComponentInChildren<Spine.Unity.SkeletonAnimation>(true);
-                if (spine == null) continue;
-
-                PlaySpineAnimation(spine, cfg.idleAnimName, cfg.actor.name);
+                if (spine != null) PlaySpineAnimation(spine, cfg.idleAnimName, cfg.actor.name);
             }
         }
     }
@@ -461,9 +418,6 @@ public class CutsceneManager : MonoBehaviour
         spine.Skeleton.UpdateWorldTransform();
     }
 
-    // ============================================================
-    // 过场结束
-    // ============================================================
     private void OnCutsceneStopped(PlayableDirector obj)
     {
         isCutscenePlaying = false;
@@ -472,19 +426,29 @@ public class CutsceneManager : MonoBehaviour
 
         RestoreRootMotionComponents();
 
+        if (!gameObject.activeInHierarchy)
+        {
+            if (fadeImage != null)
+            {
+                Color c = fadeImage.color;
+                c.a = 0f;
+                fadeImage.color = c;
+            }
+            if (letterboxRoot != null) letterboxRoot.SetActive(false);
+            
+            director.stopped -= OnCutsceneStopped;
+            return;
+        }
+
         StartCoroutine(FinishCutsceneWithFade());
         director.stopped -= OnCutsceneStopped;
     }
 
-    // ============================================================
-    // 结束流程
-    // ============================================================
     private IEnumerator FinishCutsceneWithFade()
     {
         if (useFadeOut && fadeImage != null)
         {
             yield return StartCoroutine(FadeTo(1f, fadeDuration));
-
             SwitchBackToGameplay();
 
             if (useLetterbox)
@@ -522,10 +486,8 @@ public class CutsceneManager : MonoBehaviour
     private IEnumerator FadeTo(float targetAlpha, float duration)
     {
         if (fadeImage == null) yield break;
-
         float startAlpha = fadeImage.color.a;
         float elapsed = 0f;
-
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
@@ -535,7 +497,6 @@ public class CutsceneManager : MonoBehaviour
             fadeImage.color = c;
             yield return null;
         }
-
         Color final = fadeImage.color;
         final.a = targetAlpha;
         fadeImage.color = final;
@@ -544,7 +505,6 @@ public class CutsceneManager : MonoBehaviour
     private IEnumerator LetterboxAnimation(float fromHeight, float toHeight, float duration)
     {
         if (letterboxTop == null || letterboxBottom == null) yield break;
-
         float elapsed = 0f;
         while (elapsed < duration)
         {
@@ -552,48 +512,35 @@ public class CutsceneManager : MonoBehaviour
             float t = Mathf.Clamp01(elapsed / duration);
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
             float h = Mathf.Lerp(fromHeight, toHeight, smoothT);
-
             letterboxTop.sizeDelta = new Vector2(0, h);
             letterboxBottom.sizeDelta = new Vector2(0, h);
-
             yield return null;
         }
-
         letterboxTop.sizeDelta = new Vector2(0, toHeight);
         letterboxBottom.sizeDelta = new Vector2(0, toHeight);
     }
 
     private IEnumerator FadeUI(float targetAlpha, float duration)
     {
-        if (hiddenDuringCutscene == null || hiddenDuringCutscene.Length == 0)
-            yield break;
-
+        if (hiddenDuringCutscene == null || hiddenDuringCutscene.Length == 0) yield break;
         float[] startAlphas = new float[hiddenDuringCutscene.Length];
         for (int i = 0; i < hiddenDuringCutscene.Length; i++)
         {
-            if (hiddenDuringCutscene[i] != null)
-                startAlphas[i] = hiddenDuringCutscene[i].alpha;
+            if (hiddenDuringCutscene[i] != null) startAlphas[i] = hiddenDuringCutscene[i].alpha;
         }
-
         if (targetAlpha < 0.5f)
         {
             foreach (var cg in hiddenDuringCutscene)
             {
-                if (cg != null)
-                {
-                    cg.interactable = false;
-                    cg.blocksRaycasts = false;
-                }
+                if (cg != null) { cg.interactable = false; cg.blocksRaycasts = false; }
             }
         }
-
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
-
             for (int i = 0; i < hiddenDuringCutscene.Length; i++)
             {
                 if (hiddenDuringCutscene[i] != null)
@@ -601,24 +548,19 @@ public class CutsceneManager : MonoBehaviour
             }
             yield return null;
         }
-
         bool interactable = targetAlpha > 0.5f;
         foreach (var cg in hiddenDuringCutscene)
         {
-            if (cg != null)
-            {
-                cg.alpha = targetAlpha;
-                cg.interactable = interactable;
-                cg.blocksRaycasts = interactable;
-            }
+            if (cg != null) { cg.alpha = targetAlpha; cg.interactable = interactable; cg.blocksRaycasts = interactable; }
         }
     }
 
     private void SwitchBackToGameplay()
     {
+        if (gameplayPlayer == null) return;
+
         float cinematicProgress = 0f;
-        if (syncAnimationProgress)
-            cinematicProgress = GetCinematicAnimationProgress();
+        if (syncAnimationProgress) cinematicProgress = GetCinematicAnimationProgress();
 
         Vector3 finalPos = _lastCinematicPosition;
         Quaternion finalRot = _lastCinematicRotation;
@@ -646,22 +588,16 @@ public class CutsceneManager : MonoBehaviour
             playerController.cutsceneMode = false;
         }
 
-        if (syncAnimationProgress)
-            SyncGameplayAnimationProgress(cinematicProgress);
-
+        if (syncAnimationProgress) SyncGameplayAnimationProgress(cinematicProgress);
         HandleCameraAfterCutscene();
         ResetCinematicPlayer();
     }
 
     private float GetCinematicAnimationProgress()
     {
-        if (_playerSpine == null || _playerSpine.AnimationState == null)
-            return 0f;
-
+        if (_playerSpine == null || _playerSpine.AnimationState == null) return 0f;
         var track = _playerSpine.AnimationState.GetCurrent(0);
-        if (track == null || track.Animation == null || track.Animation.Duration <= 0f)
-            return 0f;
-
+        if (track == null || track.Animation == null || track.Animation.Duration <= 0f) return 0f;
         float progress = (track.TrackTime % track.Animation.Duration) / track.Animation.Duration;
         return Mathf.Clamp01(progress);
     }
@@ -669,7 +605,6 @@ public class CutsceneManager : MonoBehaviour
     private void SyncGameplayAnimationProgress(float normalizedProgress)
     {
         if (gameplayAnimator == null) return;
-
         gameplayAnimator.Play(gameplayIdleStateName, 0, normalizedProgress);
         gameplayAnimator.Update(0f);
     }
@@ -677,22 +612,17 @@ public class CutsceneManager : MonoBehaviour
     private void HandleCameraAfterCutscene()
     {
         if (mainCamera == null || cameraScript == null) return;
-
         Vector3 finalCamPos = mainCamera.transform.position;
         Quaternion finalCamRot = mainCamera.transform.rotation;
-
-        cameraScript.SetTarget(gameplayPlayer.transform);
-
+        if (gameplayPlayer != null) cameraScript.SetTarget(gameplayPlayer.transform);
         mainCamera.transform.position = finalCamPos;
         mainCamera.transform.rotation = finalCamRot;
-
         cameraScript.enabled = true;
     }
 
     private void ResetCinematicPlayer()
     {
         if (cinematicPlayer == null) return;
-
         cinematicPlayer.transform.position = _cinematicInitialPosition;
         cinematicPlayer.transform.rotation = _cinematicInitialRotation;
         cinematicPlayer.transform.localScale = _cinematicInitialScale;
@@ -713,12 +643,12 @@ public class CutsceneManager : MonoBehaviour
 
         director.time = 0;
         director.Evaluate();
-
         cinematicPlayer.SetActive(false);
     }
 
     private void SetGameplayVisible(bool visible)
     {
+        if (gameplayRenderers == null) return;
         foreach (var r in gameplayRenderers)
         {
             if (r != null) r.enabled = visible;
@@ -729,17 +659,13 @@ public class CutsceneManager : MonoBehaviour
     {
         if (npcCinematicActors == null) return;
         foreach (var npc in npcCinematicActors)
-        {
             if (npc != null) npc.SetActive(true);
-        }
     }
 
     private void HideAllNpcActors()
     {
         if (npcCinematicActors == null) return;
         foreach (var npc in npcCinematicActors)
-        {
             if (npc != null) npc.SetActive(false);
-        }
     }
 }
