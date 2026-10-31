@@ -325,7 +325,7 @@ MonoBehaviour:
   timeScale: 1
   freeze: 0
   layoutScaleMode: 0
-  referenceSize: {x: 1920, y: 1079.7279}
+  referenceSize: {x: 1920, y: 1080}
   referenceScale: 1
   rectTransformSize: {x: 100, y: 100}
   editReferenceRect: 0
@@ -725,7 +725,7 @@ MonoBehaviour:
   timeScale: 1
   freeze: 0
   layoutScaleMode: 0
-  referenceSize: {x: 1920, y: 1079.7279}
+  referenceSize: {x: 1920, y: 1080}
   referenceScale: 1
   rectTransformSize: {x: 672, y: 378}
   editReferenceRect: 0

@@ -14,9 +14,15 @@ public class DialogueManager : MonoBehaviour
     public Button clickCatcher;
 
     [Header("对话框淡入淡出")]
-    [Tooltip("把挂载了DialoguePanel的根物体上的CanvasGroup拖进来")]
     public CanvasGroup dialogueCanvasGroup;
     public float fadeDuration = 0.3f;
+
+    [Header("背景变暗（2D Sprite）")]
+    [Tooltip("把场景里的 DimBackground_Sprite 拖进来")]
+    public SpriteRenderer dimBackgroundSprite;
+    [Tooltip("目标变暗程度（0~1，建议0.5~0.8）")]
+    public float dimAlpha = 0.6f;
+    public float dimFadeSpeed = 3f;
 
     [Header("打字机效果")]
     public bool useTypewriter = true;
@@ -37,11 +43,10 @@ public class DialogueManager : MonoBehaviour
     private string currentFullText = "";
     private System.Action onDialogueComplete;
     
-    private Dictionary<string, Live2DActor> actorDict = new Dictionary<string, Live2DActor>();
+    private float currentDimAlpha = 0f;
 
     void Start()
     {
-        // 初始状态：隐藏 UI 和透明度
         if (dialogueRoot != null) dialogueRoot.SetActive(false);
         if (continueHint != null) continueHint.SetActive(false);
         
@@ -54,11 +59,12 @@ public class DialogueManager : MonoBehaviour
             clickCatcher.onClick.AddListener(OnClick);
         }
 
-        actorDict.Clear();
-        foreach (var actor in live2DActors)
+        if (dimBackgroundSprite != null)
         {
-            if (actor != null && !string.IsNullOrEmpty(actor.actorId))
-                actorDict[actor.actorId] = actor;
+            Color c = dimBackgroundSprite.color;
+            c.a = 0f;
+            dimBackgroundSprite.color = c;
+            dimBackgroundSprite.gameObject.SetActive(false);
         }
     }
 
@@ -71,6 +77,22 @@ public class DialogueManager : MonoBehaviour
                 if (isTyping) SkipTypewriter();
                 else ShowNextLine();
             }
+        }
+
+        // 2D 黑幕平滑过渡
+        if (dimBackgroundSprite != null)
+        {
+            float target = isDialogueActive ? dimAlpha : 0f;
+            currentDimAlpha = Mathf.MoveTowards(currentDimAlpha, target, Time.unscaledDeltaTime * dimFadeSpeed);
+            
+            Color c = dimBackgroundSprite.color;
+            c.a = currentDimAlpha;
+            dimBackgroundSprite.color = c;
+
+            if (currentDimAlpha <= 0.01f && dimBackgroundSprite.gameObject.activeSelf)
+                dimBackgroundSprite.gameObject.SetActive(false);
+            else if (currentDimAlpha > 0.01f && !dimBackgroundSprite.gameObject.activeSelf)
+                dimBackgroundSprite.gameObject.SetActive(true);
         }
     }
 
@@ -88,7 +110,6 @@ public class DialogueManager : MonoBehaviour
         onDialogueComplete = onComplete;
         isDialogueActive = true;
 
-        // 激活 UI 并淡入
         if (dialogueRoot != null) dialogueRoot.SetActive(true);
         if (dialogueCanvasGroup != null)
         {
@@ -171,15 +192,15 @@ public class DialogueManager : MonoBehaviour
         waitingForClick = false;
         isTyping = false;
 
+        // 对话彻底结束，所有人滑步退场
         if (enableLive2D)
         {
             foreach (var actor in live2DActors)
             {
-                if (actor != null) actor.SetVisible(false);
+                if (actor != null) actor.SetState(Live2DActor.ActorState.Hidden);
             }
         }
 
-        // 淡出 UI
         if (dialogueCanvasGroup != null)
         {
             if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
@@ -199,7 +220,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // 对话框淡入淡出的协程
     private IEnumerator FadeCanvasGroup(float start, float end, float duration, System.Action onComplete = null)
     {
         float elapsed = 0f;
@@ -224,13 +244,19 @@ public class DialogueManager : MonoBehaviour
 
             if (actor.actorId == line.actorId)
             {
-                actor.SetVisible(true); 
+                // 谁说话，谁原地亮起（如果之前是隐藏的，直接原地淡入）
+                actor.SetState(Live2DActor.ActorState.Talking);
+                
                 if (!string.IsNullOrEmpty(line.expression)) actor.SetExpression(line.expression);
                 if (!string.IsNullOrEmpty(line.motion)) actor.PlayMotion(line.motion);
             }
             else
             {
-                actor.SetVisible(false);
+                // 没说话的人，如果已经出场了，原地变暗（不移动）
+                if (actor.currentState != Live2DActor.ActorState.Hidden)
+                {
+                    actor.SetState(Live2DActor.ActorState.Listening);
+                }
             }
         }
     }
