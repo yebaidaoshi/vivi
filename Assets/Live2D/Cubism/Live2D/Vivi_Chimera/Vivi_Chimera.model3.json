@@ -1,0 +1,126 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Vivi_Chimera.moc3",
+    "Textures": [
+      "textures/texture_00_5.png",
+      "textures/texture_01_4.png",
+      "textures/texture_02_2.png",
+      "textures/texture_03_2.png",
+      "textures/texture_04_2.png",
+      "textures/texture_05_1.png",
+      "textures/texture_06.png"
+    ],
+    "Motions": {
+      "01_Awake": [
+        {
+          "File": "motions/01_Awake.motion3.json"
+        }
+      ],
+      "02_Insert": [
+        {
+          "File": "motions/02_Insert.motion3.json"
+        }
+      ],
+      "03_Loop": [
+        {
+          "File": "motions/03_Loop.motion3.json"
+        }
+      ],
+      "04_1Cum": [
+        {
+          "File": "motions/04_1Cum.motion3.json"
+        }
+      ],
+      "05_Tunnel": [
+        {
+          "File": "motions/05_Tunnel.motion3.json"
+        }
+      ],
+      "06_Inserts": [
+        {
+          "File": "motions/06_Inserts.motion3.json"
+        }
+      ],
+      "07_Loop": [
+        {
+          "File": "motions/07_Loop_1.motion3.json"
+        }
+      ],
+      "08_Bote": [
+        {
+          "File": "motions/08_Bote.motion3.json"
+        }
+      ],
+      "09_Loop": [
+        {
+          "File": "motions/09_Loop_0.motion3.json"
+        }
+      ],
+      "10_Bath": [
+        {
+          "File": "motions/10_Bath.motion3.json"
+        }
+      ],
+      "11_Loop": [
+        {
+          "File": "motions/11_Loop.motion3.json"
+        }
+      ],
+      "12_CumMouth": [
+        {
+          "File": "motions/12_CumMouth.motion3.json"
+        }
+      ],
+      "13_Sink": [
+        {
+          "File": "motions/13_Sink.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_0.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_1.motion3.json"
+        }
+      ],
+      "Damage": [
+        {
+          "File": "motions/Damage1.motion3.json"
+        },
+        {
+          "File": "motions/Damage2.motion3.json"
+        }
+      ],
+      "HP": [
+        {
+          "File": "motions/HP_000.motion3.json"
+        },
+        {
+          "File": "motions/HP_001.motion3.json"
+        },
+        {
+          "File": "motions/HP_025.motion3.json"
+        },
+        {
+          "File": "motions/HP_050.motion3.json"
+        },
+        {
+          "File": "motions/HP_075.motion3.json"
+        },
+        {
+          "File": "motions/HP_100.motion3.json"
+        }
+      ],
+      "idling": [
+        {
+          "File": "motions/idling_00.motion3.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "MonoBehaviour_2.moc3",
+    "Textures": [
+      "textures/texture_00_13.png",
+      "textures/texture_01_10.png",
+      "textures/texture_02_5.png",
+      "textures/texture_03_5.png"
+    ],
+    "Motions": {
+      "Motion": [
+        {
+          "File": "motions/2.motion3.json"
+        },
+        {
+          "File": "motions/3.motion3.json"
+        },
+        {
+          "File": "motions/4.motion3.json"
+        }
+      ]
+    }
+  }
+}

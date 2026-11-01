@@ -15,17 +15,15 @@ public class Live2DActor : MonoBehaviour
     public string actorId = "vivi";
 
     [Header("位置配置")]
-    [Tooltip("角色的固定舞台站位（比如左边角色填 -300，右边角色填 300）")]
+    [Tooltip("角色的固定舞台站位（比如 Vivi -300，NPC 300）")]
     public Vector3 stagePosition = new Vector3(-300, 0, 0);
-    [Tooltip("退场隐藏时的位置（屏幕外，左边角色填 -1500，右边填 1500）")]
+    [Tooltip("退场隐藏时的位置（屏幕外）")]
     public Vector3 hidePosition = new Vector3(-1500, 0, 0);
-    [Tooltip("退场时的滑步速度")]
     public float moveSpeed = 10f;
 
     [Header("颜色与淡入配置")]
     public Color talkColor = Color.white;
     public Color listenColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-    [Tooltip("原地淡入的速度")]
     public float fadeSpeed = 5f;
     
     [Header("动作片段配置")]
@@ -46,6 +44,8 @@ public class Live2DActor : MonoBehaviour
     private Vector3 targetPosition;
     private Color targetColor;
     private float targetAlpha = 0f;
+    
+    private bool _isPlayingLoopMotion = false;
 
     void Awake()
     {
@@ -77,8 +77,6 @@ public class Live2DActor : MonoBehaviour
     void Start()
     {
         currentState = ActorState.Hidden;
-        
-        // 初始状态：在屏幕外，目标位置也是屏幕外
         transform.localPosition = hidePosition;
         targetPosition = hidePosition;
         targetAlpha = 0f;
@@ -102,7 +100,11 @@ public class Live2DActor : MonoBehaviour
 
     private void OnAnimationEnd(int layerIndex)
     {
-        if (idleClip != null) PlayMotion(idleClip.name, true);
+        // 只有当播放的不是 Idle 且不是循环动作时，才回到 Idle
+        if (idleClip != null && !_isPlayingLoopMotion)
+        {
+            PlayMotion(idleClip.name, true);
+        }
     }
 
     public void SetState(ActorState state)
@@ -117,10 +119,8 @@ public class Live2DActor : MonoBehaviour
             case ActorState.Talking:
                 targetColor = talkColor;
                 targetAlpha = 1f;
-                
                 if (wasHidden)
                 {
-                    // ★ 核心修复：瞬移到站位，并且把目标位置也设为站位，防止自己跑向屏幕外
                     transform.localPosition = stagePosition;
                     targetPosition = stagePosition; 
                     if (renderer != null) renderer.Opacity = 0f; 
@@ -130,7 +130,6 @@ public class Live2DActor : MonoBehaviour
             case ActorState.Listening:
                 targetColor = listenColor;
                 targetAlpha = 1f;
-                
                 if (wasHidden)
                 {
                     transform.localPosition = stagePosition;
@@ -140,7 +139,6 @@ public class Live2DActor : MonoBehaviour
                 break;
 
             case ActorState.Hidden:
-                // 对话彻底结束，目标位置设为屏幕外，开始滑步退场
                 targetPosition = hidePosition;
                 break;
         }
@@ -157,13 +155,11 @@ public class Live2DActor : MonoBehaviour
     {
         if (renderer == null) return;
 
-        // 1. 平滑移动（只在退场时移动）
         if (Vector3.Distance(transform.localPosition, targetPosition) > 0.1f)
         {
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPosition, Time.deltaTime * moveSpeed);
         }
 
-        // 2. 如果是在退场，且完全滑出了屏幕，才把透明度降为0
         if (currentState == ActorState.Hidden)
         {
             if (Vector3.Distance(transform.localPosition, hidePosition) < 1f)
@@ -172,10 +168,8 @@ public class Live2DActor : MonoBehaviour
             }
         }
 
-        // 3. 平滑处理透明度（实现原地淡入）
         renderer.Opacity = Mathf.MoveTowards(renderer.Opacity, targetAlpha, Time.deltaTime * fadeSpeed);
 
-        // 4. 平滑处理颜色（原地变暗变亮）
         Color currentColor = cubismRenderers.Length > 0 ? cubismRenderers[0].MultiplyColor : Color.white;
         if (currentColor != targetColor)
         {
@@ -200,7 +194,7 @@ public class Live2DActor : MonoBehaviour
         else if (name == "Default" || name == "") expr.CurrentExpressionIndex = -1;
     }
 
-    public void PlayMotion(string name, bool isIdle = false)
+    public void PlayMotion(string name, bool isLoop = false)
     {
         if (string.IsNullOrEmpty(name) || motion == null) return;
 
@@ -209,11 +203,12 @@ public class Live2DActor : MonoBehaviour
             if (clip == null || clip.length <= 0.01f) return;
             try
             {
+                _isPlayingLoopMotion = isLoop;
                 motion.PlayAnimation(
                     clip,
                     layerIndex: 0,
-                    priority: isIdle ? CubismMotionPriority.PriorityIdle : CubismMotionPriority.PriorityNormal,
-                    isLoop: isIdle
+                    priority: isLoop ? CubismMotionPriority.PriorityIdle : CubismMotionPriority.PriorityNormal,
+                    isLoop: isLoop
                 );
             }
             catch (System.Exception e) { Debug.LogException(e, this); }

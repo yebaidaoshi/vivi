@@ -1,0 +1,128 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Roro_3.moc3",
+    "Textures": [
+      "textures/texture_00_10.png",
+      "textures/texture_01_7.png"
+    ],
+    "Motions": {
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        },
+        {
+          "File": "motions/Breathing2.motion3.json"
+        }
+      ],
+      "Face_Anger": [
+        {
+          "File": "motions/Face_Anger1.motion3.json"
+        },
+        {
+          "File": "motions/Face_Anger2.motion3.json"
+        },
+        {
+          "File": "motions/Face_Anger3.motion3.json"
+        },
+        {
+          "File": "motions/Face_Anger4.motion3.json"
+        },
+        {
+          "File": "motions/Face_Anger5.motion3.json"
+        },
+        {
+          "File": "motions/Face_Anger6.motion3.json"
+        }
+      ],
+      "Face_Happy": [
+        {
+          "File": "motions/Face_Happy.motion3.json"
+        },
+        {
+          "File": "motions/Face_Happy2.motion3.json"
+        },
+        {
+          "File": "motions/Face_Happy3.motion3.json"
+        },
+        {
+          "File": "motions/Face_Happy4.motion3.json"
+        },
+        {
+          "File": "motions/Face_Happy３.motion3.json"
+        }
+      ],
+      "Face_LookUp": [
+        {
+          "File": "motions/Face_LookUp1.motion3.json"
+        }
+      ],
+      "Face_Normal": [
+        {
+          "File": "motions/Face_Normal1.motion3.json"
+        },
+        {
+          "File": "motions/Face_Normal2.motion3.json"
+        },
+        {
+          "File": "motions/Face_Normal3.motion3.json"
+        }
+      ],
+      "Face_Sad": [
+        {
+          "File": "motions/Face_Sad.motion3.json"
+        },
+        {
+          "File": "motions/Face_Sad1.motion3.json"
+        }
+      ],
+      "Face_Surprise": [
+        {
+          "File": "motions/Face_Surprise1.motion3.json"
+        },
+        {
+          "File": "motions/Face_Surprise2.motion3.json"
+        },
+        {
+          "File": "motions/Face_Surprise3.motion3.json"
+        }
+      ],
+      "Face_Think": [
+        {
+          "File": "motions/Face_Think1.motion3.json"
+        }
+      ],
+      "FirstImpression": [
+        {
+          "File": "motions/FirstImpression.motion3.json"
+        }
+      ],
+      "Motion": [
+        {
+          "File": "motions/Motion_.motion3.json"
+        }
+      ],
+      "Motion_Bow": [
+        {
+          "File": "motions/Motion_Bow.motion3.json"
+        }
+      ],
+      "Motion_Default": [
+        {
+          "File": "motions/Motion_Default.motion3.json"
+        }
+      ],
+      "Touch": [
+        {
+          "File": "motions/Touch_0.motion3.json"
+        },
+        {
+          "File": "motions/Touch_1.motion3.json"
+        },
+        {
+          "File": "motions/Touch_2.motion3.json"
+        }
+      ]
+    }
+  }
+}

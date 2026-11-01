@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403ae2dd693bb1d4b924f6b8d206b053, type: 3}
+  m_Name: Vivi_Chimera.fadeMotionList
+  m_EditorClassIdentifier: 
+  MotionInstanceIds: 50d4fffff0cfffff42cdffffbacbffff3ac8ffff9ac5ffffc2c2ffffc6c1ffffaac1ffff3ec0ffff0ebeffff32bcffffa6bbffffeab8ffffb2b8ffff2eb6fffff6b5ffffdab5ffffa2b5ffff52b4ffff22b2ffff7ab1ffffb6b0ffff2ab0ffff82afffff
+  CubismFadeMotionObjects:
+  - {fileID: 11400000, guid: 4529f5356d0c62b4d83b1bd846a569b5, type: 2}
+  - {fileID: 11400000, guid: 7917e9bd953372d459aebb1d37429920, type: 2}
+  - {fileID: 11400000, guid: b0f527ccd692b0446a395c6d1709e6c0, type: 2}
+  - {fileID: 11400000, guid: 33549f907f19f0543b55fc7f187bacd8, type: 2}
+  - {fileID: 11400000, guid: d052d9d37b6090147a4aaca4fccd30b4, type: 2}
+  - {fileID: 11400000, guid: 44ddce25e5e367642a330738fab9ce90, type: 2}
+  - {fileID: 11400000, guid: f4dcd4bcc1c95b44b9081b2ec62eb709, type: 2}
+  - {fileID: 11400000, guid: a0bc0809573b129499082a5335a89bdd, type: 2}
+  - {fileID: 11400000, guid: 279289b1be00a484a98358ac3c91cbdb, type: 2}
+  - {fileID: 11400000, guid: 190d0a2fe9e257441b786b9c333e4df7, type: 2}
+  - {fileID: 11400000, guid: d6456411707dbcb4ab18a669dc94f7c9, type: 2}
+  - {fileID: 11400000, guid: 4a746d9fa65e8df48a55c02ae9e3599b, type: 2}
+  - {fileID: 11400000, guid: c0e805b2c1b23ef42aac701e34e6b3cf, type: 2}
+  - {fileID: 11400000, guid: 222a649f1f2a939469825a99b67944c0, type: 2}
+  - {fileID: 11400000, guid: f738cd7aca2ceb641bbabe5cc0b2b2b4, type: 2}
+  - {fileID: 11400000, guid: 7371501a428d36a478197ac666f6dd48, type: 2}
+  - {fileID: 11400000, guid: 77cac06803144b946ae5838c7db597c0, type: 2}
+  - {fileID: 11400000, guid: 40b4503a0a36b6f4db92e30789b019e5, type: 2}
+  - {fileID: 11400000, guid: cce2f83e439d2dc45be7b58a746b8e71, type: 2}
+  - {fileID: 11400000, guid: b3462174821efe84283d3cf135dfedd0, type: 2}
+  - {fileID: 11400000, guid: cf3d18a257e9f4648ab67b13acf91e1c, type: 2}
+  - {fileID: 11400000, guid: a12c8addeb48c8849b0250db42bf5141, type: 2}
+  - {fileID: 11400000, guid: a228751fc2c5bc4498bfadaff4e7dcea, type: 2}
+  - {fileID: 11400000, guid: b3ec7de8e2d840242ab886ff6fe9bdea, type: 2}
+  - {fileID: 11400000, guid: 3ff69a04217405247bc178ac9bae586d, type: 2}

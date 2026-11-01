@@ -18,9 +18,7 @@ public class DialogueManager : MonoBehaviour
     public float fadeDuration = 0.3f;
 
     [Header("背景变暗（2D Sprite）")]
-    [Tooltip("把场景里的 DimBackground_Sprite 拖进来")]
     public SpriteRenderer dimBackgroundSprite;
-    [Tooltip("目标变暗程度（0~1，建议0.5~0.8）")]
     public float dimAlpha = 0.6f;
     public float dimFadeSpeed = 3f;
 
@@ -234,28 +232,44 @@ public class DialogueManager : MonoBehaviour
         onComplete?.Invoke();
     }
 
+    // ★ 核心：处理多人/多动作逻辑
     private void HandleLive2D(DialogueLine line)
     {
         if (!enableLive2D) return;
 
+        // 1. 处理基础状态（亮暗切换）和说话者动作
         foreach (var actor in live2DActors)
         {
             if (actor == null) continue;
 
             if (actor.actorId == line.actorId)
             {
-                // 谁说话，谁原地亮起（如果之前是隐藏的，直接原地淡入）
                 actor.SetState(Live2DActor.ActorState.Talking);
                 
                 if (!string.IsNullOrEmpty(line.expression)) actor.SetExpression(line.expression);
-                if (!string.IsNullOrEmpty(line.motion)) actor.PlayMotion(line.motion);
+                
+                // 说话者的动作（增加了是否循环的参数）
+                if (!string.IsNullOrEmpty(line.motion)) 
+                    actor.PlayMotion(line.motion, line.loopMotion);
             }
             else
             {
-                // 没说话的人，如果已经出场了，原地变暗（不移动）
-                if (actor.currentState != Live2DActor.ActorState.Hidden)
+                actor.SetState(Live2DActor.ActorState.Listening);
+            }
+        }
+
+        // 2. 处理额外动作（让其他没说话的角色也在此时做动作）
+        if (line.extraActions != null && line.extraActions.Count > 0)
+        {
+            foreach (var extra in line.extraActions)
+            {
+                if (string.IsNullOrEmpty(extra.motion)) continue;
+
+                // 去场景里找对应的角色
+                var targetActor = live2DActors.Find(a => a != null && a.actorId == extra.actorId);
+                if (targetActor != null)
                 {
-                    actor.SetState(Live2DActor.ActorState.Listening);
+                    targetActor.PlayMotion(extra.motion, extra.loopMotion);
                 }
             }
         }

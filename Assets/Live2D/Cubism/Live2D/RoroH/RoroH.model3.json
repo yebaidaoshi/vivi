@@ -1,0 +1,111 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "RoroH.moc3",
+    "Textures": [
+      "textures/texture_00_0.png",
+      "textures/texture_01_0.png",
+      "textures/texture_02_0.png",
+      "textures/texture_03_0.png",
+      "textures/texture_04_0.png"
+    ],
+    "Motions": {
+      "01_Start": [
+        {
+          "File": "motions/01_Start_0.motion3.json"
+        }
+      ],
+      "03_Insert": [
+        {
+          "File": "motions/03_Insert_0.motion3.json"
+        }
+      ],
+      "04_Loop": [
+        {
+          "File": "motions/04_Loop2_0.motion3.json"
+        },
+        {
+          "File": "motions/04_Loop_0.motion3.json"
+        }
+      ],
+      "05_Finish": [
+        {
+          "File": "motions/05_Finish_0.motion3.json"
+        }
+      ],
+      "07_Loop": [
+        {
+          "File": "motions/07_Loop_0.motion3.json"
+        }
+      ],
+      "10_Loop": [
+        {
+          "File": "motions/10_Loop.motion3.json"
+        }
+      ],
+      "11_Finish": [
+        {
+          "File": "motions/11_Finish.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_0.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_1.motion3.json"
+        }
+      ],
+      "Damage": [
+        {
+          "File": "motions/Damage1.motion3.json"
+        },
+        {
+          "File": "motions/Damage2.motion3.json"
+        }
+      ],
+      "HP": [
+        {
+          "File": "motions/HP_000.motion3.json"
+        },
+        {
+          "File": "motions/HP_001.motion3.json"
+        },
+        {
+          "File": "motions/HP_025.motion3.json"
+        },
+        {
+          "File": "motions/HP_050.motion3.json"
+        },
+        {
+          "File": "motions/HP_075.motion3.json"
+        },
+        {
+          "File": "motions/HP_100.motion3.json"
+        }
+      ],
+      "Motion": [
+        {
+          "File": "motions/02.motion3.json"
+        },
+        {
+          "File": "motions/06.motion3.json"
+        },
+        {
+          "File": "motions/07.motion3.json"
+        },
+        {
+          "File": "motions/09.motion3.json"
+        }
+      ],
+      "idling": [
+        {
+          "File": "motions/idling_00.motion3.json"
+        }
+      ]
+    }
+  }
+}

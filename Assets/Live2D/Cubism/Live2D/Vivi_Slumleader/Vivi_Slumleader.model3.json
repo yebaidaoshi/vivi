@@ -1,0 +1,128 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Vivi_Slumleader.moc3",
+    "Textures": [
+      "textures/texture_00_4.png",
+      "textures/texture_01_3.png",
+      "textures/texture_02_1.png",
+      "textures/texture_03_1.png",
+      "textures/texture_04_1.png",
+      "textures/texture_05_0.png"
+    ],
+    "Motions": {
+      "00_Start": [
+        {
+          "File": "motions/00_Start.motion3.json"
+        }
+      ],
+      "01_Opener": [
+        {
+          "File": "motions/01_Opener.motion3.json"
+        }
+      ],
+      "02_Loop": [
+        {
+          "File": "motions/02_Loop1.motion3.json"
+        },
+        {
+          "File": "motions/02_Loop2.motion3.json"
+        },
+        {
+          "File": "motions/02_Loop3.motion3.json"
+        }
+      ],
+      "03_OnTheTable": [
+        {
+          "File": "motions/03_OnTheTable.motion3.json"
+        }
+      ],
+      "04_Loop": [
+        {
+          "File": "motions/04_Loop1.motion3.json"
+        },
+        {
+          "File": "motions/04_Loop2_1.motion3.json"
+        }
+      ],
+      "05_Finish": [
+        {
+          "File": "motions/05_Finish_1.motion3.json"
+        }
+      ],
+      "07_1_Loop": [
+        {
+          "File": "motions/07_1_Loop.motion3.json"
+        }
+      ],
+      "07_1_to": [
+        {
+          "File": "motions/07_1_to2.motion3.json"
+        }
+      ],
+      "07_2_Loop": [
+        {
+          "File": "motions/07_2_Loop.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_0.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_1.motion3.json"
+        }
+      ],
+      "Damage": [
+        {
+          "File": "motions/Damage1.motion3.json"
+        },
+        {
+          "File": "motions/Damage2.motion3.json"
+        }
+      ],
+      "HP": [
+        {
+          "File": "motions/HP_000.motion3.json"
+        },
+        {
+          "File": "motions/HP_001.motion3.json"
+        },
+        {
+          "File": "motions/HP_025.motion3.json"
+        },
+        {
+          "File": "motions/HP_050.motion3.json"
+        },
+        {
+          "File": "motions/HP_075.motion3.json"
+        },
+        {
+          "File": "motions/HP_100.motion3.json"
+        }
+      ],
+      "Motion": [
+        {
+          "File": "motions/06_0.motion3.json"
+        },
+        {
+          "File": "motions/08.motion3.json"
+        },
+        {
+          "File": "motions/09_0.motion3.json"
+        },
+        {
+          "File": "motions/10.motion3.json"
+        }
+      ],
+      "idling": [
+        {
+          "File": "motions/idling_00.motion3.json"
+        }
+      ]
+    }
+  }
+}

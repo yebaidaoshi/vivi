@@ -36,14 +36,14 @@ TextureImporter:
     serializedVersion: 2
     filterMode: 1
     aniso: 1
-    mipBias: 0
+    mipBias: -0.5
     wrapU: 1
     wrapV: 1
     wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -95,7 +95,1687 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Arm_Front1_0
+      rect:
+        serializedVersion: 2
+        x: 1853
+        y: 279
+        width: 96
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0c8c015bdb251930800000000000000
+      internalID: 4113242055630425098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_1
+      rect:
+        serializedVersion: 2
+        x: 1347
+        y: 251
+        width: 102
+        height: 314
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d3c1f41f077f4290800000000000000
+      internalID: -7903967914352327725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_2
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 311
+        width: 102
+        height: 314
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5af4893cb4829f750800000000000000
+      internalID: 6339142256369880997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_3
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 324
+        width: 102
+        height: 308
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cb3a7e9b3fff2de0800000000000000
+      internalID: -1355584331288265786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_4
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 342
+        width: 102
+        height: 314
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ea2e0e9d6dc01190800000000000000
+      internalID: -7993663467895772442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_Brown
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 326
+        width: 96
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5015f3da1d2bc6a0800000000000000
+      internalID: -6427994449892798369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front1_V
+      rect:
+        serializedVersion: 2
+        x: 1031
+        y: 238
+        width: 100
+        height: 314
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 548972247efff7e40800000000000000
+      internalID: 5656521025713051717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front2_1_A
+      rect:
+        serializedVersion: 2
+        x: 1357
+        y: 543
+        width: 119
+        height: 247
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f97b1d130e853a50800000000000000
+      internalID: 6500257781203565043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front2_1_B
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 619
+        width: 119
+        height: 247
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0225f03b9139e0b90800000000000000
+      internalID: -7273714609569181152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front2_Brown
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 658
+        width: 119
+        height: 247
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76d40e0ce783ad830800000000000000
+      internalID: 4096648928099847527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front2_Brown 2
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 647
+        width: 119
+        height: 245
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1952aaeb7f09a780800000000000000
+      internalID: -8671382582633277156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front_Sailor
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 543
+        width: 117
+        height: 305
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b85895a6a7cad87f0800000000000000
+      internalID: -608640732854909557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Front_Sailor 2
+      rect:
+        serializedVersion: 2
+        x: 1606
+        y: 502
+        width: 117
+        height: 305
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ec5d4192b5aaa2b0800000000000000
+      internalID: -5572459402557039385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear1_0
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 328
+        width: 96
+        height: 193
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df736fc6ed7370580800000000000000
+      internalID: -8861052313377818627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear1_1
+      rect:
+        serializedVersion: 2
+        x: 1327
+        y: 358
+        width: 102
+        height: 311
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e4138540abdd2a30800000000000000
+      internalID: 4192248309559268578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear1_2
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 377
+        width: 102
+        height: 311
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9713a67a3731eed00800000000000000
+      internalID: 1003761154401120633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear1_4
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 418
+        width: 102
+        height: 311
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 832472f302652ca20800000000000000
+      internalID: 3081119791573320248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear1_V
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 219
+        width: 98
+        height: 309
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38018640528f0f760800000000000000
+      internalID: 7489759018188542083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear2_1_A
+      rect:
+        serializedVersion: 2
+        x: 1228
+        y: 666
+        width: 119
+        height: 245
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a1843b363178b220800000000000000
+      internalID: 2501874070739780009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear2_1_B
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 376
+        width: 62
+        height: 57
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5ca19eb29eb3b1a0800000000000000
+      internalID: -6794877875300225958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arm_Rear2_Momi
+      rect:
+        serializedVersion: 2
+        x: 1779
+        y: 694
+        width: 128
+        height: 245
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fef80dc7adaa840d0800000000000000
+      internalID: -3438310460123738129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Axe
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 1177
+        width: 209
+        height: 648
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c86c8599f7ba49de0800000000000000
+      internalID: -1327247425645525364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Axe_Broken_1
+      rect:
+        serializedVersion: 2
+        x: 1126
+        y: 1076
+        width: 209
+        height: 191
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 766576784f2a5bf10800000000000000
+      internalID: 2284911557087811175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Axe_Broken_2
+      rect:
+        serializedVersion: 2
+        x: 519
+        y: 164
+        width: 52
+        height: 264
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0873a7831b69dec40800000000000000
+      internalID: 5543252404263860096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Axe_Broken_3
+      rect:
+        serializedVersion: 2
+        x: 1471
+        y: 174
+        width: 85
+        height: 287
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccfdc33c1ef6b8ba0800000000000000
+      internalID: -6085647456027222068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FaceGear_V1
+      rect:
+        serializedVersion: 2
+        x: 1146
+        y: 327
+        width: 67
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c359a0426e27972e0800000000000000
+      internalID: -2127543016183130820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FaceGear_V2
+      rect:
+        serializedVersion: 2
+        x: 1663
+        y: 402
+        width: 109
+        height: 173
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7dd57efbbe9c1ad0800000000000000
+      internalID: -2730132743828152963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FaceGear_V3
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 432
+        width: 139
+        height: 103
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 769907180f2e2b300800000000000000
+      internalID: 266524850559949159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_1
+      rect:
+        serializedVersion: 2
+        x: 1913
+        y: 678
+        width: 119
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f8d2fe83b8cf3d90800000000000000
+      internalID: -7115748212699113225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor0
+      rect:
+        serializedVersion: 2
+        x: 1193
+        y: 913
+        width: 164
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bc329a608dc843e0800000000000000
+      internalID: -2069178077349266248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 847
+        width: 133
+        height: 136
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04d9652ab64f764f0800000000000000
+      internalID: -835430462731674304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 865
+        width: 133
+        height: 136
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 581010c6a430a52d0800000000000000
+      internalID: -3289312959666257531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor3
+      rect:
+        serializedVersion: 2
+        x: 886
+        y: 907
+        width: 146
+        height: 136
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56a0988e3384fc910800000000000000
+      internalID: 1859784558909131365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor4
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 891
+        width: 133
+        height: 136
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34be29bc3398542d0800000000000000
+      internalID: -3295076696799909053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor5
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 876
+        width: 135
+        height: 159
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bef03feb68e474900800000000000000
+      internalID: 668589410323992555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Face_Sailor6
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 907
+        width: 157
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60443b85cf572f480800000000000000
+      internalID: -8866894989658733562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gips
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1501
+        width: 213
+        height: 249
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75cf38de7289e68e0800000000000000
+      internalID: -1698252712216101801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hair_1
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 649
+        width: 123
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 447acfd0fb0bb42e0800000000000000
+      internalID: -2140422863264635068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hair_2
+      rect:
+        serializedVersion: 2
+        x: 1838
+        y: 452
+        width: 110
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a2242b2d4f889e10800000000000000
+      internalID: 2204669579196900006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hair_3
+      rect:
+        serializedVersion: 2
+        x: 1204
+        y: 554
+        width: 121
+        height: 114
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 307341899f6418e10800000000000000
+      internalID: 2198116130945775363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HandAxe
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 486
+        width: 111
+        height: 259
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8a4396931f019aa0800000000000000
+      internalID: -6156122638833726836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeadGear_1
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 376
+        width: 129
+        height: 54
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5f5b089f0847a040800000000000000
+      internalID: 4658771571350658911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeadGear_2_a
+      rect:
+        serializedVersion: 2
+        x: 628
+        y: 537
+        width: 128
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0a3d533df6213110800000000000000
+      internalID: 1238814241433926156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeadGear_2_b
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 554
+        width: 128
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab896a145cb374970800000000000000
+      internalID: 8739019320331770042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HeadGear_V
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 944
+        width: 177
+        height: 218
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fef7ed8c59b8aeff0800000000000000
+      internalID: -6038974051221521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Front_0
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 445
+        width: 113
+        height: 326
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30b6a2f7adbdbc9f0800000000000000
+      internalID: -447022006510392573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Front_Gear_1
+      rect:
+        serializedVersion: 2
+        x: 1337
+        y: 711
+        width: 166
+        height: 560
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbe98ebd8ce878f10800000000000000
+      internalID: 2271941530365763260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Front_Gear_2
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 804
+        width: 166
+        height: 560
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcc7e248dda42c620800000000000000
+      internalID: 2792877034188995789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Front_Gear_3
+      rect:
+        serializedVersion: 2
+        x: 1359
+        y: 545
+        width: 162
+        height: 558
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53c7452d61c612bf0800000000000000
+      internalID: -350880450684355531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Rear_Gear_3
+      rect:
+        serializedVersion: 2
+        x: 1359
+        y: 545
+        width: 162
+        height: 558
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 117fed03ff8179840800000000000000
+      internalID: 5230676976529766161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Front_Gear_Sailor
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 1221
+        width: 199
+        height: 546
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ffadd2a9921555e0800000000000000
+      internalID: -1921609214931914761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Rear_0
+      rect:
+        serializedVersion: 2
+        x: 1029
+        y: 458
+        width: 113
+        height: 326
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c79d2ecd4f2ea1450800000000000000
+      internalID: 6060405789886175612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Rear_Gear_1
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 831
+        width: 166
+        height: 560
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a71d40bdc3e83da40800000000000000
+      internalID: 5391809570916323706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leg_Rear_Gear_2
+      rect:
+        serializedVersion: 2
+        x: 1126
+        y: 879
+        width: 166
+        height: 560
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c3d06580bb133450800000000000000
+      internalID: 6067223567964099523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Molotov
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 359
+        width: 106
+        height: 185
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1ebf53346f5910e0800000000000000
+      internalID: -2298701250832646626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Momi_Breast
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 363
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81a8ae0af459d3fc0800000000000000
+      internalID: -3513487965044438504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mosaic
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 376
+        width: 113
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee98f7e3e34507210800000000000000
+      internalID: 1328654516387547630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NeckGear_1
+      rect:
+        serializedVersion: 2
+        x: 1363
+        y: 376
+        width: 106
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1edb0a6c8e81030800000000000000
+      internalID: 3465775853059563959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pants_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 850
+        width: 152
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 247f1d903dbc5cb20800000000000000
+      internalID: 3154151221306193730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pants_2
+      rect:
+        serializedVersion: 2
+        x: 1475
+        y: 809
+        width: 150
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa13c125aac38ca40800000000000000
+      internalID: 5388623656368484778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pants_3
+      rect:
+        serializedVersion: 2
+        x: 1627
+        y: 809
+        width: 150
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81ee196ae90e18c30800000000000000
+      internalID: 4360012886275386904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pants_Sailor
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 894
+        width: 153
+        height: 133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 988636ea96c043050800000000000000
+      internalID: 5779257869860038793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Penis
+      rect:
+        serializedVersion: 2
+        x: 1760
+        y: 373
+        width: 88
+        height: 91
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fa990666ba826ef0800000000000000
+      internalID: -116378124357625100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rope
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 376
+        width: 64
+        height: 37
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f207c62c5b668890800000000000000
+      internalID: -7456154089533537550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rope_Large
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 376
+        width: 192
+        height: 45
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45091621792f79b60800000000000000
+      internalID: 7752932014203965524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SailorCollar_Front
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 773
+        width: 172
+        height: 125
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06c55709468ecbeb0800000000000000
+      internalID: -4702628392263656352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SailorCollar_Rear
+      rect:
+        serializedVersion: 2
+        x: 1046
+        y: 339
+        width: 61
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 658a7a8a8d3f399f0800000000000000
+      internalID: -462758224820983722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SailorSetPos
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1076
+        width: 219
+        height: 970
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84d7d726e2c42d690800000000000000
+      internalID: -7578911460806525624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scarf
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 348
+        width: 51
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 019d4c1e975e26c20800000000000000
+      internalID: 3198370997028051216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scarf_Front
+      rect:
+        serializedVersion: 2
+        x: 1264
+        y: 376
+        width: 97
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8732be5b04391c8e0800000000000000
+      internalID: -1674895680265837704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scarf_Rear
+      rect:
+        serializedVersion: 2
+        x: 980
+        y: 372
+        width: 60
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1314494ad2f6d3be0800000000000000
+      internalID: -1495917259391745743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SupplyBox
+      rect:
+        serializedVersion: 2
+        x: 1451
+        y: 1638
+        width: 331
+        height: 264
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46ee7a804e04e1a70800000000000000
+      internalID: 8799542070070472292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 746
+        width: 167
+        height: 450
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea5014da54a409940800000000000000
+      internalID: 5300818424534992302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Brown
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 773
+        width: 167
+        height: 450
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1085a7543db507b0800000000000000
+      internalID: -5258588957378772964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Gear_1
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 1190
+        width: 173
+        height: 376
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d021c9a5c7cefe380800000000000000
+      internalID: -8939666716466867699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Gear_2
+      rect:
+        serializedVersion: 2
+        x: 745
+        y: 1190
+        width: 173
+        height: 376
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d40ec130f03deb1e0800000000000000
+      internalID: -2180073108170547123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Gear_3
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1172
+        width: 169
+        height: 363
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b09169cc759ff210800000000000000
+      internalID: 1368977174931017910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Gear_4
+      rect:
+        serializedVersion: 2
+        x: 1123
+        y: 1238
+        width: 173
+        height: 376
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69517daf443bdd320800000000000000
+      internalID: 2584418870028080534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Gear_V
+      rect:
+        serializedVersion: 2
+        x: 1501
+        y: 1260
+        width: 174
+        height: 376
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86e0246bec52ec2c0800000000000000
+      internalID: -4409545415397863832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Torso_Sailor
+      rect:
+        serializedVersion: 2
+        x: 1688
+        y: 1161
+        width: 187
+        height: 299
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1786cfab35272e300800000000000000
+      internalID: 279911830795348081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +1786,87 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Arm_Front1_0: 4113242055630425098
+      Arm_Front1_1: -7903967914352327725
+      Arm_Front1_2: 6339142256369880997
+      Arm_Front1_3: -1355584331288265786
+      Arm_Front1_4: -7993663467895772442
+      Arm_Front1_Brown: -6427994449892798369
+      Arm_Front1_V: 5656521025713051717
+      Arm_Front2_1_A: 6500257781203565043
+      Arm_Front2_1_B: -7273714609569181152
+      Arm_Front2_Brown: 4096648928099847527
+      Arm_Front2_Brown 2: -8671382582633277156
+      Arm_Front_Sailor: -608640732854909557
+      Arm_Front_Sailor 2: -5572459402557039385
+      Arm_Rear1_0: -8861052313377818627
+      Arm_Rear1_1: 4192248309559268578
+      Arm_Rear1_2: 1003761154401120633
+      Arm_Rear1_4: 3081119791573320248
+      Arm_Rear1_V: 7489759018188542083
+      Arm_Rear2_1_A: 2501874070739780009
+      Arm_Rear2_1_B: -6794877875300225958
+      Arm_Rear2_Momi: -3438310460123738129
+      Axe: -1327247425645525364
+      Axe_Broken_1: 2284911557087811175
+      Axe_Broken_2: 5543252404263860096
+      Axe_Broken_3: -6085647456027222068
+      FaceGear_V1: -2127543016183130820
+      FaceGear_V2: -2730132743828152963
+      FaceGear_V3: 266524850559949159
+      Face_1: -7115748212699113225
+      Face_Sailor0: -2069178077349266248
+      Face_Sailor1: -835430462731674304
+      Face_Sailor2: -3289312959666257531
+      Face_Sailor3: 1859784558909131365
+      Face_Sailor4: -3295076696799909053
+      Face_Sailor5: 668589410323992555
+      Face_Sailor6: -8866894989658733562
+      Gips: -1698252712216101801
+      Hair_1: -2140422863264635068
+      Hair_2: 2204669579196900006
+      Hair_3: 2198116130945775363
+      HandAxe: -6156122638833726836
+      HeadGear_1: 4658771571350658911
+      HeadGear_2_a: 1238814241433926156
+      HeadGear_2_b: 8739019320331770042
+      HeadGear_V: -6038974051221521
+      Leg_Front_0: -447022006510392573
+      Leg_Front_Gear_1: 2271941530365763260
+      Leg_Front_Gear_2: 2792877034188995789
+      Leg_Front_Gear_3: -350880450684355531
+      Leg_Front_Gear_Sailor: -1921609214931914761
+      Leg_Rear_0: 6060405789886175612
+      Leg_Rear_Gear_1: 5391809570916323706
+      Leg_Rear_Gear_2: 6067223567964099523
+      Leg_Rear_Gear_3: 5230676976529766161
+      Molotov: -2298701250832646626
+      Momi_Breast: -3513487965044438504
+      Mosaic: 1328654516387547630
+      NeckGear_1: 3465775853059563959
+      Pants_1: 3154151221306193730
+      Pants_2: 5388623656368484778
+      Pants_3: 4360012886275386904
+      Pants_Sailor: 5779257869860038793
+      Penis: -116378124357625100
+      Rope: -7456154089533537550
+      Rope_Large: 7752932014203965524
+      SailorCollar_Front: -4702628392263656352
+      SailorCollar_Rear: -462758224820983722
+      SailorSetPos: -7578911460806525624
+      Scarf: 3198370997028051216
+      Scarf_Front: -1674895680265837704
+      Scarf_Rear: -1495917259391745743
+      SupplyBox: 8799542070070472292
+      Torso_1: 5300818424534992302
+      Torso_Brown: -5258588957378772964
+      Torso_Gear_1: -8939666716466867699
+      Torso_Gear_2: -2180073108170547123
+      Torso_Gear_3: 1368977174931017910
+      Torso_Gear_4: 2584418870028080534
+      Torso_Gear_V: -4409545415397863832
+      Torso_Sailor: 279911830795348081
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

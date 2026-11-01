@@ -1,0 +1,84 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "CocoH.moc3",
+    "Textures": [
+      "textures/texture_00_6.png",
+      "textures/texture_01_5.png",
+      "textures/texture_02_3.png",
+      "textures/texture_03_3.png",
+      "textures/texture_04_3.png",
+      "textures/texture_05_2.png"
+    ],
+    "Motions": {
+      "01_A_Start": [
+        {
+          "File": "motions/01_A_Start.motion3.json"
+        }
+      ],
+      "01_B_Insert": [
+        {
+          "File": "motions/01_B_Insert.motion3.json"
+        }
+      ],
+      "04_Drag": [
+        {
+          "File": "motions/04_Drag.motion3.json"
+        }
+      ],
+      "05_Trip": [
+        {
+          "File": "motions/05_Trip.motion3.json"
+        }
+      ],
+      "06_Loop": [
+        {
+          "File": "motions/06_Loop.motion3.json"
+        },
+        {
+          "File": "motions/06_Loop2.motion3.json"
+        },
+        {
+          "File": "motions/06_Loop3.motion3.json"
+        }
+      ],
+      "07_Finish": [
+        {
+          "File": "motions/07_Finish.motion3.json"
+        },
+        {
+          "File": "motions/07_Finish2.motion3.json"
+        }
+      ],
+      "08_Extra": [
+        {
+          "File": "motions/08_Extra.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_0.motion3.json"
+        },
+        {
+          "File": "motions/Breathing_1.motion3.json"
+        }
+      ],
+      "HP": [
+        {
+          "File": "motions/HP_001.motion3.json"
+        },
+        {
+          "File": "motions/HP_050.motion3.json"
+        }
+      ],
+      "idling": [
+        {
+          "File": "motions/idling_00.motion3.json"
+        }
+      ]
+    }
+  }
+}

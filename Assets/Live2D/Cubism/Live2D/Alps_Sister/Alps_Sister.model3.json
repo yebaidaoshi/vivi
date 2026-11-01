@@ -1,0 +1,113 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Alps_Sister.moc3",
+    "Textures": [
+      "textures/texture_00_1.png",
+      "textures/texture_01_1.png"
+    ],
+    "Motions": {
+      "Motion": [
+        {
+          "File": "motions/01.motion3.json"
+        },
+        {
+          "File": "motions/02.motion3.json"
+        },
+        {
+          "File": "motions/03.motion3.json"
+        },
+        {
+          "File": "motions/04.motion3.json"
+        },
+        {
+          "File": "motions/05.motion3.json"
+        },
+        {
+          "File": "motions/06.motion3.json"
+        },
+        {
+          "File": "motions/07.motion3.json"
+        },
+        {
+          "File": "motions/08.motion3.json"
+        },
+        {
+          "File": "motions/09.motion3.json"
+        },
+        {
+          "File": "motions/10.motion3.json"
+        },
+        {
+          "File": "motions/11.motion3.json"
+        },
+        {
+          "File": "motions/12.motion3.json"
+        },
+        {
+          "File": "motions/13.motion3.json"
+        },
+        {
+          "File": "motions/14.motion3.json"
+        },
+        {
+          "File": "motions/15.motion3.json"
+        },
+        {
+          "File": "motions/16.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        }
+      ],
+      "Face_Weaken": [
+        {
+          "File": "motions/Face_Weaken.motion3.json"
+        }
+      ],
+      "Face_Weaken_Smile": [
+        {
+          "File": "motions/Face_Weaken_Smile.motion3.json"
+        }
+      ],
+      "FirstImpression": [
+        {
+          "File": "motions/FirstImpression.motion3.json"
+        }
+      ],
+      "Motion_Facing": [
+        {
+          "File": "motions/Motion_Facing.motion3.json"
+        }
+      ],
+      "Motion_Weaken": [
+        {
+          "File": "motions/Motion_Weaken.motion3.json"
+        }
+      ],
+      "Mouth_Close": [
+        {
+          "File": "motions/Mouth_Close.motion3.json"
+        }
+      ],
+      "Mouth_Open": [
+        {
+          "File": "motions/Mouth_Open.motion3.json"
+        }
+      ],
+      "Touch": [
+        {
+          "File": "motions/Touch_0.motion3.json"
+        },
+        {
+          "File": "motions/Touch_1.motion3.json"
+        },
+        {
+          "File": "motions/Touch_2.motion3.json"
+        }
+      ]
+    }
+  }
+}

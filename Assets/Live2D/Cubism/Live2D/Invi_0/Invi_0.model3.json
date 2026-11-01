@@ -1,0 +1,101 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "Invi_0.moc3",
+    "Textures": [
+      "textures/texture_00_8.png"
+    ],
+    "Motions": {
+      "Motion": [
+        {
+          "File": "motions/01.motion3.json"
+        },
+        {
+          "File": "motions/02.motion3.json"
+        },
+        {
+          "File": "motions/03.motion3.json"
+        },
+        {
+          "File": "motions/04.motion3.json"
+        },
+        {
+          "File": "motions/05.motion3.json"
+        },
+        {
+          "File": "motions/06.motion3.json"
+        },
+        {
+          "File": "motions/07.motion3.json"
+        },
+        {
+          "File": "motions/08.motion3.json"
+        },
+        {
+          "File": "motions/09.motion3.json"
+        },
+        {
+          "File": "motions/10.motion3.json"
+        },
+        {
+          "File": "motions/11.motion3.json"
+        },
+        {
+          "File": "motions/12.motion3.json"
+        },
+        {
+          "File": "motions/13.motion3.json"
+        },
+        {
+          "File": "motions/14.motion3.json"
+        },
+        {
+          "File": "motions/15.motion3.json"
+        },
+        {
+          "File": "motions/16.motion3.json"
+        },
+        {
+          "File": "motions/17.motion3.json"
+        },
+        {
+          "File": "motions/18.motion3.json"
+        },
+        {
+          "File": "motions/19.motion3.json"
+        }
+      ],
+      "Mouth_Close": [
+        {
+          "File": "motions/Mouth_Close.motion3.json"
+        }
+      ],
+      "Mouth_Open": [
+        {
+          "File": "motions/Mouth_Open.motion3.json"
+        }
+      ],
+      "Touch": [
+        {
+          "File": "motions/Touch_2.motion3.json"
+        }
+      ],
+      "exp": [
+        {
+          "File": "motions/exp_06.motion3.json"
+        },
+        {
+          "File": "motions/exp_07.motion3.json"
+        }
+      ],
+      "idling": [
+        {
+          "File": "motions/idling_00.motion3.json"
+        },
+        {
+          "File": "motions/idling_01.motion3.json"
+        }
+      ]
+    }
+  }
+}

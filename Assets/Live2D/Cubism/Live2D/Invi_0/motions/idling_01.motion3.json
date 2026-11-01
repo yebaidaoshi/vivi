@@ -1,0 +1,1 @@
+{"Version":3,"Meta":{"Duration":1.483,"Fps":60.0,"Loop":true,"AreBeziersRestricted":true,"CurveCount":1,"TotalSegmentCount":4,"TotalPointCount":9,"UserDataCount":0,"TotalUserDataSize":0},"Curves":[{"Target":"Parameter","Id":"ParamBreath","Segments":[0.0,0.0,1,0.222333,0.0,0.444667,2.0,0.667,2.0,0,0.75,2.0,1,0.944333,2.0,1.138667,0.0,1.333,0.0,0,1.483,0.0]}]}

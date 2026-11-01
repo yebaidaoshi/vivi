@@ -1,0 +1,116 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "MonoBehaviour.moc3",
+    "Textures": [
+      "textures/texture_00_9.png"
+    ],
+    "Motions": {
+      "Bandage": [
+        {
+          "File": "motions/Bandage_3.motion3.json"
+        },
+        {
+          "File": "motions/Bandage_4.motion3.json"
+        },
+        {
+          "File": "motions/Bandage_1.motion3.json"
+        },
+        {
+          "File": "motions/Bandage_2.motion3.json"
+        }
+      ],
+      "Breathing": [
+        {
+          "File": "motions/Breathing.motion3.json"
+        }
+      ],
+      "FirstImpression": [
+        {
+          "File": "motions/FirstImpression.motion3.json"
+        }
+      ],
+      "Touch": [
+        {
+          "File": "motions/Touch_0.motion3.json"
+        },
+        {
+          "File": "motions/Touch_1.motion3.json"
+        }
+      ],
+      "act": [
+        {
+          "File": "motions/act_00.motion3.json"
+        },
+        {
+          "File": "motions/act_01.motion3.json"
+        },
+        {
+          "File": "motions/act_02.motion3.json"
+        },
+        {
+          "File": "motions/act_03.motion3.json"
+        },
+        {
+          "File": "motions/act_05.motion3.json"
+        },
+        {
+          "File": "motions/act_06.motion3.json"
+        },
+        {
+          "File": "motions/act_07.motion3.json"
+        }
+      ],
+      "exp": [
+        {
+          "File": "motions/exp_01.motion3.json"
+        },
+        {
+          "File": "motions/exp_02.motion3.json"
+        },
+        {
+          "File": "motions/exp_03.motion3.json"
+        },
+        {
+          "File": "motions/exp_04.motion3.json"
+        },
+        {
+          "File": "motions/exp_05.motion3.json"
+        }
+      ],
+      "Motion": [
+        {
+          "File": "motions/01.motion3.json"
+        },
+        {
+          "File": "motions/02.motion3.json"
+        },
+        {
+          "File": "motions/03.motion3.json"
+        },
+        {
+          "File": "motions/04.motion3.json"
+        },
+        {
+          "File": "motions/05.motion3.json"
+        },
+        {
+          "File": "motions/06.motion3.json"
+        },
+        {
+          "File": "motions/07.motion3.json"
+        }
+      ],
+      "Mouth_Close": [
+        {
+          "File": "motions/Mouth_Close.motion3.json"
+        }
+      ],
+      "Mouth_Open": [
+        {
+          "File": "motions/Mouth_Open.motion3.json"
+        }
+      ]
+    }
+  }
+}
