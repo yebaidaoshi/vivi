@@ -77,7 +77,6 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        // 2D 黑幕平滑过渡
         if (dimBackgroundSprite != null)
         {
             float target = isDialogueActive ? dimAlpha : 0f;
@@ -190,7 +189,6 @@ public class DialogueManager : MonoBehaviour
         waitingForClick = false;
         isTyping = false;
 
-        // 对话彻底结束，所有人滑步退场
         if (enableLive2D)
         {
             foreach (var actor in live2DActors)
@@ -232,12 +230,10 @@ public class DialogueManager : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    // ★ 核心：处理多人/多动作逻辑
     private void HandleLive2D(DialogueLine line)
     {
         if (!enableLive2D) return;
 
-        // 1. 处理基础状态（亮暗切换）和说话者动作
         foreach (var actor in live2DActors)
         {
             if (actor == null) continue;
@@ -246,11 +242,9 @@ public class DialogueManager : MonoBehaviour
             {
                 actor.SetState(Live2DActor.ActorState.Talking);
                 
-                if (!string.IsNullOrEmpty(line.expression)) actor.SetExpression(line.expression);
-                
-                // 说话者的动作（增加了是否循环的参数）
+                // ★ 核心：传入后续动作
                 if (!string.IsNullOrEmpty(line.motion)) 
-                    actor.PlayMotion(line.motion, line.loopMotion);
+                    actor.PlayMotion(line.motion, line.loopMotion, line.postMotion);
             }
             else
             {
@@ -258,18 +252,16 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        // 2. 处理额外动作（让其他没说话的角色也在此时做动作）
         if (line.extraActions != null && line.extraActions.Count > 0)
         {
             foreach (var extra in line.extraActions)
             {
-                if (string.IsNullOrEmpty(extra.motion)) continue;
-
-                // 去场景里找对应的角色
                 var targetActor = live2DActors.Find(a => a != null && a.actorId == extra.actorId);
                 if (targetActor != null)
                 {
-                    targetActor.PlayMotion(extra.motion, extra.loopMotion);
+                    // ★ 核心：传入后续动作
+                    if (!string.IsNullOrEmpty(extra.motion))
+                        targetActor.PlayMotion(extra.motion, extra.loopMotion, extra.postMotion);
                 }
             }
         }

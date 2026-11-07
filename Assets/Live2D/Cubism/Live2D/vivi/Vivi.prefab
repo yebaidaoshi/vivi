@@ -1087,7 +1087,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37173265
 --- !u!33 &2546772785299378998
@@ -1220,7 +1220,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37236267
 --- !u!33 &2533457776704039059
@@ -1484,7 +1484,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37183267
 --- !u!33 &3843803859685354119
@@ -2948,7 +2948,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37174267
 --- !u!33 &7900946041932412533
@@ -3080,7 +3080,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37197265
 --- !u!33 &3358055466353506271
@@ -4277,6 +4277,7 @@ GameObject:
   - component: {fileID: 2403142944219971929}
   - component: {fileID: 3362024664363666318}
   - component: {fileID: 897085156681384556}
+  - component: {fileID: 5893894974244263783}
   m_Layer: 0
   m_Name: Vivi
   m_TagString: Untagged
@@ -4294,7 +4295,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 9.503, y: 9.503, z: 9.503}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5142631254363203418}
@@ -4594,16 +4595,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actorId: vivi
-  stagePosition: {x: -300, y: 0, z: 0}
-  hidePosition: {x: -1500, y: 0, z: 0}
-  moveSpeed: 10
+  stagePosition: {x: 19.2, y: 4.9, z: 0}
+  hidePosition: {x: 0, y: 4.9, z: 0}
+  moveSpeed: 20
   talkColor: {r: 1, g: 1, b: 1, a: 1}
   listenColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   fadeSpeed: 5
   idleClip: {fileID: 7400000, guid: 6d4bcdd351d09854a991b7b8ff520959, type: 2}
   motionClips:
   - {fileID: 7400000, guid: 6d4bcdd351d09854a991b7b8ff520959, type: 2}
+  - {fileID: 7400000, guid: a4d46a030e7a5e24d854a35f10bc2839, type: 2}
+  - {fileID: 7400000, guid: 20c965790c45dd044ab51458765933a2, type: 2}
+  postMotionOverlap: 0.15
+  debugMotion: 1
   currentState: 0
+--- !u!114 &5893894974244263783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3193487636691899872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a6425ddbf38e8548a265b01073e1194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runOnStart: 1
 --- !u!1 &3356080102229619395
 GameObject:
   m_ObjectHideFlags: 0
@@ -5038,7 +5056,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37222266
 --- !u!33 &1189174688571510597
@@ -7559,7 +7577,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37235266
 --- !u!33 &6473975689091455097
@@ -8279,7 +8297,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37198266
 --- !u!33 &3499190523365438559
@@ -9888,7 +9906,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37221265
 --- !u!33 &7862945436679794462
@@ -12315,7 +12333,7 @@ MonoBehaviour:
   ColorBlendType: 0
   AlphaBlendType: 0
   DrawObjectType: 0
-  _offsetScale: {x: 40.47, y: 12.74, z: 9.503, w: 9.503}
+  _offsetScale: {x: 65.09999, y: 12.599997, z: 10, w: 10}
   _quaternion: {x: 0, y: 0, z: 0, w: 1}
   _zOffset: -0.37202266
 --- !u!33 &4962598052877266568
