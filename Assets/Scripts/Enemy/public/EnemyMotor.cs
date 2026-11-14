@@ -127,13 +127,6 @@ namespace Enemy
             knockbackTimer = knockbackIgnoreDuration;
         }
 
-        public void SetVelocityX(float vx)
-        {
-            if (isFrozen) return;
-            rb.WakeUp();
-            rb.velocity = new Vector2(vx, rb.velocity.y);
-            targetVelocityX = vx;
-        }
 
         public void SetVelocity(Vector2 v)
         {

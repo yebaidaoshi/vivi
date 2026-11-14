@@ -23,6 +23,7 @@ namespace Player
         private bool _wallRight;
         private int _facing = 1;
         private Vector3 _baseScale = Vector3.one;
+        private bool _interpolationLogged;
 
         public PlayerMotorSettings Settings => settings;
         public bool IsGrounded => _grounded;
@@ -39,6 +40,8 @@ namespace Player
         {
             _rb = GetComponent<Rigidbody2D>();
             _timeline = GetComponent<Timeline>();
+
+            ApplyInterpolation(force: true);
 
             // 解析地面遮罩：0（Nothing）=> 自动 Ground + GroundCollider。
             _resolvedGroundMask = settings.groundMask.value;
@@ -72,8 +75,29 @@ namespace Player
                 + new Vector2(settings.groundCheckOffset.x * _facing, settings.groundCheckOffset.y);
         }
 
+        /// <summary>
+        /// 保证 Rigidbody2D 开启插值。关闭时会以 50Hz（固定步长）步进刷新 Transform，
+        /// 渲染帧率高于 50 时会出现「部分帧角色不动」的步进抖动。
+        /// </summary>
+        private void ApplyInterpolation(bool force)
+        {
+            if (_rb == null) return;
+            if (settings == null || !settings.forceInterpolation) return;
+            if (_rb.interpolation == RigidbodyInterpolation2D.Interpolate) return;
+
+            _rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+            if (force && !_interpolationLogged)
+            {
+                _interpolationLogged = true;
+                Debug.LogWarning("[PlayerMotor] Rigidbody2D interpolation 原本不是 Interpolate，已强制开启（消除 50Hz 步进抖动）。", this);
+            }
+        }
+
         public void ProbeEnvironment()
         {
+            ApplyInterpolation(force: false);
+
             _grounded = CheckGrounded();
 
             _wallRight = CastWall(Vector2.right);
@@ -98,16 +122,66 @@ namespace Player
             }
 
             Vector2 origin = GroundOrigin();
+            float spacing = settings.groundProbeSpacing;
 
-            // Overlap 捕获静止/穿透情况；CircleCast 捕获接近过程。
-            var overlap = Physics2D.OverlapCircle(origin, settings.groundCastRadius, _resolvedGroundMask);
+            // 1) 中心点
+            if (ProbeGround(origin, settings.groundCastRadius, settings.groundCastDistance))
+            {
+                return true;
+            }
+
+            // 2) 脚底左右两点：站在平台边缘时，只要有一角还踩在平台上就算着地，
+            //    避免中心点探出边缘导致 IsGrounded 闪断（会引发动画抽搐 / 反复落地锁定）。
+            if (spacing > 0.001f)
+            {
+                if (ProbeGround(origin + new Vector2(-spacing, 0f), settings.groundCastRadius, settings.groundCastDistance))
+                {
+                    return true;
+                }
+
+                if (ProbeGround(origin + new Vector2(spacing, 0f), settings.groundCastRadius, settings.groundCastDistance))
+                {
+                    return true;
+                }
+            }
+
+            // 3) 边缘兜底：脚已经探出，但身体仍被平台支撑 —— 用更大半径 + 更远距离再探一次。
+            if (settings.groundLedgeTolerance > 0f && GetVelocity().y <= 0.1f)
+            {
+                float radius = settings.groundCastRadius * Mathf.Max(1f, settings.groundLedgeRadiusScale);
+                float distance = settings.groundCastDistance + settings.groundLedgeTolerance;
+
+                if (ProbeGround(origin, radius, distance))
+                {
+                    return true;
+                }
+
+                if (spacing > 0.001f)
+                {
+                    if (ProbeGround(origin + new Vector2(-spacing, 0f), radius, distance))
+                    {
+                        return true;
+                    }
+
+                    if (ProbeGround(origin + new Vector2(spacing, 0f), radius, distance))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool ProbeGround(Vector2 origin, float radius, float distance)
+        {
+            var overlap = Physics2D.OverlapCircle(origin, radius, _resolvedGroundMask);
             if (IsValidGround(overlap))
             {
                 return true;
             }
 
-            var hit = Physics2D.CircleCast(origin, settings.groundCastRadius, Vector2.down,
-                settings.groundCastDistance, _resolvedGroundMask);
+            var hit = Physics2D.CircleCast(origin, radius, Vector2.down, distance, _resolvedGroundMask);
             return IsValidGround(hit.collider);
         }
 

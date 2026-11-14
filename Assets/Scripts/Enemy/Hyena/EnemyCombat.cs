@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Enemy
 {
-    public class EnemyCombat : MonoBehaviour, IBindingSource
+    public class EnemyCombat : EnemyAttackModule, IBindingSource
     {
         public static bool GlobalTimeFrozen { get; private set; }
 
@@ -97,7 +97,7 @@ namespace Enemy
 
         public bool IsBinding => isBindingActive;
         public BindingProfile Profile => bindingProfile;
-        public bool IsPostKillFrozen => isPostKillFrozen;
+        public override bool IsPostKillFrozen => isPostKillFrozen;
 
         public void OnPlayerEscaped()
         {
@@ -108,8 +108,8 @@ namespace Enemy
 
         public void OnPlayerDied() => isBindingActive = false;
 
-        public bool CanAttack => cooldownTimer <= 0f && !isAttacking && !isMountAttacking;
-        public bool IsAttacking => isAttacking || isMountAttacking;
+        public override bool CanAttack => cooldownTimer <= 0f && !isAttacking && !isMountAttacking;
+        public override bool IsAttacking => isAttacking || isMountAttacking;
 
         public bool IsAttackInWindup
         {
@@ -135,11 +135,10 @@ namespace Enemy
             }
         }
 
-        public bool IsMountAttacking => isMountAttacking;
+        public override bool IsMountAttacking => isMountAttacking;
         public Collider2D AttackCollider => attackCollider;
-        public float MountCooldownRemaining => Mathf.Max(0f, mountCooldownTimer);
 
-        public void Init(EnemyMotor motor, EnemyAnimDriver anim)
+        public override void Init(EnemyMotor motor, EnemyAnimDriver anim)
         {
             this.motor = motor;
             this.anim = anim;
@@ -172,7 +171,7 @@ namespace Enemy
             return false;
         }
 
-        public void PerformAttack()
+        public override void PerformAttack()
         {
             if (!CanAttack) return;
             cooldownTimer = attackCooldown;
@@ -194,7 +193,7 @@ namespace Enemy
             attackCoroutine = null;
         }
 
-        public void CancelAttack()
+        public override void CancelAttack()
         {
             if (attackCoroutine != null)
             {
@@ -547,9 +546,14 @@ namespace Enemy
             PollMountHit();
         }
 
-        public void OnClawStart() { }
-        public void OnClawEnd() { }
-        public void OnAttackEnd() { }
+        /// <summary>动画事件转发（EnemyController.SendEvent 调用）。</summary>
+        public override void OnAnimEvent(string eventName)
+        {
+            if (eventName == "Mount_Hit") OnMountHit();
+        }
+
+        /// <summary>本体死亡时强制结束束缚/飞扑协程。</summary>
+        public override void OnOwnerDeath() => ForceEndMountAttack();
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -568,7 +572,5 @@ namespace Enemy
                 knockbackForce.y);
             damageable.TakeDamage(damage, knockback, gameObject);
         }
-
-        public Collider2D GetAttackCollider() => attackCollider;
     }
 }

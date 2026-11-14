@@ -20,6 +20,9 @@ GameObject:
   - component: {fileID: 2499950942958475861}
   - component: {fileID: 8936365408137205116}
   - component: {fileID: 1074086668871830200}
+  - component: {fileID: 8009648726897573692}
+  - component: {fileID: 9005853440422775596}
+  - component: {fileID: 128220803587398640}
   m_Layer: 10
   m_Name: Hyena
   m_TagString: Enemy
@@ -43,6 +46,7 @@ Transform:
   - {fileID: 6028757270331537817}
   - {fileID: 2820311253364573573}
   - {fileID: 3838297391414042}
+  - {fileID: 3750673521785115924}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &824783063959562212
@@ -82,16 +86,18 @@ MonoBehaviour:
   jumpAttack0Duration: 0.2
   jumpAttackDuration: 1.083
   mountedLoopDuration: 1.267
-  mountKillDuration: 2
+  mountKillDuration: 2.4
   mountBreakDuration: 2.167
   mountHitWindowStart: 0.1167
   mountHitWindowEnd: 0.6
   mountLeapSpeedX: 20
   mountLeapSpeedY: 3.5
+  mountLeapPlayerOffset: {x: 0, y: 0}
   mountPositionOffset: {x: 0, y: 0}
   snapDuration: 0.2
   escapeKnockbackX: 20
   escapeKnockbackY: 6
+  maxExtraDeathWait: 3
   standbyAnim: StandBy
   jumpAttack0Anim: Jump_Attack0
   jumpAttackAnim: Jump_Attack1
@@ -118,6 +124,7 @@ MonoBehaviour:
   ai: {fileID: 2499950942958475861}
   combat: {fileID: 7589265456000728458}
   health: {fileID: 1337269911780451959}
+  debugOverlay: 0
 --- !u!23 &6031495194971033401
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -261,13 +268,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb484aa3eaf64c344ba1bebe49d4f59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 50
   destroyDelay: 4.7
   knockbackForce: 20
   knockbackDuration: 2.167
   fleeSpeed: 5
   hitBlow1Anim: Hit_Blow1
   fleeAnim: Flee
+  stageThresholds:
+  - 0.66
+  - 0.33
+  shakeStrength: 0.18
+  critShakeStrength: 0.35
+  barLerpSpeed: 6
 --- !u!114 &2499950942958475861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,33 +294,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  patrolSpeed: 1.5
+  targetTags:
+  - PlayerPresence
+  - Player
+  fsmHost: _Hyena
+  fsmName: AI
+  logStateChanges: 1
+  logHeartbeat: 0
   walkSpeed: 5
   runSpeed: 20
-  attackRange: 4
-  minMountAttackRange: 3
-  mountAttackRange: 20
   runThreshold: 15
-  gizmoLeapSpeedX: 17
-  gizmoLeapDuration: 1.0833334
-  viewAngle: 1000
+  attackRange: 4
   viewDistance: 60
-  backDetectDistance: 10
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
   attackCooldown: 1.5
+  sightForward: 42
+  sightBack: 7
+  jumpAttackDamage: 20
+  jumpHitBoxOffset: {x: 2.5, y: 2}
+  jumpHitBoxSize: {x: 4, y: 4}
+  jumpAttackRange: 15.6
+  jumpAttackCooldown: 4
+  aggroMemory: 6
+  loseRange: 60
+  roamInterval: 4
+  roamStepTime: 1.2
+  mountRange: 3
+  mountCooldown: 8
   idleAnim: Idle
-  movementState: Movement
+  walkAnim: Movement
+  spotAnim: Idle_Caution
+  surprisedAnim: Surprised
   clawAnim: Claw
-  climbCheckDistance: 1.5
-  climbCheckHeight: 2.5
-  climbForce: 12
-  climbHorizontalForce: 3
-  climbObstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
-  jumpAnim: Jump_High
+  jumpAttackAnim: Jump_Attack0
+  hitAnim: Hit_Up1
+  breakAnim: Break
+  deathAnim: Hit_Blow1
+  initDelay: 0.05
+  difficultyDelay: 0.1
+  surprisedDelay: 0.45
+  walkStepDelay: 0.6
+  clawWindup: 0.3
+  clawRecover: 0.6
+  jumpAttackDelay: 0.9
+  hitDelay: 0.35
+  breakDelay: 0.5
 --- !u!60 &8936365408137205116
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -393,6 +423,142 @@ MonoBehaviour:
   pinkOutlineMaterial: {fileID: 2100000, guid: 8e5e231faaaa1bd4c929c41f0fdee3dd, type: 2}
   outlineSortingOrderOffset: 1
   debugOutline: 1
+--- !u!82 &8009648726897573692
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3840717928811643224}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &9005853440422775596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3840717928811643224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5c8772e7d909c4aa2cc81b4f11ab32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hurt: {fileID: 0}
+  death: {fileID: 8300000, guid: 4809b029f56324a4b8dcf63261741dd4, type: 3}
+  attackWindup: {fileID: 8300000, guid: 359cc4a79f592664fb6bb56b30dc34a3, type: 3}
+  attackHit: {fileID: 8300000, guid: bb5386c276eaad548ba8a4371242825c, type: 3}
+  stun: {fileID: 0}
+  flee: {fileID: 0}
+  volume: 0.8
+--- !u!114 &128220803587398640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3840717928811643224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07a15e2a79ad334f9aefb60d617e4e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 1337269911780451959}
+  size: {x: 1.6, y: 0.16}
+  offsetY: 2.6
+  fillColor: {r: 0.85, g: 0.18, b: 0.18, a: 1}
+  trailColor: {r: 1, g: 0.82, b: 0.25, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.65}
+  sortingOrder: 30000
+  hideWhenFull: 1
+  trailSpeed: 1.2
 --- !u!1 &4316789566095416848
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,12 +720,22 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: 0, y: 4.7908607}
-      - {x: -3.3338842, y: 4.4248095}
-      - {x: -2.645677, y: 1.5196546}
-      - {x: -0.87440336, y: 1.8445857}
-      - {x: 0.81417847, y: 2.1851902}
-      - {x: 4.9505463, y: 2.415234}
-      - {x: 5.06684, y: 5.6703773}
+      - {x: -1.6808167, y: 4.709524}
+      - {x: -2.9610968, y: 3.7827868}
+      - {x: -2.5885315, y: 1.7547132}
+      - {x: -2.5214248, y: -0.17859912}
+      - {x: -1.2626343, y: -0.046362877}
+      - {x: -1.9956207, y: 0.9267485}
+      - {x: -1.5992721, y: 2.2173731}
+      - {x: 0.6070709, y: 2.7443714}
+      - {x: 1.0709991, y: 1.4864862}
+      - {x: 0.9582977, y: 0.07957935}
+      - {x: 1.868866, y: 0.08009219}
+      - {x: 1.5080719, y: 2.02874}
+      - {x: 1.7966766, y: 2.8258104}
+      - {x: 2.5524445, y: 3.4998791}
+      - {x: 3.68721, y: 3.7614107}
+      - {x: 2.9336767, y: 4.9869337}
   m_UseDelaunayMesh: 0
 --- !u!1 &6028404548201577715
 GameObject:
@@ -643,3 +819,87 @@ PolygonCollider2D:
       - {x: 9.8116455, y: -2.6187837}
       - {x: 9.881835, y: -0.01118207}
   m_UseDelaunayMesh: 0
+--- !u!1 &8107083122749489215
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3750673521785115924}
+  - component: {fileID: 6322409505392036482}
+  - component: {fileID: 5273179837979130523}
+  m_Layer: 10
+  m_Name: WeakPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3750673521785115924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8107083122749489215}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.86, y: 4.29, z: 0}
+  m_LocalScale: {x: 1.2298, y: 1.2298, z: 1.2298}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4024379914712548445}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &6322409505392036482
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8107083122749489215}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+--- !u!114 &5273179837979130523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8107083122749489215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 461952c8d8975d94eb927b6bc335e5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 1337269911780451959}
+  damageMultiplier: 2
+  bonusStun: 20
+  extraHitStop: 1

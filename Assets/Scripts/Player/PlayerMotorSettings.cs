@@ -28,10 +28,20 @@ namespace Player
         public float gravityScale = 12f;
         public float maxFallSpeed = 70f;
 
+        [Header("刚体插值")]
+        [Tooltip("强制把 Rigidbody2D 的 interpolation 设为 Interpolate。关闭后沿用预制体/场景里的设置。")]
+        public bool forceInterpolation = true;
+
         [Header("地面探测（局部脚底）")]
         public Vector2 groundCheckOffset = new Vector2(0f, 0f);
         public float groundCastRadius = 0.22f;
         public float groundCastDistance = 0.35f;
+        [Tooltip("脚底左右多点探测间距（0 = 只测中心点）。防止站在平台边缘时 IsGrounded 闪断。")]
+        public float groundProbeSpacing = 0.45f;
+        [Tooltip("站在边缘时的兜底探测：半径放宽 + 距离加长的余量。0 = 关闭。")]
+        public float groundLedgeTolerance = 0.18f;
+        [Tooltip("边缘兜底探测的半径倍率。")]
+        public float groundLedgeRadiusScale = 1.35f;
         public LayerMask groundMask = 0;
 
         [Header("墙壁探测（局部躯干）")]

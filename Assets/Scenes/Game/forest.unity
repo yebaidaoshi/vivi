@@ -11439,6 +11439,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hyena8
       objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 662.8191
@@ -11784,6 +11788,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hyena5
       objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 546.82336
@@ -11979,6 +11987,10 @@ PrefabInstance:
     - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Name
       value: NeedlePlant
+      objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
@@ -12303,6 +12315,10 @@ PrefabInstance:
     - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Name
       value: NeedlePlant7
+      objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
@@ -12646,6 +12662,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NeedlePlant1
       objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -12729,6 +12749,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hyena1
       objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 261.6
@@ -12802,6 +12826,10 @@ PrefabInstance:
     - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_Name
       value: Hyena2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12879,6 +12907,10 @@ PrefabInstance:
     - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Name
       value: NeedlePlant5
+      objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
@@ -13501,6 +13533,10 @@ PrefabInstance:
     - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Name
       value: NeedlePlant6
+      objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
@@ -14720,6 +14756,10 @@ PrefabInstance:
     - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Name
       value: NeedlePlant2
+      objectReference: {fileID: 0}
+    - target: {fileID: 556815003121722371, guid: a4151414a1e473f458a579cd58203f15, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816811549206298339, guid: a4151414a1e473f458a579cd58203f15, type: 3}
       propertyPath: m_Mesh
@@ -15964,6 +16004,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hyena15
       objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 873.2988
@@ -16797,8 +16841,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 064b16ea08ed39442ae89938d50f7329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdDuration: 0.4
-  fadeDuration: 0.6
 --- !u!1 &1427448583 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1395225150056207922, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
@@ -16849,6 +16891,47 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   enemyInfluence: 0.02
+--- !u!114 &1427448592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427448583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180e9dff053dd6540a3e040d4f5b6624, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  targetOffset: {x: 0, y: 7}
+  autoFindTags:
+  - PlayerPresence
+  - Player
+  deadZone: {x: 0.5, y: 0.5}
+  followDamping: 0.15
+  maxFollowSpeed: 60
+  followX: 1
+  followY: 1
+  jumpOffset: 1.5
+  jumpSmooth: 0.15
+  jumpVelocityThreshold: 1.5
+  combatInfluence: 0.5
+  combatBlendSpeed: 2
+  maxCombatTargets: 3
+  combatTargetMaxDistance: 18
+  defaultOrthoSize: 10
+  zoomDamping: 0.35
+  bounds: {fileID: 0}
+  shakeFrequency: 26
+  shakeRecovery: 6
+  disableProCamera2DOnAwake: 1
+  disableOtherCameraFollowersOnAwake: 1
+  conflictingTypeNames:
+  - ScoutCameraFinal
+  - ProCamera2D
+  - ProCamera2DShake
+  adoptCameraSizeOnAwake: 1
 --- !u!1 &1430703364
 GameObject:
   m_ObjectHideFlags: 0
@@ -18017,6 +18100,10 @@ PrefabInstance:
     - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_Name
       value: Hyena12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -29797,6 +29884,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hyena3
       objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 480.8206
@@ -29861,6 +29952,10 @@ PrefabInstance:
     - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_Name
       value: Hyena10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30478,6 +30573,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 2830289631467524363, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3346880739290348847, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
       propertyPath: m_LocalPosition.x
       value: 30.8
@@ -30518,6 +30617,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4679595244773133704, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5903041328641888137, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
       propertyPath: player
       value: 
@@ -30533,6 +30636,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1395225150056207922, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1427448591}
+    - targetCorrespondingSourceObject: {fileID: 1395225150056207922, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1427448592}
   m_SourcePrefab: {fileID: 100100000, guid: a68d4254428511d4cb4475cb56335b43, type: 3}
 --- !u!1 &1846287531189824833
 GameObject:
@@ -30663,6 +30769,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1337269911780451959, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 2499950942958475861, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: target
       value: 
@@ -30709,14 +30819,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7589265456000728458, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
-      propertyPath: mountKillDuration
-      value: 2.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7589265456000728458, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
-      propertyPath: mountLeapPlayerOffset.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -1,466 +1,722 @@
+using System.Collections.Generic;
+using Enemy.Fsm;
 using UnityEngine;
-using System.Collections;
-using Player;
 
 namespace Enemy
 {
-    public class EnemyAI : MonoBehaviour
+    /// <summary>
+    /// 鬣狗 AI —— 按原版 PlayMaker FSM（_Hyena/AI，111 状态）驱动。
+    ///
+    /// 数据来源：Assets/Resources/EnemyFsm/_HyenaParent.json（由解包 prefab 自动导出）。
+    /// 状态与跳转完全来自原文件；动作按语义映射到 EnemyMotor / EnemyAnimDriver / EnemyCombat。
+    ///
+    /// 事件从哪里来：
+    ///   - 感知：本脚本 Tick 里按距离/视野产生 Spot / CLAW / WALK（对应原版 Sight / *_Range FSM）
+    ///   - 动画：EnemyController.SendEvent → OnAnimEvent → SendEvent
+    ///   - 受击：EnemyHealth → NotifyHit → SendEvent("FLINCH")
+    /// </summary>
+    public class EnemyAI : EnemyBrainBase
     {
-        private EnemyMotor motor;
-        private EnemyAnimDriver anim;
-        private EnemyCombat combat;
-        private EnemyHealth health;
+        [Header("FSM 数据")]
+        [SerializeField] private string fsmHost = "_Hyena";
+        [SerializeField] private string fsmName = "AI";
+        [SerializeField] private bool logStateChanges = true;
+        [SerializeField] private bool logHeartbeat = false;
 
-        [Header("目标")]
-        [SerializeField] private Transform target;
-
-        [Header("移动速度")]
-        [SerializeField] private float patrolSpeed = 1.5f;
+        [Header("移动")]
         [SerializeField] private float walkSpeed = 3f;
         [SerializeField] private float runSpeed = 10f;
+        [SerializeField] private float runThreshold = 9f;
 
         [Header("距离阈值")]
         [SerializeField] private float attackRange = 2.5f;
-        [SerializeField] private float minMountAttackRange = 3.0f;
-        [SerializeField] private float mountAttackRange = 6.5f;
-        [SerializeField] private float runThreshold = 9f;
-
-        [Header("飞扑距离可视化（只读）")]
-        [SerializeField] private float gizmoLeapSpeedX = 5.0f;
-        [SerializeField] private float gizmoLeapDuration = 65f / 60f;
-
-        [Header("视野")]
-        [SerializeField] private float viewAngle = 60f;
-        [SerializeField] private float viewDistance = 8f;
-        [SerializeField] private float backDetectDistance = 2f;
-        [SerializeField] private LayerMask obstacleMask;
+        [SerializeField] private float viewDistance = 60f;
 
         [Header("攻击冷却")]
-        [SerializeField] private float attackCooldown = 0.8f;
+        [SerializeField] private float attackCooldown = 1.5f;
+
+        [Header("感知（原版 Sight / BackSight）")]
+        [Tooltip("正面视野距离（原版 Sight 盒 42 宽）")]
+        [SerializeField] private float sightForward = 42f;
+        [Tooltip("背后感知距离（原版 BackSight 盒 7 宽）")]
+        [SerializeField] private float sightBack = 7f;
+
+        [Header("跳攻（原版 JumpAttack_Range）")]
+        [Tooltip("跳攻命中伤害")]
+        [SerializeField] private int jumpAttackDamage = 20;
+        [Tooltip("跳攻判定盒中心（相对自身，x 按朝向翻转）")]
+        [SerializeField] private Vector2 jumpHitBoxOffset = new Vector2(2.5f, 2f);
+        [SerializeField] private Vector2 jumpHitBoxSize = new Vector2(4f, 4f);
+        [Tooltip("跳攻触发距离（原版范围盒约 15.6）")]
+        [SerializeField] private float jumpAttackRange = 15.6f;
+        [SerializeField] private float jumpAttackCooldown = 4f;
+
+        [Header("仇恨记忆")]
+        [Tooltip("被发现后维持追击的时间，绕背后也不会立刻丢失目标")]
+        [SerializeField] private float aggroMemory = 6f;
+        [Tooltip("超过这个距离才彻底脱战")]
+        [SerializeField] private float loseRange = 60f;
+
+        [Header("巡逻（原版 Roam）")]
+        [SerializeField] private float roamInterval = 4f;
+        [SerializeField] private float roamStepTime = 1.2f;
+
+        [Header("束缚/擒抱攻击")]
+        [SerializeField] private float mountRange = 3f;
+        [SerializeField] private float mountCooldown = 8f;
 
         [Header("动画状态名")]
         [SerializeField] private string idleAnim = "Idle";
-        [SerializeField] private string movementState = "Movement";
+        [SerializeField] private string walkAnim = "Movement";
+        [SerializeField] private string spotAnim = "Idle_Caution";
+        [SerializeField] private string surprisedAnim = "Surprised";
         [SerializeField] private string clawAnim = "Claw";
+        [SerializeField] private string jumpAttackAnim = "Jump_Attack0";
+        [SerializeField] private string hitAnim = "Hit_Up1";
+        [SerializeField] private string breakAnim = "Break";
+        [SerializeField] private string deathAnim = "Hit_Blow1";
 
-        [Header("攀爬检测")]
-        [SerializeField] private float climbCheckDistance = 2.5f;
-        [SerializeField] private float climbCheckHeight = 2.5f;
-        [SerializeField] private float climbForce = 12f;
-        [SerializeField] private float climbHorizontalForce = 3f;
-        [SerializeField] private LayerMask climbObstacleMask;
-        [SerializeField] private string jumpAnim = "Jump_High";
+        [Header("状态时长（秒，按原版动作推算）")]
+        [SerializeField] private float initDelay = 0.05f;
+        [SerializeField] private float difficultyDelay = 0.1f;
+        [SerializeField] private float surprisedDelay = 0.45f;
+        [SerializeField] private float walkStepDelay = 0.6f;
+        [SerializeField] private float clawWindup = 0.3f;
+        [SerializeField] private float clawRecover = 0.6f;
+        [SerializeField] private float jumpAttackDelay = 0.9f;
+        [SerializeField] private float hitDelay = 0.35f;
+        [SerializeField] private float breakDelay = 0.5f;
 
-        private enum State { Idle, Patrol, Chase }
-        private State currentState;
-        private float timer;
-        private float patrolTargetX;
-        private bool isChasing = false;
-        private float attackCooldownTimer;
-        private bool isMoving = false;
+        private EnemyCombat _combat;
+        private EnemyHealth _health;
 
-        private bool isClimbing = false;
-        private float climbCooldownTimer = 0f;
-        private Coroutine climbCoroutine;
-        private bool jumpEventTriggered = false;
+        private FsmDefinition _fsm;
+        private readonly Dictionary<string, string> _globals = new Dictionary<string, string>();
 
-        // ★ 本地冻结标志，避免重复调用 FreezeAnimator
-        private bool _frozenByGlobal = false;
+        private string _state = "";
+        private float _stateTime;
+        private float _attackFiredAt = -1f;
+        private bool _deathPlayed;
+        private bool _playerDetected;
+        private float _hbTimer;
+        private float _attackCooldownTimer;
+        private float _jumpCooldownTimer;
+        private bool _alerted;
+        private float _alertGrace;
+        private float _aggroTimer;
+        private float _roamTimer;
+        private float _mountCooldownTimer;
+        private int _roamDir;
+        private bool _warnedNoController;
+        private readonly Dictionary<string, bool> _loggedAnim = new Dictionary<string, bool>();
 
-        public void Init(EnemyMotor motor, EnemyAnimDriver anim, EnemyCombat combat, EnemyHealth health)
+        public string CurrentState => _state;
+        public FsmDefinition Fsm => _fsm;
+
+        // =====================================================================
+        // 初始化
+        // =====================================================================
+
+        public override void Init(EnemyMotor motor, EnemyAnimDriver anim, EnemyAttackModule attack, EnemyHealth health)
         {
-            this.motor = motor;
-            this.anim = anim;
-            this.combat = combat;
-            this.health = health;
+            base.Init(motor, anim, attack, health);
+
+            _combat = attack as EnemyCombat;
+            _health = health;
+
+            LoadFsm();
+        }
+
+        private void LoadFsm()
+        {
+            var db = EnemyFsmData.Hyena;
+            if (db == null) return;
+
+            _fsm = db.Find(fsmHost, fsmName);
+            if (_fsm == null)
+            {
+                Debug.LogError("[EnemyAI] 找不到 FSM 数据：" + fsmHost + "/" + fsmName);
+                return;
+            }
+
+            _globals.Clear();
+            if (_fsm.globalTransitions != null)
+            {
+                for (int i = 0; i < _fsm.globalTransitions.Length; i++)
+                {
+                    var g = _fsm.globalTransitions[i];
+                    if (!string.IsNullOrEmpty(g.evt)) _globals[g.evt] = g.to;
+                }
+            }
+
+            EnterState(_fsm.startState);
+
+            Debug.Log("[HyenaAI] FSM loaded: " + _fsm.name + " states=" + _fsm.states.Length
+                + " globals=" + _globals.Count + " start=" + _fsm.startState
+                + " target=" + (target != null ? target.name : "null"), this);
         }
 
         private void Start()
         {
-            if (target == null)
-                target = GameObject.FindGameObjectWithTag("PlayerPresence")?.transform;
-
-            currentState = State.Idle;
-            anim.PlayState(idleAnim);
-            timer = Random.Range(3f, 5f);
-            isMoving = false;
-            _frozenByGlobal = false;
+            if (_fsm == null) LoadFsm();
         }
 
-        public void Tick()
-        {
-            if (target == null || health.IsDead) return;
+        // =====================================================================
+        // 主循环
+        // =====================================================================
 
-            // ★★ 全局时间冻结：击杀者播完 Mount_Kill，所有敌人停在当前帧
-            if (EnemyCombat.GlobalTimeFrozen)
+        public override void Tick()
+        {
+            if (_fsm == null || _health == null || _health.IsDead) return;
+
+            // 束缚期间交给 EnemyCombat
+            if (_combat != null && (_combat.IsMountAttacking || _combat.IsPostKillFrozen)) return;
+
+            float dt = Time.deltaTime;
+            _stateTime += dt;
+            if (_attackCooldownTimer > 0f) _attackCooldownTimer -= dt;
+            if (_jumpCooldownTimer > 0f) _jumpCooldownTimer -= dt;
+            if (_alertGrace > 0f) _alertGrace -= dt;
+            if (_aggroTimer > 0f) _aggroTimer -= dt;
+            if (_roamTimer > 0f) _roamTimer -= dt;
+            if (_mountCooldownTimer > 0f) _mountCooldownTimer -= dt;
+
+            // 原版每帧同步 Speed 参数（Movement 是 BlendTree，靠它决定迈步速度）
+            Anim.SetFloat("Speed", Motor.Speed);
+            _playerDetected = target != null && HorizontalDistanceTo(target) <= viewDistance;
+
+            TickState(dt);
+            TickDrivers();
+
+            if (logStateChanges && logHeartbeat)
             {
-                if (!_frozenByGlobal)
+                _hbTimer += dt;
+                if (_hbTimer >= 2f)
                 {
-                    _frozenByGlobal = true;
-                    motor.Stop();
-                    if (motor.IsFrozen) motor.UnfreezePhysics();
-                    anim.FreezeAnimator();   // 冻结在当前帧
+                    _hbTimer = 0f;
+                    Debug.Log("[HyenaAI] state=" + _state
+                        + " target=" + (target != null ? target.name : "null")
+                        + " dist=" + (target != null ? HorizontalDistanceTo(target).ToString("F1") : "-")
+                        + " detected=" + _playerDetected
+                        + " combat=" + (_combat != null ? (_combat.IsAttacking ? "attack" : "idle") : "none"), this);
+                }
+            }
+        }
+
+        /// <summary>根据距离/感知产生原版事件（替代 Sight / ClawAttack_Range / JumpAttack_Range FSM）。</summary>
+        private void TickDrivers()
+        {
+            if (target == null) return;
+
+            float dist = HorizontalDistanceTo(target);
+            bool inFront = IsFacingTarget();
+            bool rawSight = (inFront && dist <= sightForward) || (!inFront && dist <= sightBack);
+
+            // ---- 感知 + 仇恨记忆：一旦发现，绕背后也不会立刻丢 ----
+            if (rawSight)
+            {
+                _aggroTimer = aggroMemory;
+                if (!_alerted)
+                {
+                    _alerted = true;
+                    _alertGrace = 0.4f;   // 让 Spot 动画播一下
+                    SendEvent("Spot");
+                }
+            }
+
+            bool sighted = rawSight || _aggroTimer > 0f;
+
+            if (!sighted)
+            {
+                if (dist > loseRange) _alerted = false;
+
+                // ---- 原版 Roam：没发现玩家时来回巡逻 ----
+                if (_state == "Idle" && _roamTimer <= 0f)
+                {
+                    _roamTimer = roamInterval;
+                    SendEvent("Roam");
                 }
                 return;
             }
 
-            // 自己正在束缚玩家 → 全权交给 EnemyCombat
-            if (combat != null && combat.IsMountAttacking) return;
+            if (_alertGrace > 0f) return;
 
-            // 已击杀玩家并冻结在 Mount_Kill 最后一帧 → AI 不干预
-            if (combat != null && combat.IsPostKillFrozen) return;
+            bool combatBusy = _combat != null && _combat.IsAttacking;
+            if (combatBusy) return;
 
-            // 玩家死亡 / 被其他敌人束缚 → 自己停下播 Idle
-            if (IsPlayerDead() || IsPlayerBound())
+            // ---- 束缚/擒抱：贴身时优先 ----
+            if (dist <= mountRange && _mountCooldownTimer <= 0f
+                && _combat != null && _combat.CanMountAttack)
             {
-                ForcePassiveIdle();
+                _mountCooldownTimer = mountCooldown;
+                FaceTarget();
+                _combat.PerformMountAttack();
                 return;
             }
 
-            if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
-            if (climbCooldownTimer > 0f) climbCooldownTimer -= Time.deltaTime;
-
-            float distX = Mathf.Abs(target.position.x - transform.position.x);
-            bool playerDetected = CheckPlayerDetected();
-
-            if (!isChasing && playerDetected)
+            // ---- 原版 ClawAttack_Range ----
+            if (dist <= attackRange && _attackCooldownTimer <= 0f)
             {
-                isChasing = true;
-                currentState = State.Chase;
-            }
-
-            anim.SetFloat("Speed", motor.Speed);
-
-            switch (currentState)
-            {
-                case State.Idle:
-                    timer -= Time.deltaTime;
-                    if (timer <= 0f)
-                    {
-                        if (isChasing) currentState = State.Chase;
-                        else
-                        {
-                            currentState = State.Patrol;
-                            patrolTargetX = transform.position.x + Random.Range(-4f, 4f);
-                            timer = Random.Range(2f, 4f);
-                            isMoving = true;
-                            anim.PlayState(movementState);
-                        }
-                    }
-                    break;
-
-                case State.Patrol:
-                    if (isChasing)
-                    {
-                        currentState = State.Chase;
-                        isMoving = true;
-                        anim.PlayState(movementState);
-                        break;
-                    }
-                    float dirPatrol = Mathf.Sign(patrolTargetX - transform.position.x);
-                    motor.MoveTo(new Vector2(dirPatrol, 0), patrolSpeed);
-                    motor.FaceDirection(new Vector2(dirPatrol, 0));
-                    timer -= Time.deltaTime;
-                    if (timer <= 0f || Mathf.Abs(transform.position.x - patrolTargetX) < 0.5f)
-                    {
-                        currentState = State.Idle;
-                        anim.PlayState(idleAnim);
-                        isMoving = false;
-                        timer = Random.Range(3f, 5f);
-                    }
-                    break;
-
-                case State.Chase:
-                    if (combat.IsAttacking) break;
-                    if (isClimbing) break;
-
-                    if (isChasing && target != null)
-                    {
-                        bool canClimb = CanClimbUp();
-                        if (canClimb && climbCooldownTimer <= 0f)
-                        {
-                            StartClimb();
-                            break;
-                        }
-
-                        if (!combat.IsAttacking && motor.IsFrozen)
-                            motor.UnfreezePhysics();
-
-                        Chase(distX);
-                    }
-                    break;
-            }
-        }
-
-        private bool IsPlayerDead()
-        {
-            if (target == null) return false;
-
-            var damageable = target.GetComponentInParent<IDamageable>();
-            if (damageable != null && damageable.IsDead) return true;
-
-            var pb = PlayerBinding.Instance;
-            if (pb != null && pb.Phase == BindingPhase.Dead) return true;
-
-            return false;
-        }
-
-        private bool IsPlayerBound()
-        {
-            var pb = PlayerBinding.Instance;
-            if (pb == null) return false;
-            return pb.IsActive;
-        }
-
-        private void ForcePassiveIdle()
-        {
-            if (combat != null && combat.IsAttacking && !combat.IsMountAttacking)
-                combat.CancelAttack();
-
-            if (motor.IsFrozen) motor.UnfreezePhysics();
-            motor.Stop();
-
-            isMoving = false;
-            isChasing = false;
-            currentState = State.Idle;
-            timer = Random.Range(3f, 5f);
-
-            if (!anim.IsPlaying(idleAnim))
-                anim.PlayState(idleAnim);
-        }
-
-        private void Chase(float distX)
-        {
-            if (distX <= attackRange)
-            {
-                motor.Stop();
-
-                if (!combat.IsAttacking && attackCooldownTimer <= 0f)
-                    StartAttack();
+                _attackCooldownTimer = attackCooldown;
+                SendEvent("CLAW");
                 return;
             }
 
-            if (distX <= mountAttackRange && distX >= minMountAttackRange)
+            // ---- 原版 JumpAttack_Range ----
+            if (dist > attackRange && dist <= jumpAttackRange
+                && _jumpCooldownTimer <= 0f && !IsAttackState())
             {
-                if (combat.CanMountAttack)
-                {
-                    motor.Stop();
-                    float d = Mathf.Sign(target.position.x - transform.position.x);
-                    motor.FaceDirection(new Vector2(d, 0));
-                    combat.PerformMountAttack();
-                    isMoving = false;
-                    return;
-                }
-
-                MoveToward(distX, walkSpeed);
+                _jumpCooldownTimer = jumpAttackCooldown;
+                SendEvent("Jump_Attack");
                 return;
             }
 
-            float speed = distX > runThreshold ? runSpeed : walkSpeed;
-            MoveToward(distX, speed);
+            if (IsMoveState(_state)) return;
+            if (IsAttackState()) return;
+
+            SendEvent(dist >= runThreshold ? "RUN" : "WALK");
         }
 
-        private void MoveToward(float distX, float speed)
+        /// <summary>原版 JumpAttack_HitBox 的等效判定：在身前一个盒范围内结算伤害。</summary>
+        private void DealJumpAttackDamage()
         {
-            float dir = Mathf.Sign(target.position.x - transform.position.x);
-            motor.FaceDirection(new Vector2(dir, 0));
-            motor.MoveTo(new Vector2(dir, 0), speed);
+            Vector2 center = (Vector2)transform.position
+                + new Vector2(jumpHitBoxOffset.x * Motor.Facing, jumpHitBoxOffset.y);
 
-            if (!isMoving)
+            var hits = Physics2D.OverlapBoxAll(center, jumpHitBoxSize, 0f);
+            if (hits == null) return;
+
+            for (int i = 0; i < hits.Length; i++)
             {
-                isMoving = true;
-                anim.PlayState(movementState);
+                var col = hits[i];
+                if (col == null) continue;
+                if (col.transform == transform || col.transform.IsChildOf(transform)) continue;
+
+                var dmg = col.GetComponentInParent<Player.IDamageable>();
+                if (dmg == null || dmg.IsDead) continue;
+
+                Vector2 kb = new Vector2(Motor.Facing * 10f, 6f);
+                dmg.TakeDamage(jumpAttackDamage, kb, gameObject);
+                break;
             }
         }
 
-        private bool CanClimbUp()
+        private bool IsFacingTarget()
         {
-            if (target == null) return false;
-            int dirSign = target.position.x > transform.position.x ? 1 : -1;
-            Vector2 direction = Vector2.right * dirSign;
-            Vector2 origin = (Vector2)transform.position + Vector2.up * 0.5f;
-
-            RaycastHit2D hit = Physics2D.Raycast(origin, direction, climbCheckDistance, climbObstacleMask);
-            if (hit.collider != null)
-            {
-                Vector2 topOrigin = (Vector2)hit.point + Vector2.up * climbCheckHeight;
-                RaycastHit2D topHit = Physics2D.Raycast(topOrigin, direction, 0.5f, climbObstacleMask);
-                if (topHit.collider == null) return true;
-            }
-            return false;
+            if (target == null) return true;
+            float dx = target.position.x - transform.position.x;
+            return (dx >= 0f) == (Motor.Facing > 0);
         }
 
-        private void StartClimb()
+        private bool HasTransition(string evt)
         {
-            if (isClimbing || climbCooldownTimer > 0f) return;
-            isClimbing = true;
-            climbCooldownTimer = 2.5f;
-            jumpEventTriggered = false;
-            motor.FreezePhysics();
-            motor.Stop();
-            anim.PlayState(jumpAnim);
-            if (climbCoroutine != null) StopCoroutine(climbCoroutine);
-            climbCoroutine = StartCoroutine(ClimbRoutine());
+            if (_fsm == null) return false;
+            var st = _fsm.FindState(_state);
+            return st != null && !string.IsNullOrEmpty(st.TargetStateFor(evt));
         }
 
-        private IEnumerator ClimbRoutine()
+        public string DebugAnimInfo => Anim != null ? Anim.CurrentClipName + " t=" + Anim.CurrentNormalizedTime.ToString("F2") : "-";
+
+        private bool IsAttackState()
         {
-            motor.UnfreezePhysics();
-            motor.SetIgnorePhysicsUpdate(true);
-            motor.ApplyKnockback(Vector2.up * climbForce);
-
-            float waitForEvent = 0.6f;
-            float elapsed = 0f;
-            while (elapsed < waitForEvent)
+            switch (_state)
             {
-                elapsed += Time.deltaTime;
-                if (jumpEventTriggered) break;
-                yield return null;
-            }
-
-            if (!jumpEventTriggered)
-            {
-                int dirSign = target != null && target.position.x > transform.position.x ? 1 : -1;
-                motor.ApplyKnockback(Vector2.right * dirSign * climbHorizontalForce);
-            }
-
-            yield return new WaitForSeconds(2.233f);
-
-            motor.SetIgnorePhysicsUpdate(false);
-            motor.Stop();
-            isClimbing = false;
-            climbCoroutine = null;
-            climbCooldownTimer = 0f;
-
-            anim.PlayState(movementState);
-            isMoving = true;
-        }
-
-        public void OnJumpHighEvent()
-        {
-            if (isClimbing && motor != null && !jumpEventTriggered)
-            {
-                jumpEventTriggered = true;
-                int dirSign = target != null && target.position.x > transform.position.x ? 1 : -1;
-                motor.ApplyKnockback(Vector2.right * dirSign * climbHorizontalForce);
-            }
-        }
-
-        private bool CheckPlayerDetected()
-        {
-            if (target == null) return false;
-            Vector2 dirToPlayer = target.position - transform.position;
-            float distance = dirToPlayer.magnitude;
-            if (distance > viewDistance && distance > backDetectDistance) return false;
-
-            float dot = Vector2.Dot(transform.right, dirToPlayer.normalized);
-            float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
-            bool inFront = angle < viewAngle * 0.5f;
-            bool inBack = distance <= backDetectDistance;
-
-            if (inFront)
-            {
-                RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position, obstacleMask);
-                if (hit.collider == null || hit.collider.transform == target)
+                case "ClawAttack":
+                case "State 15":
+                case "State 24":
+                case "JumpAttack":
+                case "State 21":
+                case "State 23":
+                case "HitEvent":
+                case "State 76":
+                case "State 41":
+                case "State 25":
                     return true;
+                default:
+                    return false;
             }
-            else if (inBack)
-            {
-                return true;
-            }
-            return false;
         }
 
-        private void StartAttack()
+        private static bool IsMoveState(string s)
         {
-            if (combat.IsAttacking || attackCooldownTimer > 0f) return;
-
-            if (target != null)
+            switch (s)
             {
-                float d = Mathf.Sign(target.position.x - transform.position.x);
-                motor.FaceDirection(new Vector2(d, 0));
+                case "Walk":
+                case "Walking":
+                case "State 61":
+                case "Walk 2":
+                case "State 68":
+                case "RunUp":
+                case "Walking 2":
+                case "MovementLoop":
+                    return true;
+                default:
+                    return false;
             }
-
-            attackCooldownTimer = attackCooldown;
-            motor.FreezePhysics();
-            motor.Stop();
-            anim.PlayState(clawAnim);
-            combat.PerformAttack();
-            isMoving = false;
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            Vector3 start = transform.position;
 
-            Vector3 forward = transform.right;
-            float halfAngle = viewAngle * 0.5f * Mathf.Deg2Rad;
-            Vector3 leftDir = Quaternion.Euler(0, 0, -halfAngle) * forward;
-            Vector3 rightDir = Quaternion.Euler(0, 0, halfAngle) * forward;
-            Gizmos.color = new Color(0, 1, 0, 0.15f);
-            Gizmos.DrawLine(start, start + leftDir * viewDistance);
-            Gizmos.DrawLine(start, start + rightDir * viewDistance);
-            int segments = 20;
-            Vector3 prev = start + leftDir * viewDistance;
-            for (int i = 1; i <= segments; i++)
+        private void TickState(float dt)
+        {
+            switch (_state)
             {
-                float t = (float)i / segments;
-                float angle = -halfAngle + t * 2 * halfAngle;
-                Vector3 dir = Quaternion.Euler(0, 0, angle) * forward;
-                Vector3 next = start + dir * viewDistance;
-                Gizmos.DrawLine(prev, next);
-                prev = next;
+                case "INIT":
+                    if (_stateTime >= initDelay) SendEvent("FINISHED");
+                    break;
+
+                case "State 9":
+                    if (_stateTime >= difficultyDelay) SendEvent("Normal");
+                    break;
+
+                case "Easy":
+                case "Normal":
+                case "Hard":
+                    if (_stateTime >= difficultyDelay) SendEvent("FINISHED");
+                    break;
+
+                case "Spot":
+                case "State 2":
+                    // 原地警戒，等待 WALK / CLAW / RUN
+                    Motor.Stop();
+                    FaceTarget();
+                    break;
+
+                case "Surprised":
+                    Motor.Stop();
+                    FaceTarget();
+                    if (_stateTime >= surprisedDelay) SendEvent("Next");
+                    break;
+
+                case "Walk":
+                case "State 61":
+                case "Walk 2":
+                case "State 68":
+                    if (_stateTime >= 0.15f) SendEvent("FINISHED");
+                    break;
+
+                case "Walking":
+                case "Walking 2":
+                case "RunUp":
+                case "Walking 3":
+                    Approach(_state.StartsWith("Walking 2") || _state == "RunUp" ? runSpeed : walkSpeed, dt);
+                    if (_stateTime >= walkStepDelay) SendEvent("FINISHED");
+                    break;
+
+                case "MovementLoop":
+                    Approach(target != null && HorizontalDistanceTo(target) > attackRange ? runSpeed : 0f, dt);
+                    break;
+
+                case "ClawAttack":
+                    Motor.Stop();
+                    if (_attackFiredAt < 0f && _stateTime >= clawWindup)
+                    {
+                        _attackFiredAt = _stateTime;
+                        if (_combat != null) _combat.PerformAttack();
+                    }
+                    if (_stateTime >= clawWindup + 0.4f) SendEvent("Claw");
+                    break;
+
+                case "State 15":
+                    if (_stateTime >= clawRecover * 0.5f) SendEvent("Claw_End");
+                    break;
+
+                case "State 24":
+                    if (_stateTime >= clawRecover) SendEvent("FINISHED");
+                    break;
+
+                case "JumpAttack":
+                    Motor.Stop();
+                    FaceTarget();
+                    if (_stateTime >= 0.25f) SendEvent("JAttack");
+                    break;
+
+                case "State 21":
+                    if (_attackFiredAt < 0f && _stateTime >= 0.08f)
+                    {
+                        _attackFiredAt = _stateTime;
+                        DealJumpAttackDamage();
+                    }
+                    if (_stateTime >= jumpAttackDelay * 0.4f) SendEvent("JAttack_End");
+                    break;
+
+                case "State 23":
+                    if (_stateTime >= jumpAttackDelay) SendEvent("Next");
+                    break;
+
+                case "HitEvent":
+                    Motor.Stop();
+                    if (_stateTime >= hitDelay) SendEvent("FINISHED");
+                    break;
+
+                case "State 65":
+                    if (_stateTime >= 0.1f) SendEvent("FINISHED");
+                    break;
+
+                case "State 13":
+                    // 原版巡逻入口：随机选左右
+                    if (_stateTime >= 0.1f) SendEvent(Random.value < 0.5f ? "RoamLeft" : "RoamRight");
+                    break;
+
+                case "State 14":
+                case "State 17":
+                    Motor.MoveTo(new Vector2(_roamDir, 0f), walkSpeed);
+                    if (_stateTime >= roamStepTime) SendEvent("FINISHED");
+                    break;
+
+                case "State 16":
+                case "State 18":
+                    Motor.Stop();
+                    if (_stateTime >= roamStepTime * 0.6f) SendEvent("FINISHED");
+                    break;
+
+                case "State 35":
+                    Motor.Stop();
+                    if (_stateTime >= hitDelay) SendEvent("Next");
+                    break;
+
+                case "State 76":
+                case "State 41":
+                    SendEvent("do");
+                    break;
+
+                case "Break":
+                    Motor.Stop();
+                    if (_stateTime >= breakDelay) SendEvent("Next");
+                    break;
+
+                case "Step_Up":
+                case "Climb_Up":
+                case "Step_Down":
+                case "Climb_Down":
+                    Motor.Stop();
+                    if (_stateTime >= 0.3f) SendEvent(_state == "Climb_Up" ? "Jump_High" : "Jump");
+                    break;
+
+                case "Climbed":
+                case "State 5":
+                case "State 72":
+                case "State 69":
+                    Motor.Stop();
+                    break;
+
+                default:
+                    Motor.Stop();
+                    // 没有出口的终点状态：给个保底，防止永久卡死
+                    if (_stateTime > 0.8f && HasTransition("Next")) SendEvent("Next");
+                    break;
+            }
+        }
+
+        /// <summary>只有当前没在播这个状态时才 Play，避免每帧/每次切状态把动画重置到第 0 帧。</summary>
+        private void EnsureAnim(string stateName)
+        {
+            if (string.IsNullOrEmpty(stateName)) return;
+            if (!Anim.HasController)
+            {
+                if (!_warnedNoController)
+                {
+                    _warnedNoController = true;
+                    Debug.LogWarning("[HyenaAI] Animator 没有 Controller，动画不会播放。", this);
+                }
+                return;
             }
 
-            Gizmos.color = new Color(1, 0, 0, 0.2f);
-            Gizmos.DrawWireSphere(start, backDetectDistance);
+            if (Anim.IsPlaying(stateName)) return;
 
-            DrawCircleAt(start, attackRange, new Color(1f, 0.3f, 0.3f));
-            DrawCircleAt(start, minMountAttackRange, new Color(0.5f, 0.5f, 1f));
-            DrawCircleAt(start, mountAttackRange, new Color(1f, 0.85f, 0f));
-            float leapDistance = gizmoLeapSpeedX * gizmoLeapDuration;
-            DrawCircleAt(start, leapDistance, new Color(0f, 0.8f, 1f));
+            Anim.PlayState(stateName);
 
-            DrawLeapArrow(start, -1, leapDistance);
-            DrawLeapArrow(start, +1, leapDistance);
+            if (logStateChanges && !_loggedAnim.TryGetValue(stateName, out _))
+            {
+                _loggedAnim[stateName] = true;
+                Debug.Log("[HyenaAI] play anim '" + stateName + "' (animator now: " + Anim.CurrentClipName + ")", this);
+            }
+        }
+
+        private void Approach(float speed, float dt)
+
+        {
+            if (target == null) { Motor.Stop(); return; }
+
+            float dir = Mathf.Sign(target.position.x - transform.position.x);
+            Motor.FaceDirection(new Vector2(dir, 0f));
+            Motor.MoveTo(new Vector2(dir, 0f), speed);
+
+            if (!Anim.IsPlaying(walkAnim)) EnsureAnim(walkAnim);
+        }
+
+        private void FaceTarget()
+        {
+            if (target == null) return;
+            Motor.FaceDirection(new Vector2(Mathf.Sign(target.position.x - transform.position.x), 0f));
+        }
+
+        // =====================================================================
+        // 状态机
+        // =====================================================================
+
+        /// <summary>发送事件：先查全局跳转，再查当前状态的跳转。</summary>
+        public void SendEvent(string evt)
+        {
+            if (_fsm == null || string.IsNullOrEmpty(evt)) return;
+
+            string next;
+            if (_globals.TryGetValue(evt, out next))
+            {
+                if (next == _state) return;   // 已在目标状态，避免每帧重入
+                EnterState(next);
+                return;
+            }
+
+            var st = _fsm.FindState(_state);
+            if (st != null)
+            {
+                next = st.TargetStateFor(evt);
+                if (!string.IsNullOrEmpty(next) && next != _state)
+                {
+                    EnterState(next);
+                }
+            }
+        }
+
+        private void EnterState(string stateName)
+        {
+            if (string.IsNullOrEmpty(stateName)) return;
+
+            if (logStateChanges)
+                Debug.Log("[HyenaAI] " + _state + " -> " + stateName, this);
+
+            _state = stateName;
+            _stateTime = 0f;
+            _attackFiredAt = -1f;
+            OnEnterState(stateName);
+        }
+
+        private void OnEnterState(string stateName)
+        {
+            switch (stateName)
+            {
+                case "INIT":
+                    Motor.Stop();
+                    if (Motor.IsFrozen) Motor.UnfreezePhysics();
+                    Anim.ResumeAnimator();
+                    break;
+
+                case "State 9":
+                    Motor.Stop();
+                    break;
+
+                case "Easy":
+                case "Normal":
+                case "Hard":
+                    Motor.Stop();
+                    break;
+
+                case "Idle":
+                    Motor.Stop();
+                    EnsureAnim(idleAnim);
+                    break;
+
+                case "State 14":
+                    _roamDir = -1;
+                    Motor.FaceDirection(new Vector2(_roamDir, 0f));
+                    EnsureAnim(walkAnim);
+                    break;
+
+                case "State 17":
+                    _roamDir = 1;
+                    Motor.FaceDirection(new Vector2(_roamDir, 0f));
+                    EnsureAnim(walkAnim);
+                    break;
+
+                case "Spot":
+                    Motor.Stop();
+                    EnsureAnim(spotAnim);
+                    FaceTarget();
+                    break;
+
+                case "Surprised":
+                    Motor.Stop();
+                    EnsureAnim(surprisedAnim);
+                    FaceTarget();
+                    break;
+
+                case "Walk":
+                case "Walking":
+                case "State 61":
+                case "Walk 2":
+                case "Walking 2":
+                case "RunUp":
+                case "MovementLoop":
+                    EnsureAnim(walkAnim);
+                    break;
+
+                case "ClawAttack":
+                    Motor.Stop();
+                    FaceTarget();
+                    EnsureAnim(clawAnim);
+                    break;
+
+                case "JumpAttack":
+                    Motor.Stop();
+                    FaceTarget();
+                    EnsureAnim(jumpAttackAnim);
+                    break;
+
+                case "HitEvent":
+                    Motor.Stop();
+                    EnsureAnim(hitAnim);
+                    break;
+
+                case "Break":
+                    Motor.Stop();
+                    EnsureAnim(breakAnim);
+                    break;
+
+                case "State 62":
+                    Motor.Stop();
+                    if (!_deathPlayed)
+                    {
+                        _deathPlayed = true;
+                        EnsureAnim(deathAnim);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // =====================================================================
+        // 外部事件
+        // =====================================================================
+
+        public override void OnAnimEvent(string eventName)
+        {
+            SendEvent(eventName);
+        }
+
+        /// <summary>受击（EnemyHealth 调用）：原版走 FLINCH → State 35。</summary>
+        public override void NotifyHit()
+        {
+            if (_health != null && _health.IsDead) return;
+            SendEvent("FLINCH");
+        }
+
+        public override void OnDeath()
+        {
+            SendEvent("DO SCENE");
+        }
+
+        public void OnJumpHighEvent() { SendEvent("Jump_High"); }
 
 #if UNITY_EDITOR
-            UnityEditor.Handles.color = Color.white;
-            UnityEditor.Handles.Label(start + Vector3.up * 4.5f,
-                $"红:攻击 {attackRange:F1}m\n" +
-                $"蓝:最小飞扑 {minMountAttackRange:F1}m\n" +
-                $"黄:最大飞扑 {mountAttackRange:F1}m\n" +
-                $"青:飞扑距离 {leapDistance:F2}m",
-                new GUIStyle
-                {
-                    normal = { textColor = Color.white },
-                    fontSize = 11,
-                    fontStyle = FontStyle.Bold
-                });
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(1f, 0.3f, 0.3f, 0.5f);
+            Gizmos.DrawWireSphere(transform.position, attackRange);
+            Gizmos.color = new Color(0f, 0.8f, 1f, 0.4f);
+            Gizmos.DrawWireSphere(transform.position, viewDistance);
+        }
 #endif
-        }
-
-        private void DrawCircleAt(Vector3 center, float radius, Color c)
-        {
-            Gizmos.color = c;
-            int seg = 48;
-            Vector3 prev = center + Vector3.right * radius;
-            for (int i = 1; i <= seg; i++)
-            {
-                float a = i / (float)seg * Mathf.PI * 2f;
-                Vector3 next = center + new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * radius;
-                Gizmos.DrawLine(prev, next);
-                prev = next;
-            }
-        }
-
-        private void DrawLeapArrow(Vector3 origin, int dirSign, float distance)
-        {
-            Gizmos.color = new Color(0f, 0.8f, 1f, 0.9f);
-            Vector3 end = origin + new Vector3(dirSign * distance, 0f, 0f);
-            Gizmos.DrawLine(origin, end);
-            Gizmos.DrawLine(end, end + new Vector3(-dirSign * 0.3f, 0.3f, 0f));
-            Gizmos.DrawLine(end, end + new Vector3(-dirSign * 0.3f, -0.3f, 0f));
-        }
     }
 }
