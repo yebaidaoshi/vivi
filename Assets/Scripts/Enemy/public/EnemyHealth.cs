@@ -26,6 +26,11 @@ namespace Enemy
         [Header("分段受伤（血量跌破这些比例时给重反馈）")]
         [SerializeField] private float[] stageThresholds = { 0.66f, 0.33f };
 
+        [Header("打击特效（拖 BulletHit / BulletHitCritical）")]
+        [SerializeField] private GameObject hitVfx;
+        [SerializeField] private GameObject criticalVfx;
+        [SerializeField] private float vfxLifetime = 1f;
+
         [Header("受击反馈")]
         [Tooltip("普通命中震屏强度")]
         [SerializeField] private float shakeStrength = 0.18f;
@@ -48,6 +53,9 @@ namespace Enemy
         private GameObject lastAttacker;
 
         private float displayNormalized = 1f;
+        private Vector2 _lastHitPoint;
+        private float _lastHitPointTime = -10f;
+        private static bool _warmedUp;
 
         public bool IsDead => isDead;
         public int CurrentHealth => currentHealth;
@@ -56,6 +64,13 @@ namespace Enemy
 
         /// <summary>血条用的平滑值（0~1），UI 每帧读这个做插值。</summary>
         public float DisplayNormalized => displayNormalized;
+
+        /// <summary>由子弹/近战在碰撞点调用，让打击特效出现在真正命中的位置。</summary>
+        public void SetHitPoint(Vector2 worldPoint)
+        {
+            _lastHitPoint = worldPoint;
+            _lastHitPointTime = Time.time;
+        }
 
         /// <summary>(current, max) 血量变化时触发，用于刷新血条。</summary>
         public event Action<int, int> HealthChanged;
@@ -74,6 +89,15 @@ namespace Enemy
             rb = GetComponent<Rigidbody2D>();
 
             if (flinching != null) flinching.Init(motor, anim, ai);
+
+            // 启动预热：字体 + 打击特效，避免第一次射击时一次性卡住
+            if (!_warmedUp)
+            {
+                _warmedUp = true;
+                UI.DamageNumber.Warmup();
+                VfxPool.Warmup(hitVfx, 2);
+                VfxPool.Warmup(criticalVfx, 1);
+            }
         }
 
         private void Update()
@@ -87,6 +111,10 @@ namespace Enemy
             {
                 if (motor.IsFrozen) motor.UnfreezePhysics();
                 motor.MoveTo(new Vector2(fleeDirection, 0), fleeSpeed);
+
+                // 逃跑动画循环播放，避免播完一遍后变成纯位移
+                if (anim != null && !string.IsNullOrEmpty(fleeAnim) && !anim.IsPlaying(fleeAnim))
+                    anim.PlayState(fleeAnim);
             }
         }
 
@@ -118,29 +146,46 @@ namespace Enemy
 
             HealthChanged?.Invoke(Mathf.Max(0, currentHealth), maxHealth);
 
-            StartCoroutine(FlashColor(critical ? Color.red : Color.yellow, critical ? 0.25f : 0.15f));
+            var flasher = GetComponent<EnemyColorFlasher>();
+            if (flasher != null) { if (critical) flasher.FlashCritical(); else flasher.FlashHurt(); }
 
-            // ---- 打击感：顿帧 + 震屏 + 音效 ----
-            var hitStop = GetComponent<EnemyHitStop>();
-            if (hitStop != null) hitStop.Play(critical ? 0.1f : 0.055f, critical ? 0.02f : 0.05f);
-
+            // ---- 打击感：震屏 + 音效（顿帧已全部移除，避免"卡顿"）----
             var camera = SceneCamera.CameraDirector.Instance;
             if (camera != null) camera.Shake(critical ? 0.16f : 0.09f, critical ? critShakeStrength : shakeStrength);
 
             var sfx = GetComponent<EnemyAudio>();
-            if (sfx != null) sfx.PlayHurt();
+            if (sfx != null)
+            {
+                if (critical) sfx.PlayHurtCritical();
+                else sfx.PlayHurt();
+            }
+
+            // 打击特效
+            var vfx = critical ? criticalVfx : hitVfx;
+            if (vfx != null)
+            {
+                Vector3 spawnPos = Time.time - _lastHitPointTime < 0.15f
+                    ? (Vector3)_lastHitPoint
+                    : transform.position + Vector3.up * 1.2f;
+
+                VfxPool.Spawn(vfx, spawnPos, vfxLifetime);
+            }
 
             // 血量跌破分段阈值：追加一次重反馈
             if (crossedStage)
             {
-                if (hitStop != null) hitStop.Play(0.12f, 0.02f);
-                if (camera != null) camera.Shake(0.2f, 0.45f);
-                Debug.Log("[EnemyHealth] 血量跌破分段阈值 " + newRatio.ToString("F2"), this);
-            }
+                // 只做震屏，不做顿帧：分段跌血的慢动作会让人以为卡顿
+                if (camera != null) camera.Shake(0.2f, 0.45f);            }
 
-            // ---- 眩晕累积 ----
+            // ---- 伤害数字（白色）----
+            Vector3 popupPos = Time.time - _lastHitPointTime < 0.15f
+                ? (Vector3)_lastHitPoint + Vector3.up * 0.4f
+                : transform.position + Vector3.up * 1.6f;
+            UI.DamageNumber.ShowEnemy(popupPos, damage);
+
+            // ---- 眩晕累积：这一下会死就不加眩晕 ----
             var gauge = GetComponent<EnemyStunGauge>();
-            if (gauge != null) gauge.AddHitStun(damage);
+            if (gauge != null && currentHealth > 0) gauge.AddHitStun(damage);
 
             if (currentHealth <= 0)
             {
@@ -155,17 +200,6 @@ namespace Enemy
             if (!absorbed) ai?.NotifyHit();
         }
 
-        private IEnumerator FlashColor(Color color, float duration)
-        {
-            if (skeletonMecanim == null) yield break;
-            var skeleton = skeletonMecanim.skeleton;
-            if (skeleton == null) yield break;
-
-            float origR = skeleton.R, origG = skeleton.G, origB = skeleton.B, origA = skeleton.A;
-            skeleton.R = color.r; skeleton.G = color.g; skeleton.B = color.b; skeleton.A = color.a;
-            yield return new WaitForSeconds(duration);
-            skeleton.R = origR; skeleton.G = origG; skeleton.B = origB; skeleton.A = origA;
-        }
 
         private void Die()
         {
@@ -190,9 +224,17 @@ namespace Enemy
             var camLink = GetComponent<EnemyCameraLink>();
             if (camLink != null) camLink.Release();
 
+            // 死亡时取消眩晕（避免"死了还在眩晕循环"）
+            var stunGauge = GetComponent<EnemyStunGauge>();
+            if (stunGauge != null) stunGauge.Cancel();
+
             combat?.OnOwnerDeath();
 
-            anim.PlayState(hitBlow1Anim);
+            if (anim != null)
+            {
+                anim.ResumeAnimator();
+                anim.PlayState(hitBlow1Anim, 0f);
+            }
 
             Vector2 knockDir = Vector2.right;
             if (lastAttacker != null)

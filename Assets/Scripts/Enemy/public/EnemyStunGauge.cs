@@ -19,7 +19,9 @@ namespace Enemy
 
         [Header("眩晕")]
         [SerializeField] private float stunDuration = 3f;
-        [SerializeField] private string stunAnim = "Shake";
+        [SerializeField] private string stunAnim = "Break";
+        [Tooltip("找不到 stunAnim 时依次尝试的备用动画")]
+        [SerializeField] private string[] stunAnimFallbacks = { "Shake", "Surprised", "Idle_Caution" };
         [Tooltip("眩晕结束时发给 AI 的事件（原版 RESET）")]
         [SerializeField] private string recoverEvent = "RESET";
 
@@ -27,6 +29,7 @@ namespace Enemy
         private EnemyMotor _motor;
         private EnemyAnimDriver _anim;
 
+        private string _resolvedStunAnim;
         private float _value;
         private float _stunTimer;
 
@@ -46,13 +49,46 @@ namespace Enemy
         public void AddStun(float amount)
         {
             if (IsStunned) return;
+            if (GetComponent<EnemyHealth>() != null && GetComponent<EnemyHealth>().IsDead) return;
             _value += amount;
             if (_value >= maxStun) Break();
+        }
+
+        /// <summary>死亡/脱离时强制取消眩晕状态。</summary>
+        public void Cancel()
+        {
+            _stunTimer = 0f;
+            _value = 0f;
+            var flasher = GetComponent<EnemyColorFlasher>();
+            if (flasher != null) flasher.SetStunPulse(false);
         }
 
         public void AddHitStun(int damage)
         {
             AddStun(Mathf.Max(stunPerHitMin, damage * stunPerDamage));
+        }
+
+        private string ResolveStunAnim()
+        {
+            if (_anim == null) return null;
+
+            // 原作眩晕动画就是 Break，优先用它
+            if (_anim.FindStateLayer("Break") >= 0) return "Break";
+            if (!string.IsNullOrEmpty(stunAnim) && _anim.FindStateLayer(stunAnim) >= 0) return stunAnim;
+
+            if (stunAnimFallbacks != null)
+            {
+                for (int i = 0; i < stunAnimFallbacks.Length; i++)
+                {
+                    var name = stunAnimFallbacks[i];
+                    if (!string.IsNullOrEmpty(name) && _anim.FindStateLayer(name) >= 0)
+                    {                        return name;
+                    }
+                }
+            }
+
+            Debug.LogError("[EnemyStunGauge] 找不到任何可用的眩晕动画（" + stunAnim + "）", this);
+            return null;
         }
 
         private void Break()
@@ -61,11 +97,15 @@ namespace Enemy
             _stunTimer = stunDuration;
 
             if (_motor != null) _motor.Stop();
-            if (_anim != null && !string.IsNullOrEmpty(stunAnim)) _anim.PlayState(stunAnim);
+
+            if (_anim == null) _anim = GetComponent<EnemyAnimDriver>();
+
+            _resolvedStunAnim = ResolveStunAnim();            if (_anim != null && _resolvedStunAnim != null) _anim.PlayState(_resolvedStunAnim, 0f);
+
+            var flasher = GetComponent<EnemyColorFlasher>();
+            if (flasher != null) flasher.SetStunPulse(true);
+
             if (_brain != null) _brain.OnAnimEvent("Stun");
-
-            Debug.Log("[EnemyStunGauge] 眩晕触发 " + stunDuration + "s", this);
-
             var cam = SceneCamera.CameraDirector.Instance;
             if (cam != null) cam.Shake(0.2f, 0.4f);
 
@@ -80,14 +120,15 @@ namespace Enemy
             if (_stunTimer > 0f)
             {
                 // 眩晕动画循环播放，避免播完一遍后看起来"完全卡死"
-                if (_anim != null && !string.IsNullOrEmpty(stunAnim) && !_anim.IsPlaying(stunAnim))
-                    _anim.PlayState(stunAnim);
+                if (_anim != null && _resolvedStunAnim != null && !_anim.IsPlaying(_resolvedStunAnim))
+                    _anim.PlayState(_resolvedStunAnim, 0f);
 
                 _stunTimer -= dt;
                 if (_stunTimer <= 0f)
                 {
                     _stunTimer = 0f;
-                    if (_brain != null && !string.IsNullOrEmpty(recoverEvent)) _brain.OnAnimEvent(recoverEvent);
+                    var flasher = GetComponent<EnemyColorFlasher>();
+                    if (flasher != null) flasher.SetStunPulse(false);                    if (_brain != null && !string.IsNullOrEmpty(recoverEvent)) _brain.OnAnimEvent(recoverEvent);
                 }
                 return;
             }

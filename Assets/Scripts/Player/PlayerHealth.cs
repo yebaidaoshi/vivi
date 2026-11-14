@@ -264,6 +264,7 @@ namespace Player
             if (IsInvincible) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
+            UI.DamageNumber.ShowPlayer(transform.position + Vector3.up * 2f, damage);
             _invincibleTimer = invincibleDuration;
 
             if (_isInIdleDamage) ExitIdleDamage();
@@ -308,6 +309,7 @@ namespace Player
             if (_evadeInvincible) return;
 
             _currentHealth = Mathf.Max(0, _currentHealth - damage);
+            UI.DamageNumber.ShowPlayer(transform.position + Vector3.up * 2f, damage);
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
             ShowHitFlash();
 

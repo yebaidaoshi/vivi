@@ -263,6 +263,13 @@ namespace Player
         private void ApplyDamage(int damage, GameObject attacker)
         {
             _health?.TakeBindingDamage(damage, attacker);
+
+            // 每次被束缚攻击扣血：从挣扎音里随机播一个
+            if (_profile != null && _profile.struggleHits != null && _profile.struggleHits.Length > 0)
+            {
+                var clip = _profile.struggleHits[Random.Range(0, _profile.struggleHits.Length)];
+                if (clip != null && _audio != null) _audio.Play(clip);
+            }
         }
 
         public void ForceEnd()

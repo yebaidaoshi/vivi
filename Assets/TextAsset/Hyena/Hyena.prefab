@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 8009648726897573692}
   - component: {fileID: 9005853440422775596}
   - component: {fileID: 128220803587398640}
+  - component: {fileID: 2792653973269986955}
+  - component: {fileID: 5366354553436731311}
   m_Layer: 10
   m_Name: Hyena
   m_TagString: Enemy
@@ -268,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb484aa3eaf64c344ba1bebe49d4f59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
+  maxHealth: 100
   destroyDelay: 4.7
   knockbackForce: 20
   knockbackDuration: 2.167
@@ -278,6 +280,9 @@ MonoBehaviour:
   stageThresholds:
   - 0.66
   - 0.33
+  hitVfx: {fileID: 1709254077376921, guid: 24040550145605445864847b0371f74c, type: 3}
+  criticalVfx: {fileID: 1709254077376921, guid: 582b91bc3fef1324e8c65c234221c086, type: 3}
+  vfxLifetime: 1
   shakeStrength: 0.18
   critShakeStrength: 0.35
   barLerpSpeed: 6
@@ -309,11 +314,6 @@ MonoBehaviour:
   attackCooldown: 1.5
   sightForward: 42
   sightBack: 7
-  jumpAttackDamage: 20
-  jumpHitBoxOffset: {x: 2.5, y: 2}
-  jumpHitBoxSize: {x: 4, y: 4}
-  jumpAttackRange: 15.6
-  jumpAttackCooldown: 4
   aggroMemory: 6
   loseRange: 60
   roamInterval: 4
@@ -531,13 +531,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5c8772e7d909c4aa2cc81b4f11ab32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hurt: {fileID: 0}
-  death: {fileID: 8300000, guid: 4809b029f56324a4b8dcf63261741dd4, type: 3}
-  attackWindup: {fileID: 8300000, guid: 359cc4a79f592664fb6bb56b30dc34a3, type: 3}
+  attackWindup: {fileID: 8300000, guid: 81a9475080daefb4b92035546b612bfc, type: 3}
   attackHit: {fileID: 8300000, guid: bb5386c276eaad548ba8a4371242825c, type: 3}
-  stun: {fileID: 0}
-  flee: {fileID: 0}
-  volume: 0.8
+  jumpAttack: {fileID: 8300000, guid: 62f96e9ca36cefd409690945bdfa4ec8, type: 3}
+  death: {fileID: 8300000, guid: 917ea4e9a53c05f48b008d841b0db86d, type: 3}
+  flee: {fileID: 8300000, guid: 92d44b9852bc00c4c93685f382303848, type: 3}
+  spotted: {fileID: 8300000, guid: aa383ae043c57db40baab17be02440ad, type: 3}
+  hurt: {fileID: 8300000, guid: 59a6144420bc9cb4891b93ca27c4b645, type: 3}
+  hurtCritical: {fileID: 8300000, guid: cc4d9da621ea5644dafdd407855b0edf, type: 3}
+  stun: {fileID: 8300000, guid: bcfdfca459889ec4b9509ab0c4a6ad30, type: 3}
+  mountStart: {fileID: 8300000, guid: 02811fff9fd4c7549ba7edcf20d51188, type: 3}
+  mountLoop: {fileID: 8300000, guid: 359cc4a79f592664fb6bb56b30dc34a3, type: 3}
+  volume: 1
 --- !u!114 &128220803587398640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,6 +564,50 @@ MonoBehaviour:
   sortingOrder: 30000
   hideWhenFull: 1
   trailSpeed: 1.2
+--- !u!114 &2792653973269986955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3840717928811643224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40f134870e936d24f961dd0dd06f52cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gauge: {fileID: 0}
+  starCount: 3
+  radius: 1
+  height: 5
+  offsetX: 4.36
+  orbitSpeed: 200
+  starSize: 0.34
+  starColor: {r: 1, g: 0.9, b: 0.25, a: 1}
+  sortingOrder: 31000
+--- !u!114 &5366354553436731311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3840717928811643224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a75c818ae5c3d4ba418c8181ae3e9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStun: 75
+  decayPerSecond: 4
+  stunPerDamage: 1
+  stunPerHitMin: 3
+  stunDuration: 3
+  stunAnim: Shake
+  stunAnimFallbacks:
+  - Surprised
+  - Idle_Caution
+  - Break
+  recoverEvent: RESET
 --- !u!1 &4316789566095416848
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,8 +895,8 @@ Transform:
   m_GameObject: {fileID: 8107083122749489215}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.86, y: 4.29, z: 0}
-  m_LocalScale: {x: 1.2298, y: 1.2298, z: 1.2298}
+  m_LocalPosition: {x: 4.04, y: 4.14, z: 0}
+  m_LocalScale: {x: 1.414639, y: 1.414639, z: 1.414639}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4024379914712548445}
@@ -884,9 +933,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.49999988}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6652043
 --- !u!114 &5273179837979130523
 MonoBehaviour:
   m_ObjectHideFlags: 0

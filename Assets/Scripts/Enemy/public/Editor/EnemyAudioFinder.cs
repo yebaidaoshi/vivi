@@ -14,15 +14,20 @@ namespace Enemy.EditorTools
     {
         private const string Root = "Assets/Audio/Clips";
 
+        // 取自原版 _HyenaParent.prefab 实际引用的音频
         private static readonly Dictionary<string, string> HyenaMap = new Dictionary<string, string>
         {
-            { "Hyena_VClaw",       "attackWindup" },
-            { "Hyena_Clawhit",     "attackHit" },
-            { "Hyena_Vdeath",      "death" },
-            { "Hyena_VJumpAttack1","jumpAttack" },
-            { "Hyena_Slide",       "flee" },
-            { "ArmorDamaged",      "hurt" },
-            { "Break_New",         "stun" },
+            { "Hyena_VClaw",        "attackWindup" },
+            { "Hyena_Clawhit",      "attackHit" },
+            { "Hyena_Vdeath",       "death" },
+            { "Hyena_VJumpAttack1", "jumpAttack" },
+            { "Hyena_Slide",        "flee" },
+            { "Damage1",            "hurt" },
+            { "MeleeCritical",      "hurtCritical" },
+            { "Break1",             "stun" },
+            { "Spotted",            "spotted" },
+            { "Hyena_JumpAttackLoop", "mountLoop" },
+            { "Hyena_VJumpAttack2",   "mountStart" },
         };
 
         [MenuItem("Tools/Vivi/敌人/自动匹配鬣狗音效（精确）", false, 40)]
@@ -52,6 +57,10 @@ namespace Enemy.EditorTools
                     case "flee": audio.flee = clip; break;
                     case "hurt": audio.hurt = clip; break;
                     case "stun": audio.stun = clip; break;
+                    case "hurtCritical": audio.hurtCritical = clip; break;
+                    case "spotted": audio.spotted = clip; break;
+                    case "mountLoop": audio.mountLoop = clip; break;
+                    case "mountStart": audio.mountStart = clip; break;
                 }
                 assigned++;
             }

@@ -47,6 +47,9 @@ namespace Enemy
         public virtual void OnDeath() { }
 
         /// <summary>受击回调（由 EnemyHealth.TakeDamage 调用），用于硬直/打断。</summary>
+        /// <summary>临时动画（受击等）播放后，多少秒后恢复当前状态动画。</summary>
+        public virtual void NotifyTemporaryAnim(float seconds) { }
+
         public virtual void NotifyHit() { }
 
         // ------------------------------------------------------------------

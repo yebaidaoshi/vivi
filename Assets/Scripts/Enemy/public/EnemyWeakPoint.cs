@@ -22,7 +22,7 @@ namespace Enemy
         [SerializeField] private float bonusStun = 20f;
 
         [Tooltip("命中弱点时是否额外顿帧")]
-        [SerializeField] private bool extraHitStop = true;
+        [SerializeField] private bool extraHitStop = false;
 
         public bool IsDead => health == null || health.IsDead;
 
@@ -37,10 +37,11 @@ namespace Enemy
             if (health == null || health.IsDead) return;
 
             int final = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
+            health.SetHitPoint(transform.position);
             health.TakeDamage(final, knockback, attacker, true);   // critical
 
             var gauge = GetComponentInParent<EnemyStunGauge>();
-            if (gauge != null) gauge.AddStun(bonusStun);
+            if (gauge != null && !health.IsDead) gauge.AddStun(bonusStun);
 
             if (extraHitStop)
             {

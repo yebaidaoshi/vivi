@@ -82,6 +82,7 @@ namespace Enemy
 
         private float mountCooldownTimer;
         private bool isMountAttacking;
+        private float _mountStartTime;
         private bool isBindingActive;
         private Coroutine mountCoroutine;
         private IDamageable currentMountTarget;
@@ -153,6 +154,12 @@ namespace Enemy
 
         private void Update()
         {
+        // 不在攻击/束缚状态时，攻击碰撞体必须是关闭的，避免"没动画却打到人"
+        if (!isAttacking && !isMountAttacking && attackCollider != null && attackCollider.enabled)
+            attackCollider.enabled = false;
+        if (isMountAttacking && Time.time - _mountStartTime > 20f)
+        {            ForceEndMountAttack();
+        }
             if (cooldownTimer > 0f) cooldownTimer -= Time.deltaTime;
             if (mountCooldownTimer > 0f) mountCooldownTimer -= Time.deltaTime;
         }
@@ -211,6 +218,8 @@ namespace Enemy
 
             mountCooldownTimer = mountCooldown;
             isMountAttacking = true;
+            _mountStartTime = Time.time;
+            { var sfx = GetComponent<EnemyAudio>(); if (sfx != null) sfx.PlayMountStart(); }
             isBindingActive = true;
             isPostKillFrozen = false;
 
@@ -325,6 +334,7 @@ namespace Enemy
             motor.Stop();
 
             anim.PlayState(mountedAnim);
+            { var sfx = GetComponent<EnemyAudio>(); if (sfx != null) sfx.PlayMountLoop(); }
 
             yield return SnapToPlayerSmoothly();
             motor.FreezePhysics();
@@ -460,6 +470,8 @@ namespace Enemy
 
         private void EndMountAttack(bool freezeAnim = false)
         {
+            { var sfx = GetComponent<EnemyAudio>(); if (sfx != null) sfx.StopMountLoop(); }
+            { var brain = GetComponent<EnemyAI>(); if (brain != null) brain.OnCombatFinished(); }
             if (mountDetectCollider != null) mountDetectCollider.enabled = false;
             motor.SetIgnorePhysicsUpdate(false);
             motor.SetInterpolation(RigidbodyInterpolation2D.Interpolate);

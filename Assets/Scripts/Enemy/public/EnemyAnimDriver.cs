@@ -45,16 +45,12 @@ namespace Enemy
 
                 if (mecanim.Translator != null && mecanim.Translator.Animator == null)
                 {
-                    mecanim.Translator.Initialize(animator, mecanim.skeletonDataAsset);
-                    Debug.Log("[EnemyAnimDriver] SkeletonMecanim.Translator 重新绑定完成", this);
-                }
+                    mecanim.Translator.Initialize(animator, mecanim.skeletonDataAsset);                }
 
                 AuditClips(mecanim);
             }
             catch (System.Exception e)
-            {
-                Debug.LogWarning("[EnemyAnimDriver] Spine 修复失败: " + e.Message, this);
-            }
+            {            }
         }
 
         private void AuditClips(Spine.Unity.SkeletonMecanim mecanim)
@@ -74,11 +70,7 @@ namespace Enemy
                 if (clip == null) continue;
                 if (spineNames.Contains(clip.name)) matched++;
                 else missing.Add(clip.name);
-            }
-
-            Debug.Log("[EnemyAnimDriver] Spine 动画匹配: " + matched + " 个命中, " + missing.Count + " 个缺失"
-                + (missing.Count > 0 ? "  缺失示例: " + string.Join(", ", missing.GetRange(0, Mathf.Min(8, missing.Count)).ToArray()) : ""), this);
-        }
+            }        }
 
         public string CurrentClipName
         {
@@ -100,16 +92,53 @@ namespace Enemy
             }
         }
 
+        private readonly System.Collections.Generic.Dictionary<string, int> _stateLayers =
+            new System.Collections.Generic.Dictionary<string, int>();
+
+        /// <summary>在任意层查找该状态，返回层号；找不到返回 -1。</summary>
+        public int FindStateLayer(string stateName)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return -1;
+            if (_stateLayers.TryGetValue(stateName, out int cached)) return cached;
+
+            int hash = Animator.StringToHash(stateName);
+            for (int layer = 0; layer < animator.layerCount; layer++)
+            {
+                if (animator.HasState(layer, hash))
+                {
+                    _stateLayers[stateName] = layer;
+                    return layer;
+                }
+            }
+
+            return -1;   // 不缓存未找到，控制器可能还没初始化
+        }
+
         public void PlayState(string stateName, float normalizedTime = 0f)
         {
-            if (animator != null)
-                animator.Play(stateName, 0, normalizedTime);
+            if (animator == null) return;
+
+            int layer = FindStateLayer(stateName);
+            if (layer < 0)
+            {
+                if (_warnedMissing == null) _warnedMissing = new System.Collections.Generic.HashSet<string>();
+                if (_warnedMissing.Add(stateName))
+                    Debug.LogError("[EnemyAnimDriver] Controller 里找不到状态 '" + stateName + "'（共 " + animator.layerCount + " 层）", this);
+                return;
+            }
+
+            animator.Play(stateName, layer, normalizedTime);
         }
+
+        private System.Collections.Generic.HashSet<string> _warnedMissing;
 
         public bool IsPlaying(string stateName)
         {
             if (animator == null) return false;
-            return animator.GetCurrentAnimatorStateInfo(0).IsName(stateName);
+
+            int layer = FindStateLayer(stateName);
+            if (layer < 0) layer = 0;
+            return animator.GetCurrentAnimatorStateInfo(layer).IsName(stateName);
         }
 
         public void SetTrigger(string name)
@@ -127,6 +156,8 @@ namespace Enemy
         // =========================================================
         // ★ 动画冻结（停在最后一帧）
         // =========================================================
+        public bool IsFrozen => animator != null && animator.speed <= 0.001f;
+
         public void FreezeAnimator()
         {
             if (animator != null)

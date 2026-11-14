@@ -20,7 +20,7 @@ namespace Enemy
         [Header("FSM 数据")]
         [SerializeField] private string fsmHost = "_Hyena";
         [SerializeField] private string fsmName = "AI";
-        [SerializeField] private bool logStateChanges = true;
+        [SerializeField] private bool logStateChanges = false;
         [SerializeField] private bool logHeartbeat = false;
 
         [Header("移动")]
@@ -41,15 +41,7 @@ namespace Enemy
         [Tooltip("背后感知距离（原版 BackSight 盒 7 宽）")]
         [SerializeField] private float sightBack = 7f;
 
-        [Header("跳攻（原版 JumpAttack_Range）")]
-        [Tooltip("跳攻命中伤害")]
-        [SerializeField] private int jumpAttackDamage = 20;
-        [Tooltip("跳攻判定盒中心（相对自身，x 按朝向翻转）")]
-        [SerializeField] private Vector2 jumpHitBoxOffset = new Vector2(2.5f, 2f);
-        [SerializeField] private Vector2 jumpHitBoxSize = new Vector2(4f, 4f);
-        [Tooltip("跳攻触发距离（原版范围盒约 15.6）")]
-        [SerializeField] private float jumpAttackRange = 15.6f;
-        [SerializeField] private float jumpAttackCooldown = 4f;
+
 
         [Header("仇恨记忆")]
         [Tooltip("被发现后维持追击的时间，绕背后也不会立刻丢失目标")]
@@ -84,7 +76,7 @@ namespace Enemy
         [SerializeField] private float clawWindup = 0.3f;
         [SerializeField] private float clawRecover = 0.6f;
         [SerializeField] private float jumpAttackDelay = 0.9f;
-        [SerializeField] private float hitDelay = 0.35f;
+        [SerializeField] private float hitDelay = 0.2f;
         [SerializeField] private float breakDelay = 0.5f;
 
         private EnemyCombat _combat;
@@ -100,12 +92,12 @@ namespace Enemy
         private bool _playerDetected;
         private float _hbTimer;
         private float _attackCooldownTimer;
-        private float _jumpCooldownTimer;
         private bool _alerted;
         private float _alertGrace;
         private float _aggroTimer;
         private float _roamTimer;
         private float _mountCooldownTimer;
+        private float _animRestoreAt;
         private int _roamDir;
         private bool _warnedNoController;
         private readonly Dictionary<string, bool> _loggedAnim = new Dictionary<string, bool>();
@@ -129,6 +121,9 @@ namespace Enemy
 
         private void LoadFsm()
         {
+            logStateChanges = false;   // 关掉所有状态日志
+            logHeartbeat = false;
+
             var db = EnemyFsmData.Hyena;
             if (db == null) return;
 
@@ -150,10 +145,6 @@ namespace Enemy
             }
 
             EnterState(_fsm.startState);
-
-            Debug.Log("[HyenaAI] FSM loaded: " + _fsm.name + " states=" + _fsm.states.Length
-                + " globals=" + _globals.Count + " start=" + _fsm.startState
-                + " target=" + (target != null ? target.name : "null"), this);
         }
 
         private void Start()
@@ -175,7 +166,6 @@ namespace Enemy
             float dt = Time.deltaTime;
             _stateTime += dt;
             if (_attackCooldownTimer > 0f) _attackCooldownTimer -= dt;
-            if (_jumpCooldownTimer > 0f) _jumpCooldownTimer -= dt;
             if (_alertGrace > 0f) _alertGrace -= dt;
             if (_aggroTimer > 0f) _aggroTimer -= dt;
             if (_roamTimer > 0f) _roamTimer -= dt;
@@ -187,6 +177,8 @@ namespace Enemy
 
             TickState(dt);
             TickDrivers();
+            RestoreStateAnimIfNeeded();
+            TickStuckWatchdog();
 
             if (logStateChanges && logHeartbeat)
             {
@@ -221,6 +213,7 @@ namespace Enemy
                     _alerted = true;
                     _alertGrace = 0.4f;   // 让 Spot 动画播一下
                     SendEvent("Spot");
+                    { var sfx = GetComponent<EnemyAudio>(); if (sfx != null) sfx.PlaySpotted(); }
                 }
             }
 
@@ -262,14 +255,6 @@ namespace Enemy
                 return;
             }
 
-            // ---- 原版 JumpAttack_Range ----
-            if (dist > attackRange && dist <= jumpAttackRange
-                && _jumpCooldownTimer <= 0f && !IsAttackState())
-            {
-                _jumpCooldownTimer = jumpAttackCooldown;
-                SendEvent("Jump_Attack");
-                return;
-            }
 
             if (IsMoveState(_state)) return;
             if (IsAttackState()) return;
@@ -277,29 +262,6 @@ namespace Enemy
             SendEvent(dist >= runThreshold ? "RUN" : "WALK");
         }
 
-        /// <summary>原版 JumpAttack_HitBox 的等效判定：在身前一个盒范围内结算伤害。</summary>
-        private void DealJumpAttackDamage()
-        {
-            Vector2 center = (Vector2)transform.position
-                + new Vector2(jumpHitBoxOffset.x * Motor.Facing, jumpHitBoxOffset.y);
-
-            var hits = Physics2D.OverlapBoxAll(center, jumpHitBoxSize, 0f);
-            if (hits == null) return;
-
-            for (int i = 0; i < hits.Length; i++)
-            {
-                var col = hits[i];
-                if (col == null) continue;
-                if (col.transform == transform || col.transform.IsChildOf(transform)) continue;
-
-                var dmg = col.GetComponentInParent<Player.IDamageable>();
-                if (dmg == null || dmg.IsDead) continue;
-
-                Vector2 kb = new Vector2(Motor.Facing * 10f, 6f);
-                dmg.TakeDamage(jumpAttackDamage, kb, gameObject);
-                break;
-            }
-        }
 
         private bool IsFacingTarget()
         {
@@ -314,6 +276,8 @@ namespace Enemy
             var st = _fsm.FindState(_state);
             return st != null && !string.IsNullOrEmpty(st.TargetStateFor(evt));
         }
+
+        public string DebugState => _state;
 
         public string DebugAnimInfo => Anim != null ? Anim.CurrentClipName + " t=" + Anim.CurrentNormalizedTime.ToString("F2") : "-";
 
@@ -431,11 +395,7 @@ namespace Enemy
                     break;
 
                 case "State 21":
-                    if (_attackFiredAt < 0f && _stateTime >= 0.08f)
-                    {
-                        _attackFiredAt = _stateTime;
-                        DealJumpAttackDamage();
-                    }
+
                     if (_stateTime >= jumpAttackDelay * 0.4f) SendEvent("JAttack_End");
                     break;
 
@@ -480,7 +440,7 @@ namespace Enemy
                     break;
 
                 case "Break":
-                    Motor.Stop();
+                    // 不停步：破甲只是表现，原地站 0.5 秒会像卡住
                     if (_stateTime >= breakDelay) SendEvent("Next");
                     break;
 
@@ -515,9 +475,7 @@ namespace Enemy
             {
                 if (!_warnedNoController)
                 {
-                    _warnedNoController = true;
-                    Debug.LogWarning("[HyenaAI] Animator 没有 Controller，动画不会播放。", this);
-                }
+                    _warnedNoController = true;                }
                 return;
             }
 
@@ -630,7 +588,7 @@ namespace Enemy
 
                 case "Spot":
                     Motor.Stop();
-                    EnsureAnim(spotAnim);
+                    Anim.PlayState(spotAnim, 0f);
                     FaceTarget();
                     break;
 
@@ -653,7 +611,7 @@ namespace Enemy
                 case "ClawAttack":
                     Motor.Stop();
                     FaceTarget();
-                    EnsureAnim(clawAnim);
+                    Anim.PlayState(clawAnim, 0f);
                     break;
 
                 case "JumpAttack":
@@ -664,12 +622,12 @@ namespace Enemy
 
                 case "HitEvent":
                     Motor.Stop();
-                    EnsureAnim(hitAnim);
+                    Anim.PlayState(hitAnim, 0f);
                     break;
 
                 case "Break":
                     Motor.Stop();
-                    EnsureAnim(breakAnim);
+                    Anim.PlayState(breakAnim, 0f);
                     break;
 
                 case "State 62":
@@ -696,6 +654,105 @@ namespace Enemy
         }
 
         /// <summary>受击（EnemyHealth 调用）：原版走 FLINCH → State 35。</summary>
+        /// <summary>束缚/擒抱等战斗动作结束后由 EnemyCombat 调用，立刻恢复追击，避免原地发呆。</summary>
+        public void OnCombatFinished()
+        {
+            _stateTime = 0f;
+            _attackCooldownTimer = 0f;
+            _mountCooldownTimer = 0f;
+            _alertGrace = 0f;
+            _aggroTimer = aggroMemory;
+
+            if (!IsAttackState() && _state != "Idle")
+                EnterState("Idle");
+        }
+
+        /// <summary>兜底：任何非攻击状态卡住太久就强制回 Idle，避免永久停摆。</summary>
+        private void TickStuckWatchdog()
+        {
+            if (_stateTime < 3f) return;
+            if (_combat != null && _combat.IsAttacking) return;
+            if (_health != null && _health.IsDead) return;
+
+            switch (_state)
+            {
+                case "Idle":
+                case "State 20":
+                case "State 22":
+                case "State 69":
+                case "State 79":
+                case "State 13":
+                case "State 14":
+                case "State 16":
+                case "State 17":
+                case "State 18":
+                    return;
+            }
+
+            if (IsAttackState()) return;            EnterState("Idle");
+        }
+
+        public override void NotifyTemporaryAnim(float seconds)
+        {
+            _animRestoreAt = Time.time + Mathf.Max(0.05f, seconds);
+        }
+
+        /// <summary>临时动画结束后，把当前状态对应的动画切回来（受击动画不能永久盖住攻击/待机动画）。</summary>
+        private void RestoreStateAnimIfNeeded()
+        {
+            if (Time.time < _animRestoreAt) return;
+            if (_animRestoreAt <= 0f) return;
+            _animRestoreAt = 0f;
+
+            string clip = AnimForState(_state);
+            if (!string.IsNullOrEmpty(clip) && !Anim.IsPlaying(clip))
+                Anim.PlayState(clip, 0f);
+        }
+
+        private string AnimForState(string s)
+        {
+            switch (s)
+            {
+                case "Idle":
+                case "State 2":
+                case "State 20":
+                case "State 22":
+                case "State 69":
+                case "State 79":
+                case "State 35":
+                    return idleAnim;
+
+                case "Walk":
+                case "State 61":
+                case "Walking":
+                case "Walk 2":
+                case "State 68":
+                case "RunUp":
+                case "Walking 2":
+                case "MovementLoop":
+                case "State 13":
+                case "State 14":
+                case "State 16":
+                case "State 17":
+                case "State 18":
+                    return walkAnim;
+
+                case "ClawAttack":
+                case "State 15":
+                case "State 24":
+                    return clawAnim;
+
+                case "Break":
+                    return breakAnim;
+
+                case "Spot":
+                    return spotAnim;
+
+                default:
+                    return null;
+            }
+        }
+
         public override void NotifyHit()
         {
             if (_health != null && _health.IsDead) return;

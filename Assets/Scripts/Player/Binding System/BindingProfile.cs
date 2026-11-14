@@ -40,7 +40,9 @@ namespace Player
         public float struggleDecayPerSec = 0f;
 
         [Header("音效")]
-        public AudioClip struggleSe;
+        [Tooltip("每次被束缚攻击扣血时随机播放")]
+    public AudioClip[] struggleHits;
+    public AudioClip struggleSe;
         public AudioClip escapeSe;
         public AudioClip deathSe;
     }

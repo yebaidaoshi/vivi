@@ -97,8 +97,6 @@ namespace Enemy
 
             outlineLayer.gameObject.SetActive(false);
 
-            if (debugOutline)
-                Debug.Log($"[EnemyHighlight] OutlineLayer 创建完成, 材质 = {pinkOutlineMaterial.name}");
         }
 
         // =========================================================
@@ -128,8 +126,6 @@ namespace Enemy
             if (on && outlineMeshFilter != null && mainMeshFilter != null)
                 outlineMeshFilter.sharedMesh = mainMeshFilter.sharedMesh;
 
-            if (debugOutline)
-                Debug.Log($"[EnemyHighlight] SetPinkOutline({on})");
         }
 
         // =========================================================

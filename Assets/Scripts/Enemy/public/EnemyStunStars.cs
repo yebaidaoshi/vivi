@@ -13,6 +13,8 @@ namespace Enemy
         [SerializeField] private int starCount = 3;
         [SerializeField] private float radius = 0.55f;
         [SerializeField] private float height = 2.9f;
+        [Tooltip("左右偏移（正数往右）")]
+        [SerializeField] private float offsetX = 0f;
         [SerializeField] private float orbitSpeed = 200f;
         [SerializeField] private float starSize = 0.34f;
         [SerializeField] private Color starColor = new Color(1f, 0.9f, 0.25f, 1f);
@@ -92,7 +94,7 @@ namespace Enemy
 
             var root = new GameObject("EnemyStunStars");
             root.transform.SetParent(transform, false);
-            root.transform.localPosition = new Vector3(0f, height, 0f);
+            root.transform.localPosition = new Vector3(offsetX, height, 0f);
             _root = root.transform;
 
             _stars = new Transform[starCount];
@@ -114,6 +116,23 @@ namespace Enemy
         private void SetVisible(bool visible)
         {
             if (_root != null) _root.gameObject.SetActive(visible);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Vector3 center = transform.position + new Vector3(offsetX, height, 0f);
+
+            Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.9f);
+            Gizmos.DrawWireSphere(center, radius);
+            Gizmos.DrawLine(transform.position, center);
+
+            Gizmos.color = new Color(1f, 0.5f, 0.1f, 0.9f);
+            for (int i = 0; i < starCount; i++)
+            {
+                float a = Mathf.Deg2Rad * (i * (360f / Mathf.Max(1, starCount)));
+                Vector3 p = center + new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * 0.22f, 0f);
+                Gizmos.DrawWireSphere(p, starSize * 0.5f);
+            }
         }
 
         private void LateUpdate()

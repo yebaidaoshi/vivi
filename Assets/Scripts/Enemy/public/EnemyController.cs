@@ -19,53 +19,9 @@ namespace Enemy
         [SerializeField] private EnemyHealth health;
 
         [Header("调试")]
-        [Tooltip("屏幕左上角显示 AI 状态 / 目标 / 距离，排查用。")]
-        [SerializeField] private bool debugOverlay = false;
+        [Tooltip("左上角显示状态 / 距离 / 动画 / 眩晕，F1 开关。")]
+        [SerializeField] private bool debugOverlay = true;
 
-        private void OnGUI()
-        {
-            if (!debugOverlay || ai == null) return;
-
-            string state = ai != null && ai is EnemyAI hyena ? hyena.CurrentState : ai.GetType().Name;
-            Transform t = ai.Target;
-            float dist = t != null ? Mathf.Abs(t.position.x - transform.position.x) : -1f;
-
-            string anim = (ai is EnemyAI hy2) ? hy2.DebugAnimInfo : "-";
-
-            GUI.Label(new Rect(12f, 12f, 1400f, 22f),
-                "[Hyena] state=" + state
-                + "  target=" + (t != null ? t.name : "null")
-                + "  dist=" + (dist >= 0f ? dist.ToString("F1") : "-")
-                + "  anim=" + anim
-                + "  dead=" + (health != null && health.IsDead));
-
-            // 第二行：所有 Animator / SkeletonMecanim 的真实状态
-            var animators = GetComponentsInChildren<Animator>(true);
-            var sb = new System.Text.StringBuilder();
-            for (int i = 0; i < animators.Length; i++)
-            {
-                var an = animators[i];
-                if (an == null) continue;
-                string ctl = an.runtimeAnimatorController != null ? an.runtimeAnimatorController.name : "null";
-                string cur = an.layerCount > 0
-                    ? (an.GetCurrentAnimatorStateInfo(0).IsName("Movement") ? "Movement"
-                        : an.GetCurrentAnimatorStateInfo(0).IsName("Idle") ? "Idle"
-                        : an.GetCurrentAnimatorStateInfo(0).IsName("Walk") ? "Walk"
-                        : "other")
-                    : "-";
-                sb.Append(an.name).Append("(en=").Append(an.enabled).Append(",layers=").Append(an.layerCount)
-                  .Append(",ctl=").Append(ctl).Append(",s0=").Append(cur).Append(") ");
-            }
-
-            var skeletons = GetComponentsInChildren<Spine.Unity.SkeletonMecanim>(true);
-            for (int i = 0; i < skeletons.Length; i++)
-            {
-                var sk = skeletons[i];
-                if (sk != null) sb.Append("SKM:").Append(sk.name).Append("(en=").Append(sk.enabled).Append(") ");
-            }
-
-            GUI.Label(new Rect(12f, 34f, 1400f, 22f), sb.ToString());
-        }
         public EnemyMotor Motor => motor;
         public EnemyAnimDriver Anim => anim;
         public EnemyBrainBase Brain => ai;
@@ -74,6 +30,7 @@ namespace Enemy
 
         private void Awake()
         {
+            debugOverlay = true;
             EnsureModules();
             WireModules();
         }
@@ -95,7 +52,6 @@ namespace Enemy
                 // 兼容旧预制体：没有显式 Brain 时回退到鬣狗的 EnemyAI。
                 ai = GetComponent<EnemyAI>();
                 if (ai == null) ai = gameObject.AddComponent<EnemyAI>();
-                Debug.LogWarning("[EnemyController] 没有找到 Brain，已回退到 EnemyAI（鬣狗）。新敌人请显式挂自己的 Brain。", this);
             }
 
             combat = combat != null ? combat : GetComponent<EnemyAttackModule>();
@@ -108,6 +64,7 @@ namespace Enemy
             if (GetComponent<EnemyFlinching>() == null) gameObject.AddComponent<EnemyFlinching>();
             if (GetComponent<EnemyAudio>() == null) gameObject.AddComponent<EnemyAudio>();
             if (GetComponent<EnemyStunStars>() == null) gameObject.AddComponent<EnemyStunStars>();
+            if (GetComponent<EnemyColorFlasher>() == null) gameObject.AddComponent<EnemyColorFlasher>();
         }
 
         private void WireModules()
@@ -122,8 +79,28 @@ namespace Enemy
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F1)) debugOverlay = !debugOverlay;
+
             if (ai == null || !ai.enabled) return;
             if (health != null && health.IsDead) return;
+
+            // 安全阀：动画不允许莫名停在 speed=0（束缚击杀时的定格会残留）
+            if (anim != null)
+            {
+                bool mountingAnim = combat != null && combat.IsMountAttacking;
+                if (!mountingAnim && anim.IsFrozen) anim.ResumeAnimator();
+            }
+
+            // 安全阀：既没在束缚、也没死亡时，马达不允许保持冻结/忽略物理
+            if (motor != null)
+            {
+                bool mounting = combat != null && combat.IsMountAttacking;
+                if (!mounting)
+                {
+                    if (motor.IsFrozen) motor.UnfreezePhysics();
+                    motor.SetIgnorePhysicsUpdate(false);
+                }
+            }
 
             // 眩晕期间 AI 停摆（原版 StunGauge 的 Break 状态）
             var gauge = GetComponent<EnemyStunGauge>();
@@ -149,6 +126,28 @@ namespace Enemy
 
             ai?.OnAnimEvent(eventName);
             combat?.OnAnimEvent(eventName);
+        }
+
+        private void OnGUI()
+        {
+            if (!debugOverlay || ai == null) return;
+
+            var brain = ai as EnemyAI;
+            string state = brain != null ? brain.DebugState : ai.GetType().Name;
+            string clip = brain != null ? brain.DebugAnimInfo : "-";
+
+            Transform target = ai.Target;
+            float dist = target != null ? Mathf.Abs(target.position.x - transform.position.x) : -1f;
+
+            var gauge = GetComponent<EnemyStunGauge>();
+            bool stunned = gauge != null && gauge.IsStunned;
+
+            GUI.Label(new Rect(10f, 10f, 1200f, 22f),
+                "[Hyena] " + state
+                + "  dist=" + (dist >= 0f ? dist.ToString("F1") : "-")
+                + "  anim=" + clip
+                + (stunned ? "  STUN" : "")
+                + ((health != null && health.IsDead) ? "  DEAD" : ""));
         }
     }
 }
