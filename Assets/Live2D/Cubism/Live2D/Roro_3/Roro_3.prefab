@@ -10591,6 +10591,7 @@ MonoBehaviour:
   talkColor: {r: 1, g: 1, b: 1, a: 1}
   listenColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   fadeSpeed: 5
+  fadeSeconds: 0.35
   idleClip: {fileID: 7400000, guid: 7251c62e9761dae4dbb473dbb98edd26, type: 2}
   motionClips:
   - {fileID: 7400000, guid: 7251c62e9761dae4dbb473dbb98edd26, type: 2}
@@ -10600,6 +10601,8 @@ MonoBehaviour:
   debugMotion: 1
   hideOnStart: 1
   manageTransformAndFade: 1
+  hideInPlace: 1
+  useScreenLayer: 1
   currentState: 0
 --- !u!114 &6461734340782111504
 MonoBehaviour:

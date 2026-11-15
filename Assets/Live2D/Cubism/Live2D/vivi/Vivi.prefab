@@ -4601,6 +4601,7 @@ MonoBehaviour:
   talkColor: {r: 1, g: 1, b: 1, a: 1}
   listenColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   fadeSpeed: 5
+  fadeSeconds: 0.35
   idleClip: {fileID: 7400000, guid: 6d4bcdd351d09854a991b7b8ff520959, type: 2}
   motionClips:
   - {fileID: 7400000, guid: 6d4bcdd351d09854a991b7b8ff520959, type: 2}

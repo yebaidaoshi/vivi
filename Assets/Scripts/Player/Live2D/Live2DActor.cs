@@ -22,7 +22,10 @@ public class Live2DActor : MonoBehaviour
     [Header("颜色与淡入配置")]
     public Color talkColor = Color.white;
     public Color listenColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+    [Tooltip("淡入淡出速度（旧参数，保留兼容）")]
     public float fadeSpeed = 5f;
+    [Tooltip("对话触发时淡入、对话结束时淡出，各用多少秒（新参数，默认 0.35s；旧 prefab 不用改也会生效）")]
+    public float fadeSeconds = 0.35f;
 
     [Header("动作片段配置")]
     public AnimationClip idleClip;
@@ -39,10 +42,12 @@ public class Live2DActor : MonoBehaviour
     public bool hideOnStart = true;
     [Tooltip("勾选 = 本脚本自己挪位置 / 淡入淡出 / 变色。取消 = 位置与透明度交给外部（Live2DRealtimeHud）控制")]
     public bool manageTransformAndFade = true;
-    [Tooltip("对话收场方式：勾选 = 原地淡出（不移出屏幕）；取消 = 旧行为（滑到 hidePosition 再淡出）")]
-    public bool hideInPlace = true;
-    [Tooltip("勾选 = 对话立绘走「相机→RenderTexture→UI alpha」，淡入淡出是整张图一起淡（不会透底）")]
-    public bool useScreenLayer = true;
+    [Tooltip("对话收场方式：勾选 = 原地淡出；取消 = 旧行为（滑到 hidePosition 移出屏幕再淡出）")]
+    public bool hideInPlace = false;
+    [Tooltip("勾选 = 对话立绘走「相机→RenderTexture→UI alpha」。注意：当前实现下同一场景多个角色会互相串（每台相机都能看到所有角色），且半分辨率会糊，默认先关掉")]
+    public bool useScreenLayer = false;
+
+    private float _fadeT;
 
     private Live2DCanvasLayer _screenLayer;
     private float _screenAlpha;
@@ -157,17 +162,11 @@ public class Live2DActor : MonoBehaviour
 
         SetMultiplyColor(Color.white);
 
-        // 对话立绘：走屏幕层（相机→RT→UI alpha），这样淡入淡出是整体一致的
-        if (useScreenLayer && manageTransformAndFade && _screenLayer == null)
-        {
-            _screenLayer = Live2DCanvasLayer.Attach(gameObject, Camera.main);
-            _screenAlpha = 0f;
-
-            if (_screenLayer != null && renderer != null)
-            {
-                renderer.Opacity = 1f;
-            }
-        }
+        // 旧行为（移出屏幕收场）强制生效：prefab 里存了 hideInPlace: 1 也不管用。
+        hideInPlace = false;
+        useScreenLayer = false;
+        _screenLayer = null;
+        _screenAlpha = 0f;
 
         // actorId 重复是最常见的"NPC 莫名其妙跟着播动作"的原因（脚本默认值是 vivi）
         foreach (var other in FindObjectsOfType<Live2DActor>())
@@ -269,16 +268,10 @@ public class Live2DActor : MonoBehaviour
             }
         }
 
-        if (_screenLayer != null)
-        {
-            // 屏幕层：整体 alpha 淡入淡出（不会出现重叠部位透底）
-            _screenAlpha = Mathf.MoveTowards(_screenAlpha, targetAlpha, Time.deltaTime * fadeSpeed);
-            _screenLayer.Alpha = _screenAlpha;
-        }
-        else
-        {
-            renderer.Opacity = Mathf.MoveTowards(renderer.Opacity, targetAlpha, Time.deltaTime * fadeSpeed);
-        }
+        float fadeStep = Time.deltaTime / Mathf.Max(0.01f, fadeSeconds);
+
+        _fadeT = Mathf.MoveTowards(_fadeT, targetAlpha, fadeStep);
+        renderer.Opacity = _fadeT;
 
         Color currentColor = cubismRenderers.Length > 0 ? cubismRenderers[0].MultiplyColor : Color.white;
         if (currentColor != targetColor)
