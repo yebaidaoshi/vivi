@@ -17,6 +17,8 @@ namespace Enemy
         [SerializeField] private float attackCooldown = 0.8f;
         [SerializeField] private Vector2 knockbackForce = new Vector2(5f, 3f);
         [SerializeField] private Collider2D attackCollider;
+        [Tooltip("被玩家完美闪避后，这次攻击额外追加的冷却倍率（越大破绽越长）")]
+        [SerializeField] private float dodgedCooldownMultiplier = 2f;
 
         [Header("束缚攻击 - 配置")]
         [SerializeField] private BindingProfile bindingProfile;
@@ -71,8 +73,10 @@ namespace Enemy
         [Header("视觉提示")]
         [SerializeField] private EnemyHighlight highlight;
 
-        private const float ATTACK_START_DELAY = 39f / 60f;
-        private const float ATTACK_DURATION = (42f - 39f) / 60f;
+        // 爪击判定窗口（帧）：窗口从 32 帧开始（起手 0.53s），一直开到 46 帧。
+        // 提前开 + 拉长，玩家在爪子挥到身上的瞬间就有反应，不会"打过了才痛"。
+        private const float ATTACK_START_DELAY = 32f / 60f;
+        private const float ATTACK_DURATION = (46f - 32f) / 60f;
         private const float TOTAL_ATTACK_DURATION = 93f / 60f;
 
         private float cooldownTimer;
@@ -310,7 +314,20 @@ namespace Enemy
                     PollMountHit();
                     if (mountHitConfirmed)
                     {
-                        // 命中瞬间扣血，使玩家立刻进入束缚状态（播放被扑倒的挣扎动画）
+                        // 抓中瞬间：先让玩家进入束缚状态（播被扑倒动画 / 出挣扎 UI / 锁操作）
+                        var playerHealth = currentMountTarget as PlayerHealth;
+
+                        if (playerHealth != null)
+                        {
+                            var playerBinding = playerHealth.GetComponent<PlayerBinding>();
+
+                            if (playerBinding != null && !playerBinding.IsActive)
+                            {
+                                playerBinding.HandleBindingHit(this, 0, gameObject);
+                            }
+                        }
+
+                        // 再扣这一下的血
                         DealMountDamage();
                     }
                 }
@@ -465,7 +482,8 @@ namespace Enemy
         private void DealMountDamage()
         {
             if (currentMountTarget == null || currentMountTarget.IsDead) return;
-            currentMountTarget.TakeDamage(mountDamagePerTick, mountKnockback, gameObject);
+            // 束缚中每跳伤害走"束缚伤害"通道：只有这条会闪屏幕血迹
+            (currentMountTarget as PlayerHealth)?.TakeBindingDamage(mountDamagePerTick, gameObject);
         }
 
         private void EndMountAttack(bool freezeAnim = false)
@@ -573,7 +591,20 @@ namespace Enemy
             if (attackCollider == null || !attackCollider.enabled) return;
             if (other.gameObject == gameObject) return;
             if (hitThisSwing.Contains(other)) return;
-            if (IsPlayerInAirOrInvincible()) return;
+
+            if (IsPlayerInAirOrInvincible())
+            {
+                // 原版 HitBox FSM 的 "Dodged"：玩家在闪避无敌帧里躲过了这一爪
+                var evade = other.GetComponentInParent<PlayerEvade>();
+
+                if (evade != null && evade.IsInvincibleWindow && hitThisSwing.Add(other))
+                {
+                    evade.NotifyPerfectDodge(gameObject);
+                    OnPlayerDodged();
+                }
+
+                return;
+            }
 
             var damageable = other.GetComponentInParent<IDamageable>();
             if (damageable == null || damageable.IsDead) return;
@@ -583,6 +614,15 @@ namespace Enemy
                 knockbackForce.x * (other.transform.position.x > transform.position.x ? 1 : -1),
                 knockbackForce.y);
             damageable.TakeDamage(damage, knockback, gameObject);
+        }
+
+        /// <summary>
+        /// 被完美闪避：这一爪落空 → 追加冷却（给玩家留破绽）。
+        /// 动画不打断，跟原版"HitBox FSM 收到 Dodged 后转状态"的表现一致。
+        /// </summary>
+        public override void OnPlayerDodged()
+        {
+            cooldownTimer = Mathf.Max(cooldownTimer, attackCooldown * Mathf.Max(1f, dodgedCooldownMultiplier));
         }
     }
 }

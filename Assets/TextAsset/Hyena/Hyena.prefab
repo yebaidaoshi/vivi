@@ -75,6 +75,7 @@ MonoBehaviour:
   attackCooldown: 1.5
   knockbackForce: {x: 5, y: 3}
   attackCollider: {fileID: 3825459658894881279}
+  dodgedCooldownMultiplier: 2
   bindingProfile: {fileID: 11400000, guid: 4847d263db621d44b91fb03f34e79e2e, type: 2}
   mountCooldown: 10
   useCooldownOnStart: 0
@@ -270,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb484aa3eaf64c344ba1bebe49d4f59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 200
   destroyDelay: 4.7
   knockbackForce: 20
   knockbackDuration: 2.167
@@ -311,14 +312,14 @@ MonoBehaviour:
   runThreshold: 15
   attackRange: 4
   viewDistance: 60
-  attackCooldown: 1.5
+  attackCooldown: 0
   sightForward: 42
   sightBack: 7
   aggroMemory: 6
   loseRange: 60
   roamInterval: 4
   roamStepTime: 1.2
-  mountRange: 3
+  mountRange: 10
   mountCooldown: 8
   idleAnim: Idle
   walkAnim: Movement
@@ -865,8 +866,8 @@ PolygonCollider2D:
     - - {x: 2.6910133, y: 0.07496452}
       - {x: 1.6074228, y: -0.04376766}
       - {x: 1.4947058, y: -2.3415523}
-      - {x: 9.8116455, y: -2.6187837}
-      - {x: 9.881835, y: -0.01118207}
+      - {x: 11.318115, y: -2.7129378}
+      - {x: 11.482451, y: 0.27128005}
   m_UseDelaunayMesh: 0
 --- !u!1 &8107083122749489215
 GameObject:

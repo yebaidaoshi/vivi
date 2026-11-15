@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d7fe0a1c4b25e34ea5b0cc1f2a94b78, type: 3}
+  m_Name: Live2DHudConfig
+  m_EditorClassIdentifier: 
+  hudEnabled: 1
+  modelPrefab: {fileID: 3193487636691899872, guid: 9cdb747536f99a546a745511b787a3a2, type: 3}
+  motionClips:
+  - {fileID: 7400000, guid: 8eb8cd84573e0f14faf373f3284cd02a, type: 2}
+  - {fileID: 7400000, guid: d65f78599a8cf464bb4e7f04faa343ae, type: 2}
+  - {fileID: 7400000, guid: dddcf3d1e494c6449a591c79ebebaf97, type: 2}
+  - {fileID: 7400000, guid: c07e4a3a3a297054eb90b16d1bc94155, type: 2}
+  - {fileID: 7400000, guid: 57dc379f4ca4b0843b586ff2eebecb56, type: 2}
+  - {fileID: 7400000, guid: 885411c8bc36d9d4f9539925ab363976, type: 2}
+  - {fileID: 7400000, guid: 704f8121aeee6a342af55515f2eef571, type: 2}
+  - {fileID: 7400000, guid: 0781e81fb8c706d47b06bd8c61113fad, type: 2}
+  - {fileID: 7400000, guid: a39180a97e66af34ca6ddbfc1b4758d2, type: 2}
+  - {fileID: 7400000, guid: e88cc974ea72e6142bb6f698fa4e2744, type: 2}
+  - {fileID: 7400000, guid: b947610fc8967e04b9467fd79cade094, type: 2}
+  - {fileID: 7400000, guid: f1d1ab0a34f56e64aa020ca4de3828d5, type: 2}
+  - {fileID: 7400000, guid: 70ca8cf620f13184c86acc81c843ea96, type: 2}
+  - {fileID: 7400000, guid: df908705032fe654d8928c196bc3b358, type: 2}
+  - {fileID: 7400000, guid: a4d46a030e7a5e24d854a35f10bc2839, type: 2}
+  - {fileID: 7400000, guid: 20c965790c45dd044ab51458765933a2, type: 2}
+  - {fileID: 7400000, guid: 2a75ae653b8d2be4f899b7a33de3f425, type: 2}
+  - {fileID: 7400000, guid: 92243a403b8f3c54c933df5da6f05a82, type: 2}
+  - {fileID: 7400000, guid: 2e4fcf277d1ec0044896d15d83236ba0, type: 2}
+  - {fileID: 7400000, guid: 81ce9dfef98b7434a8f28281ee427b1a, type: 2}
+  - {fileID: 7400000, guid: a0f7bd6ad28a6344fa0f90f42964e137, type: 2}
+  - {fileID: 7400000, guid: 39245c3652f33b84b84c1d0b4ed7809c, type: 2}
+  - {fileID: 7400000, guid: e4ef73d08fd16fb468721aca9574e1a8, type: 2}
+  - {fileID: 7400000, guid: 6d4bcdd351d09854a991b7b8ff520959, type: 2}
+  - {fileID: 7400000, guid: 7a8e22c9b5c5f104186f6dd3404a14c2, type: 2}
+  bustTopLeftAnchor: {x: 0.02, y: 0.1}
+  bustSize: {x: 0.19, y: 0.36}
+  bustFraction: 0.3
+  bustScale: 1
+  hudCameraRendererIndex: 1
+  hudCameraLayerName: L2D
+  canvasSortingOrder: 500
+  depthFromCamera: 1
+  faceRight: 1
+  opacity: 1
+  fadeInSeconds: 0.9
+  deadOpacity: 0.55
+  deadFadeSeconds: 1.5
+  deadTint: {r: 0.72, g: 0.72, b: 0.72, a: 1}
+  hideDuringCutscene: 0
+  hp100Motion: HP_100
+  hp75Motion: HP_075
+  hp50Motion: HP_050
+  hp25Motion: HP_025
+  hp01Motion: HP_001
+  hp00Motion: HP_000
+  damageMotion1: Damage1
+  damageMotion2: Damage2
+  deathMotion: Damage2
+  attackMotion: 
+  evadeMotion: 
+  airMotion: 
+  aimMotion: 
+  magicMotion: 
+  boundMotion: Damage1
+  healMotion: Face_Smile1
+  fireMotion: 
+  reloadMotion: 
+  crouchMotion: 
+  perfectEvadeMotion: 
+  reactionHoldSeconds: 0.8
+  idleFlavorMotions: []
+  idleFlavorDelay: {x: 11, y: 22}
+  damageHoldSeconds: 0.35
+  showDebugLine: 0
+  warnOnMissingMotion: 0

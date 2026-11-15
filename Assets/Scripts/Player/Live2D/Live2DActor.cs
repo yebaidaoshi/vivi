@@ -34,6 +34,19 @@ public class Live2DActor : MonoBehaviour
     [Tooltip("打开后会在控制台打印每次动作播放和 SDK 的动作结束回调，用来排查问题")]
     public bool debugMotion = false;
 
+    [Header("游戏内实时 HUD 模式")]
+    [Tooltip("勾选 = 对话用：开局隐藏、淡出。取消 = 开局直接可见（游戏内实时 HUD 用）")]
+    public bool hideOnStart = true;
+    [Tooltip("勾选 = 本脚本自己挪位置 / 淡入淡出 / 变色。取消 = 位置与透明度交给外部（Live2DRealtimeHud）控制")]
+    public bool manageTransformAndFade = true;
+    [Tooltip("对话收场方式：勾选 = 原地淡出（不移出屏幕）；取消 = 旧行为（滑到 hidePosition 再淡出）")]
+    public bool hideInPlace = true;
+    [Tooltip("勾选 = 对话立绘走「相机→RenderTexture→UI alpha」，淡入淡出是整张图一起淡（不会透底）")]
+    public bool useScreenLayer = true;
+
+    private Live2DCanvasLayer _screenLayer;
+    private float _screenAlpha;
+
     private CubismExpressionController expr;
     private CubismMotionController motion;
     private CubismRenderController renderer;
@@ -115,13 +128,46 @@ public class Live2DActor : MonoBehaviour
 
     void Start()
     {
-        currentState = ActorState.Hidden;
-        transform.localPosition = hidePosition;
-        targetPosition = hidePosition;
-        targetAlpha = 0f;
+        if (hideOnStart)
+        {
+            currentState = ActorState.Hidden;
 
-        if (renderer != null) renderer.Opacity = 0f;
+            // 原地淡出模式：人留在自己的站位上，只把透明度淡到 0，不走"移出屏幕"那套
+            if (!hideInPlace)
+            {
+                transform.localPosition = hidePosition;
+            }
+
+            targetPosition = transform.localPosition;
+            targetAlpha = 0f;
+
+            if (renderer != null) renderer.Opacity = 0f;
+        }
+        else
+        {
+            // 游戏内实时 HUD：开局就站在舞台上，不再走"从场外滑进来"的对话流程
+            currentState = ActorState.Listening;
+            targetPosition = transform.localPosition;
+            targetColor = talkColor;
+            targetAlpha = 1f;
+
+            // 透明度由外部（Live2DRealtimeHud）控制时不要在这里抢，否则第一帧会闪一下
+            if (renderer != null && manageTransformAndFade) renderer.Opacity = 1f;
+        }
+
         SetMultiplyColor(Color.white);
+
+        // 对话立绘：走屏幕层（相机→RT→UI alpha），这样淡入淡出是整体一致的
+        if (useScreenLayer && manageTransformAndFade && _screenLayer == null)
+        {
+            _screenLayer = Live2DCanvasLayer.Attach(gameObject, Camera.main);
+            _screenAlpha = 0f;
+
+            if (_screenLayer != null && renderer != null)
+            {
+                renderer.Opacity = 1f;
+            }
+        }
 
         // actorId 重复是最常见的"NPC 莫名其妙跟着播动作"的原因（脚本默认值是 vivi）
         foreach (var other in FindObjectsOfType<Live2DActor>())
@@ -138,6 +184,12 @@ public class Live2DActor : MonoBehaviour
     void OnDestroy()
     {
         if (debugMotion && motion != null) motion.AnimationEndHandler -= DebugOnAnimationEnd;
+
+        if (_screenLayer != null)
+        {
+            Destroy(_screenLayer.gameObject);
+            _screenLayer = null;
+        }
     }
 
     private void PlayIdleDelay()
@@ -164,7 +216,7 @@ public class Live2DActor : MonoBehaviour
             case ActorState.Talking:
                 targetColor = talkColor;
                 targetAlpha = 1f;
-                if (wasHidden)
+                if (wasHidden && !hideInPlace)
                 {
                     transform.localPosition = stagePosition;
                     targetPosition = stagePosition;
@@ -175,7 +227,7 @@ public class Live2DActor : MonoBehaviour
             case ActorState.Listening:
                 targetColor = listenColor;
                 targetAlpha = 1f;
-                if (wasHidden)
+                if (wasHidden && !hideInPlace)
                 {
                     transform.localPosition = stagePosition;
                     targetPosition = stagePosition;
@@ -184,7 +236,7 @@ public class Live2DActor : MonoBehaviour
                 break;
 
             case ActorState.Hidden:
-                targetPosition = hidePosition;
+                targetPosition = hideInPlace ? transform.localPosition : hidePosition;
                 break;
         }
     }
@@ -200,6 +252,7 @@ public class Live2DActor : MonoBehaviour
     {
         UpdateMotionSequence();
 
+        if (!manageTransformAndFade) return;
         if (renderer == null) return;
 
         if (Vector3.Distance(transform.localPosition, targetPosition) > 0.1f)
@@ -209,13 +262,23 @@ public class Live2DActor : MonoBehaviour
 
         if (currentState == ActorState.Hidden)
         {
-            if (Vector3.Distance(transform.localPosition, hidePosition) < 1f)
+            // 原地淡出：不用等走到 hidePosition，直接淡
+            if (hideInPlace || Vector3.Distance(transform.localPosition, hidePosition) < 1f)
             {
                 targetAlpha = 0f;
             }
         }
 
-        renderer.Opacity = Mathf.MoveTowards(renderer.Opacity, targetAlpha, Time.deltaTime * fadeSpeed);
+        if (_screenLayer != null)
+        {
+            // 屏幕层：整体 alpha 淡入淡出（不会出现重叠部位透底）
+            _screenAlpha = Mathf.MoveTowards(_screenAlpha, targetAlpha, Time.deltaTime * fadeSpeed);
+            _screenLayer.Alpha = _screenAlpha;
+        }
+        else
+        {
+            renderer.Opacity = Mathf.MoveTowards(renderer.Opacity, targetAlpha, Time.deltaTime * fadeSpeed);
+        }
 
         Color currentColor = cubismRenderers.Length > 0 ? cubismRenderers[0].MultiplyColor : Color.white;
         if (currentColor != targetColor)
@@ -309,5 +372,68 @@ public class Live2DActor : MonoBehaviour
             PlayMotion(next, false, "");
         else if (!string.IsNullOrEmpty(_idleClipName))
             PlayMotion(_idleClipName, true);
+    }
+
+    // ================= 给游戏内实时 HUD（Live2DRealtimeHud）用的接口 =================
+
+    /// <summary>这个角色的动作表里有没有这个名字（不会打警告）。</summary>
+    public bool HasMotion(string name)
+    {
+        return !string.IsNullOrEmpty(name) && clipByName.ContainsKey(name);
+    }
+
+    /// <summary>动作时长（秒）。找不到返回 0。</summary>
+    public float GetMotionLength(string name)
+    {
+        return clipByName.TryGetValue(name, out var clip) && clip != null ? clip.length : 0f;
+    }
+
+    /// <summary>
+    /// 设定"动作播完后回到哪个循环"。
+    /// HUD 会把它设成当前血量对应的 HP_xxx 循环，这样受击/Damage 播完就回到该血量的样子。
+    /// </summary>
+    public void SetIdleMotion(string name)
+    {
+        if (HasMotion(name)) _idleClipName = name;
+    }
+
+    /// <summary>当前的回待机动作名。</summary>
+    public string IdleMotion => _idleClipName;
+
+    /// <summary>当前正在播的动作名（HUD 自己记的，不参与对话逻辑）。</summary>
+    public string CurrentMotionName => _currentClip != null ? _currentClip.name : "";
+
+    /// <summary>外部补登记动作片段（HUD 从 Live2DHudConfig 里把整套片段喂进来）。</summary>
+    public void RegisterClips(IEnumerable<AnimationClip> clips)
+    {
+        if (clips == null) return;
+
+        foreach (var clip in clips)
+        {
+            if (clip != null) clipByName[clip.name] = clip;
+        }
+    }
+
+    /// <summary>找不到动作时静默返回 false，方便 HUD 先探测再播。</summary>
+    public bool TryPlayMotion(string name, bool isLoop = false, string nextMotion = "")
+    {
+        if (!HasMotion(name)) return false;
+
+        PlayMotion(name, isLoop, nextMotion);
+        return true;
+    }
+
+    /// <summary>立刻设置透明度（HUD 淡入淡出用）。</summary>
+    public void SetOpacityNow(float opacity)
+    {
+        targetAlpha = Mathf.Clamp01(opacity);
+        if (renderer != null) renderer.Opacity = targetAlpha;
+    }
+
+    /// <summary>改整体 MultiplyColor（HUD 配色调色用）。</summary>
+    public void SetTint(Color color)
+    {
+        targetColor = color;
+        SetMultiplyColor(color);
     }
 }

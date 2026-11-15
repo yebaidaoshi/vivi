@@ -12642,7 +12642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &766508648
 RectTransform:
   m_ObjectHideFlags: 0
@@ -30590,7 +30590,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2710881663461286001, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5774476207614972246, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: target
@@ -30598,11 +30598,11 @@ PrefabInstance:
       objectReference: {fileID: 839767718}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_Pivot.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_AnchorMax.x
@@ -30622,11 +30622,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 3000
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 500
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30658,11 +30658,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -50
+      value: 92
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 550
+      value: 499
       objectReference: {fileID: 0}
     - target: {fileID: 8402664084525999232, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -30678,11 +30678,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8782462679407672648, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8782462679407672648, guid: 76749a03df3a36243865afba0ca70267, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -30923,10 +30923,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1136390800}
-    - target: {fileID: 2792653973269986955, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3840717928811643224, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_Name
       value: Hyena
@@ -30970,10 +30966,6 @@ PrefabInstance:
     - target: {fileID: 4024379914712548445, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5366354553436731311, guid: 35166068313a2b44e874e7a60414e7dd, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -31166,7 +31158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

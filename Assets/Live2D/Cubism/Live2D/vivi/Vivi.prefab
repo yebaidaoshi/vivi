@@ -4608,6 +4608,10 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 20c965790c45dd044ab51458765933a2, type: 2}
   postMotionOverlap: 0.15
   debugMotion: 1
+  hideOnStart: 1
+  manageTransformAndFade: 1
+  hideInPlace: 1
+  useScreenLayer: 1
   currentState: 0
 --- !u!114 &5893894974244263783
 MonoBehaviour:

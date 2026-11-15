@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Spine;
 using Spine.Unity;
+using SceneCamera;
 
 namespace Player
 {
@@ -13,6 +14,15 @@ namespace Player
 
         [Header("取消窗口")]
         [SerializeField] private float cancelableAt = 47f / 60f;
+
+        [Header("完美闪避（无敌帧内躲过敌人攻击判定）")]
+        [Tooltip("完美闪避成功的震屏时长 / 强度")]
+        [SerializeField] private float perfectShakeDuration = 0.16f;
+        [SerializeField] private float perfectShakeStrength = 0.3f;
+        [Tooltip("完美闪避成功后额外延长多少秒无敌（方便穿出攻击）")]
+        [SerializeField] private float perfectExtraInvincible = 0.08f;
+        [Tooltip("同一次闪避最短判定间隔，防止一个判定盒多次触发")]
+        [SerializeField] private float perfectDodgeGuard = 0.15f;
 
         private PlayerMotor _motor;
         private PlayerAnimDriver _anim;
@@ -33,10 +43,22 @@ namespace Player
         private bool _invincibleApplied;
         private bool _overlayApplied;
 
+        private float _invincibleBonus;
+        private float _perfectGuardUntil;
+
+        /// <summary>完美闪避成功（参数 = 被躲过的攻击者）。</summary>
+        public event System.Action<GameObject> OnPerfectDodge;
+
+        /// <summary>累计完美闪避次数（调试/成就用）。</summary>
+        public int PerfectDodgeCount { get; private set; }
+
         public bool IsActive => _active;
         public float Elapsed => _elapsed;
         public float CancelableAt => cancelableAt;
         public bool CanCancel => _active && _elapsed >= cancelableAt;
+
+        /// <summary>现在是不是闪避的无敌帧窗口（原版判定"完美闪避"就靠这个）。</summary>
+        public bool IsInvincibleWindow => _active && _invincibleApplied;
 
         public void Init(PlayerContext ctx, PlayerHealth health)
         {
@@ -124,6 +146,28 @@ namespace Player
 
         public bool HasThreatInWindup() => TryGetThreat(out _);
 
+        /// <summary>
+        /// 完美闪避：闪避的无敌帧窗口里被敌人攻击判定扫到时，由 EnemyCombat 调用。
+        /// 原版的判定就是"闪避无敌帧躲过正在生效的攻击判定"，反馈 = 拖影 + 震屏 + 敌人攻击落空。
+        /// </summary>
+        public void NotifyPerfectDodge(GameObject attacker)
+        {
+            if (!IsInvincibleWindow) return;
+            if (Time.time < _perfectGuardUntil) return;
+
+            _perfectGuardUntil = Time.time + Mathf.Max(0.05f, perfectDodgeGuard);
+            PerfectDodgeCount++;
+
+            _invincibleBonus += Mathf.Max(0f, perfectExtraInvincible);
+
+            var cam = CameraDirector.Instance;
+            if (cam != null) cam.Shake(perfectShakeDuration, perfectShakeStrength);
+
+            _audio?.PlayBackStep();
+
+            OnPerfectDodge?.Invoke(attacker);
+        }
+
         public bool TryStart(int facing)
         {
             if (_active) return false;
@@ -133,6 +177,7 @@ namespace Player
             _elapsed = 0f;
             _invincibleApplied = false;
             _overlayApplied = false;
+            _invincibleBonus = 0f;
 
             _anim.ForcePlay(PlayerAnimDriver.States.JumpEvade);
 
@@ -151,7 +196,7 @@ namespace Player
             _elapsed += dt;
 
             bool inWindow = _elapsed >= _settings.evadeInvincibleStart
-                         && _elapsed <= _settings.evadeInvincibleEnd;
+                         && _elapsed <= _settings.evadeInvincibleEnd + _invincibleBonus;
 
             if (inWindow != _invincibleApplied)
             {

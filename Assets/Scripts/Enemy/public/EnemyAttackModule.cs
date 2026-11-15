@@ -39,6 +39,12 @@ namespace Enemy
         /// <summary>动画事件转发，例如 "Mount_Hit"。</summary>
         public virtual void OnAnimEvent(string eventName) { }
 
+        /// <summary>
+        /// 玩家用闪避无敌帧躲过了本次攻击判定（原版 HitBox FSM 的 "Dodged" 事件）。
+        /// 一般用来给攻击落空加额外冷却 / 播空挥反馈。
+        /// </summary>
+        public virtual void OnPlayerDodged() { }
+
         /// <summary>本体死亡时回调，用于强制结束协程 / 关闭判定。</summary>
         public virtual void OnOwnerDeath() { }
     }

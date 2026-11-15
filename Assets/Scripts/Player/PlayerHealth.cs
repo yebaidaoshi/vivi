@@ -67,6 +67,7 @@ namespace Player
 
         private PlayerBinding _binding;
         private bool _evadeInvincible;
+        private PlayerEvade _evadeControl;
 
         public int CurrentHealth => _currentHealth;
         public int MaxHealth => _maxHealth;
@@ -131,6 +132,8 @@ namespace Player
         public void SetController(PlayerController controller) => _controller = controller;
 
         public void SetBindingControl(PlayerBinding binding) => _binding = binding;
+
+        public void SetEvadeControl(PlayerEvade evade) => _evadeControl = evade;
 
         public void SetEvadeInvincible(bool on)
         {
@@ -243,7 +246,13 @@ namespace Player
         public void TakeDamage(int damage, Vector2 knockback, GameObject attacker)
         {
             if (_isDead) return;
-            if (_evadeInvincible) return;
+
+            if (_evadeInvincible)
+            {
+                // 闪避无敌帧里被打到 = 完美闪避（原版：攻击判定被躲过 → 敌人收 Dodged 事件）
+                _evadeControl?.NotifyPerfectDodge(attacker);
+                return;
+            }
 
             IBindingSource bindingSource = attacker != null
                 ? attacker.GetComponent<IBindingSource>() : null;
@@ -297,12 +306,14 @@ namespace Player
                 else _audio.PlayDamageB();
             }
 
-            ShowHitFlash();
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
 
             if (_currentHealth <= 0) Die();
         }
 
+        /// <summary>
+        /// 束缚攻击每跳一次伤害：只有这条路径会闪屏幕血迹（普通爪击不闪）。
+        /// </summary>
         public void TakeBindingDamage(int damage, GameObject attacker)
         {
             if (_isDead) return;

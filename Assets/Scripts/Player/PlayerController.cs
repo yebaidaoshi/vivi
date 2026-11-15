@@ -110,6 +110,7 @@ namespace Player
             health.SetBindingControl(binding);
 
             evade.Init(_ctx, health);
+            health.SetEvadeControl(evade);
         }
 
         // ★ Update - 过场模式下完全返回

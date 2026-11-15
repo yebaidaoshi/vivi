@@ -108,7 +108,7 @@ namespace Player
             _prevAds = false;
 
             _motor?.SetVelocity(Vector2.zero);
-            _anim?.ForcePlay(_profile.pinnedAnim);
+            _anim?.ForcePlay(string.IsNullOrEmpty(_profile.pinnedAnim) ? PlayerAnimDriver.States.Idle : _profile.pinnedAnim);
 
             OnStruggleProgressChanged?.Invoke(0f);
         }
@@ -146,7 +146,7 @@ namespace Player
         {
             _phase = BindingPhase.Loop;
             _phaseTimer = 0f;
-            _anim?.ForcePlay(_profile.loopAnim);
+            _anim?.ForcePlay(string.IsNullOrEmpty(_profile.loopAnim) ? PlayerAnimDriver.States.Idle : _profile.loopAnim);
 
             SpawnStruggleUI();
         }
@@ -281,11 +281,16 @@ namespace Player
 
         private void SpawnStruggleUI()
         {
-            if (struggleUIPrefab == null || _struggleUI != null) return;
+            if (_struggleUI != null) return;
 
-            var go = Instantiate(struggleUIPrefab);
-            
+            var go = struggleUIPrefab != null ? Instantiate(struggleUIPrefab) : new GameObject("StruggleUI");
+
             _struggleUI = go.GetComponent<PlayerStruggleUI>();
+
+            if (_struggleUI == null)
+            {
+                _struggleUI = go.AddComponent<PlayerStruggleUI>();
+            }
             if (_struggleUI != null)
             {
                 _struggleUI.Show(transform);

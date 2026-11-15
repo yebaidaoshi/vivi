@@ -55,6 +55,59 @@ namespace Player
                 skeletonAnimation = GetComponent<SkeletonAnimation>();
         }
 
+        // ================= 没有 Spine 资源时的代码版挣扎条 =================
+        // 工程里没有 Struggle 的 Spine prefab，这里用 UGUI 现场画一个：黑底 + 红条
+        private RectTransform _fallbackFill;
+        private bool _fallbackBuilt;
+
+        private void BuildFallback()
+        {
+            if (_fallbackBuilt) return;
+            _fallbackBuilt = true;
+
+            var canvasGo = new GameObject("Canvas", typeof(RectTransform));
+            canvasGo.transform.SetParent(transform, false);
+
+            var canvas = canvasGo.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+
+            var frameGo = new GameObject("Frame", typeof(RectTransform));
+            frameGo.transform.SetParent(canvasGo.transform, false);
+
+            var frame = frameGo.GetComponent<RectTransform>();
+            frame.anchorMin = frame.anchorMax = new Vector2(0.5f, 0.5f);
+            frame.pivot = new Vector2(0.5f, 0.5f);
+            frame.anchoredPosition = new Vector2(0f, -220f);
+            frame.sizeDelta = new Vector2(420f, 26f);
+
+            var frameImage = frameGo.AddComponent<UnityEngine.UI.Image>();
+            frameImage.color = new Color(0f, 0f, 0f, 0.75f);
+            frameImage.raycastTarget = false;
+
+            var fillGo = new GameObject("Fill", typeof(RectTransform));
+            fillGo.transform.SetParent(frame, false);
+
+            _fallbackFill = fillGo.GetComponent<RectTransform>();
+            _fallbackFill.anchorMin = new Vector2(0f, 0.5f);
+            _fallbackFill.anchorMax = new Vector2(0f, 0.5f);
+            _fallbackFill.pivot = new Vector2(0f, 0.5f);
+            _fallbackFill.anchoredPosition = new Vector2(2f, 0f);
+            _fallbackFill.sizeDelta = new Vector2(416f, 22f);
+
+            var fillImage = fillGo.AddComponent<UnityEngine.UI.Image>();
+            fillImage.color = new Color(0.9f, 0.15f, 0.15f, 0.95f);
+            fillImage.raycastTarget = false;
+
+            ApplyFallbackProgress(0f);
+        }
+
+        private void ApplyFallbackProgress(float progress)
+        {
+            if (_fallbackFill != null)
+                _fallbackFill.localScale = new Vector3(Mathf.Clamp01(progress), 1f, 1f);
+        }
+
         public void Show(Transform target)
         {
             _target = target;
@@ -63,6 +116,14 @@ namespace Player
             
             gameObject.SetActive(true);
             _isUnlocking = false;
+
+            if (skeletonAnimation == null)
+            {
+                // 没有 Spine 资源：代码版挣扎条
+                BuildFallback();
+                UpdateProgress(0f);
+                return;
+            }
 
             var state = skeletonAnimation.AnimationState;
             state.SetAnimation(0, lockedAnim, false);
@@ -85,6 +146,11 @@ namespace Player
             if (_isUnlocking) return;
             // 缓存进度，在 LateUpdate 里每帧应用（防止被 Shake 动画覆盖）
             _currentProgress = Mathf.Clamp01(progress);
+
+            if (skeletonAnimation == null)
+            {
+                ApplyFallbackProgress(_currentProgress);
+            }
         }
 
         private void LateUpdate()
