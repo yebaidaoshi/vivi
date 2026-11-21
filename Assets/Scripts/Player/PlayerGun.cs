@@ -308,8 +308,10 @@ namespace Player
             _anim.SetCrouch(_aimCrouch);
             UpdateReloadAimLocomotion(intent);
 
-            // ★ 核心修改：换弹时始终保持 Aim 层权重为 1，播放换弹动画
-            SetAimWeightImmediate(1f);
+            // ★ 站立换弹：保持 Aim 层权重为 1（原逻辑不变）。
+            // ★ 蹲姿换弹：必须压回 0 —— Aim 层的 Aim_Standing 是站姿 BlendTree，权重 > 0 会盖住
+            //   Base 层 SMG.Aim_SMG_Reload 的蹲姿片段（这就是"换弹时站起来"的原因）。
+            SetAimWeightImmediate(_aimCrouch ? 0f : 1f);
             bool onReload = _anim.IsPlayingAim(PlayerAnimDriver.States.AimSmgReload);
             if (onReload)
             {
@@ -374,13 +376,24 @@ namespace Player
             }
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // 蹲瞄准的实现方式（与原版 Animator 一致）：
+        //   Base Layer.SMG 子状态机里的 Aim_SMG / Aim_SMG_Hold / Aim_SMG_vibration / Aim_SMG_Reload /
+        //   Aim_SMG_Release 都是按浮点 crouching 混合的 BlendTree（0 = 站姿片段，1 = 蹲姿片段）。
+        //   所以"蹲瞄准" = 先写 crouching = 1，再播同一批 SMG 状态；不需要单独播
+        //   Crouch/Crouch_Aim_* 那些根层副本，更不能每帧再去强播站姿的 Aim_SMG_Hold。
+        //   播放 / 判断一律走 PlayerAnimDriver 的 SMG 路由，避免和根层同名的"站姿副本"撞名。
+        // ─────────────────────────────────────────────────────────────────────
+
         private void TickIdle(PlayerIntent intent, bool wantAds)
         {
             if (wantAds)
             {
-                _aimCrouch = _crouched;
-                EnterRaise();
+                _aimCrouch = _crouched || intent.Crouch;
+
+                // 顺序很重要：先写 crouching，再播 SMG 状态（路由和 BlendTree 都依赖它）
                 _anim.SetCrouch(_aimCrouch);
+                EnterRaise();
             }
             else if (intent.ReloadPressed && _ammo < _settings.magazineCapacity)
             {
@@ -396,8 +409,11 @@ namespace Player
 
         private void TickRaising(PlayerIntent intent, bool wantAds, bool allowFaceFlip)
         {
-            _aimCrouch = _crouched;
+            // 别只信 _crouched：蹲下输入刚按下时 PlayerCrouch 可能还在 Entering，这里要和 TickIdle 用同一套判定
+            _aimCrouch = _crouched || intent.Crouch;
             _anim.SetCrouch(_aimCrouch);
+            _anim.SetCrouchingWeight(_aimCrouch ? 1f : 0f);
+
             SetAimWeightImmediate(0f);
             UpdateAdsAim(intent, allowFaceFlip);
             _phaseTimer -= _motor.DeltaTime;
@@ -420,16 +436,29 @@ namespace Player
                 return;
             }
 
-            bool wantCrouch = _crouched;
+            bool wantCrouch = _crouched || intent.Crouch;
             if (wantCrouch != _aimCrouch && _vibrationTimer <= 0f)
             {
-                BeginCrouchAimTransition(wantCrouch);
-                TickCrouchAimTransition(intent, wantAds, allowFaceFlip);
-                return;
+                if (wantCrouch)
+                {
+                    // 瞄准中按蹲：先播 Aim/Aim_SMG_Hold_to_Crouch_Aim 过渡，再停在蹲瞄准
+                    BeginCrouchAimTransition(true);
+                    TickCrouchAimTransition(intent, wantAds, allowFaceFlip);
+                    return;
+                }
+                else
+                {
+                    BeginCrouchAimTransition(false);
+                    TickCrouchAimTransition(intent, wantAds, allowFaceFlip);
+                    return;
+                }
             }
 
-            _anim.SetCrouch(_aimCrouch);
             UpdateAdsAim(intent, allowFaceFlip);
+
+
+            _anim.SetCrouch(_aimCrouch);
+            _anim.SetCrouchingWeight(_aimCrouch ? 1f : 0f);
 
             bool moving = !_aimCrouch && _vibrationTimer <= 0f
                 && Mathf.Abs(intent.Move) > 0.1f;
@@ -508,6 +537,10 @@ namespace Player
             _crouchAimTransitionTimer = PlayerAnimTimings.CrouchAimTransition.ClipLength + 0.05f;
             _crouchAimBlend = toCrouch ? 0f : 1f;
             _anim.SetCrouchingWeight(_crouchAimBlend);
+
+            // SMG.Crouch_Aim_to_Stand_Aim 是按 crouching 选片段的 BlendTree：
+            //   crouching = 0 → 站→蹲 过渡片段；crouching = 1 → 蹲→站 过渡片段。
+            // （旧代码里 "Base Layer/Aim/..." 这种带斜杠的路径 Unity 根本解析不出来。）
             _anim.ForcePlayAim(PlayerAnimDriver.States.CrouchAimToStandAim);
         }
 
@@ -523,6 +556,12 @@ namespace Player
             SetAimWeightImmediate(0f);
             _anim.SetCrouchingWeight(_crouchAimBlend);
             _crouchAimTransitionTimer -= _motor.DeltaTime;
+
+            // 蹲下瞄准过渡中也可以开火（不然"蹲下射击"要等过渡播完）
+            if (intent.Fire && _fireCooldown <= 0f)
+            {
+                TryFire(allowRecoil: false);
+            }
 
             bool playing = _anim.IsPlayingAim(PlayerAnimDriver.States.CrouchAimToStandAim);
             if (playing)
@@ -908,6 +947,7 @@ namespace Player
             _anim.SetAiming(true);
             _anim.SetAimDir(1f);
             SetAimWeightImmediate(0f);
+            _anim.SetCrouch(_aimCrouch);
             _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmg);
             if (!_playedAimSound)
             {
@@ -946,6 +986,7 @@ namespace Player
             _releaseSeFoldSmg = false;
             _releaseClipSeen = false;
             _anim.SetCrouch(_aimCrouch);
+
             _anim.ForcePlayAim(PlayerAnimDriver.States.AimSmgRelease);
         }
 

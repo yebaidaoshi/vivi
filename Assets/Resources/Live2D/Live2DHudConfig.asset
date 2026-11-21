@@ -76,7 +76,9 @@ MonoBehaviour:
   crouchMotion: 
   perfectEvadeMotion: 
   reactionHoldSeconds: 0.8
-  idleFlavorMotions: []
+  idleFlavorMotions:
+  - Face_Smile2
+  - Face_Smile1
   idleFlavorDelay: {x: 11, y: 22}
   damageHoldSeconds: 0.35
   showDebugLine: 0

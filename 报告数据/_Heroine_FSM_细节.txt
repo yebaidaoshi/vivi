@@ -1,0 +1,646 @@
+============================================================
+HOST: EV_Vivi   FSM: FSM   start=State 1  states=2
+  GLOBAL EV_Turn -> Turn
+  --- State 1
+      actions : 
+  --- Turn
+      actions : GetScale, FloatMultiply, SetScale
+      params  : MyScale=0 | 0 | 0 | MyScale=0 | -1 | MyScale=0 | 0 | 0 | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+============================================================
+HOST: _Heroine   FSM: Movement   start=INIT  states=70
+  GLOBAL Attacking -> State 24
+  GLOBAL Sliding -> State 22
+  GLOBAL ADS -> ADS
+  GLOBAL STOP -> NoInput
+  GLOBAL Return -> Idle
+  GLOBAL Landing -> LRAnim
+  GLOBAL Cancelable -> BackStepable
+  GLOBAL OnAir -> ONAIR
+  GLOBAL Falling -> ONAIR
+  GLOBAL Ledge -> Check
+  GLOBAL Step_Up -> Step Up
+  GLOBAL Movable -> INIT
+  GLOBAL RESET -> INIT
+  GLOBAL STEPUP -> Check 2
+  GLOBAL Back -> Input Ch.
+  GLOBAL Ledge_Cancelable -> NoInput
+  GLOBAL NeutralStep -> BackStep 2
+  GLOBAL BackwardLanding -> State 3
+  GLOBAL Channeling -> NoInput
+  GLOBAL ADS_RELOAD -> State 4
+  GLOBAL ReloadStep -> BackStep 3
+  GLOBAL Grabbing -> ADS 2
+  GLOBAL BackFlip -> State 6
+  GLOBAL Crouch -> State 8
+  GLOBAL Climb_Enemy -> State 18
+  GLOBAL Climb_Up -> State 19
+  GLOBAL BHopStop -> State 31
+  GLOBAL AirADS -> ONAIR 2
+  --- ADS
+      actions : SetAnimatorFloat, FloatCompare, GetFsmFloat, FloatCompare, SetVelocity2dChronos
+      on      : AimWalk -> FaceCheck
+      on      : Controlled -> ADS 3
+      params  : aimDir | VelocityControl | Velocity | 1 | 0 | GAME_MOVE=0 | 0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 0 | 0 | ControlVelocity=0 | 0 | {x: 0, y: 0}
+  --- NoInput
+      actions : GetFsmFloat, FloatCompare
+      on      : Next -> State 29
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | 0.1
+  --- FaceCheck
+      actions : SetAnimatorLayerWeight, BoolTest, GetScale, FloatSubtract, FloatAbs, SetAnimatorFloat, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, SetVelocity2dChronos
+      on      : stop -> DontMoveWhileCrouching
+      params  : aimDir | VelocityControl | Velocity | 1 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | XScale=18 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _ADSXSpeed=4 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | 0 | 1 | Crouching=0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- INIT
+      actions : SendEventByName, NextFrameEvent
+      on      : FINISHED -> Idle
+      params  : Return | 0
+  --- Idle
+      actions : SetFloatValue, SetFsmFloat, SetAnimatorLayerWeight, GetFsmFloat, AddForce2d, FloatCompare, FloatCompare
+      on      : Run -> Run Animation
+      on      : Controlled -> Idle 2
+      params  : Crouching | RunTime | VelocityControl | Velocity | RunTime=0 | 0 | RunTime=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 0 | GAME_MOVE=0 | 0 | 0 | ControlVelocity=0 | 0 | 0 | 1 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- Run Animation
+      actions : SetFsmInt, SendEventByName, BoolTest, AnimatorPlay
+      on      : FINISHED -> Input Ch.
+      params  : Melee | MeleeCount | Movable | Event/Run_Event_Start | 0 | 0 | 0 | 0 | Crouching=0
+  --- ONAIR
+      actions : BoolTest, BoolTest, GetScale, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, FloatClamp, FloatCompare, SetVelocity2dChronos, GetScale, FloatMultiply, SetAnimatorFloat
+      on      : WallStop -> State 9
+      on      : Next -> State 16
+      on      : CorM -> State 28
+      params  : GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XScale=18 | 0 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _AirXSpeed=20 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | 0 | 0.1 | XAxis=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | WallStop=0 | IceBool=0 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- LRAnim
+      actions : BoolTest, GetScale, FloatMultiply, FloatCompare, NextFrameEvent
+      on      : LandingRun -> L Run Animation
+      params  : XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0 | 0 | GAME_SKILL=0 | {x: 0, y: 0, z: 0}
+  --- L Run Animation
+      actions : SetFloatValue, AnimatorPlay
+      on      : FINISHED -> Input Ch.
+      params  : LandingToRunForwardMotion=Landing_to_Run_Forward | RunTime=0 | 1 | 0 | 0
+  --- Input Ch.
+      actions : SetFloatValue, FloatMultiply, GetFsmFloat, FloatClamp, FloatAdd, SetVelocity2dChronos, FloatCompare, GameObjectIsNull, SetScale, GetScale, FloatCompare, FloatInterpolateChronos, SetFsmFloat, BoolTest
+      on      : Turn -> Turn
+      on      : stop -> Run_to_Idle
+      on      : WallStop -> State 10
+      params  : VelocityControl | Velocity | Crouching | RunTime | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _XSpeed=20 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | 0 | GAME_MOVE=0 | 0 | 0 | GAME_MOVE=0 | 0 | 0 | XScale=18 | 0 | 0 | GAME_MOVE=0 | XScale=18 | 0.1 | RunTime=0 | 1 | 0.3 | RunTime=0 | RunTime=0 | 0 | WallStop=0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- Run_to_Idle
+      actions : SetFsmFloat, AnimatorPlay, SendEvent, GetScale, FloatCompare, SetFloatValue, ConditionalExpression, FloatCompare, ChronosWait, NextFrameEvent
+      on      : Next -> Run Animation
+      params  : Crouching | RunTime | Event/Run_Event_to_Idle | GAME_MOVE != 0 && GAME_MOVE != XScale | RunTime=0 | 0 | 0 | XScale=18 | 0 | 0 | RunTime=0 | 1 | 0 | RunTime=0 | 0 | GAME_MOVE=0 | 0 | 0 | 0.2 | 0 | 0 | {x: 0, y: 0, z: 0}
+  --- Turn
+      actions : SetFloatValue, SetFsmFloat, AnimatorPlay
+      on      : Runnable -> Input Ch.
+      params  : Crouching | RunTime | Run_Turning | RunTime=0 | 0 | RunTime=0 | 0 | 0
+  --- BackStepable
+      actions : GetScale, FloatCompare, FloatChanged, GetFsmInt, ConditionalExpression, ConditionalExpression, GetFsmFloat, SetVelocity2dChronos
+      on      : BackStep -> BackStep
+      on      : FrontStep -> BackStep 4
+      params  : Melee | MeleeCount | StepBool == true && MeleeCount != 4 | Changed == true && GAME_MOVE == XScale && MeleeCount != 4 | VelocityControl | Velocity | XScale=18 | 0 | 0 | GAME_MOVE=0 | XScale=18 | 1 | GAME_MOVE=0 | ControlVelocity=0 | ControlVelocity=0 | 0 | MeleeCount=0 | Changed=0 | 0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- BackStep
+      actions : SetBoolValue, BoolTest, SendEventByName, AnimatorPlay, GetScale, SetVelocity2dChronos, FloatOperator, AddForce2d, GetScale, FloatMultiply, CreateObject, SetScale, SendEventByName, SetFsmFloat
+      params  : {fileID: 1709254077376921, guid: a83f67ccc06f521449b5c97e8832892b, type: 2} | {fileID: 668} | SE_BackStep | BackStep | BackStep | FSM | InvincibleTime | 0 | 0 | XScale=18 | 0 | 0 | 0 | 0 | -50 | XScale=18 | BackStepVelocity=0 | BackStepVelocity=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0.4 | 0 | Changed=0 | 0 | GAME_JUMP=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- Check
+      actions : SetGameObject, GetName, SendEventByName
+      on      : Climb -> State 1
+      params  : 0
+  --- Step Up
+      actions : SendEventByName, GetParent, GetChild, AnimatorPlay, SendEventByName, DOTweenTransformMove, SendEventByName, SetFsmFloat
+      on      : FINISHED -> Done
+      params  : V_Run_Over | Step_Down | Run_Over | Moving | StepUp | Crouching | RunTime | 0 | 0 | 0 | 0.35 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | {x: 0, y: 0, z: 0}
+  --- Done
+      actions : SendEventByName, SendEventByName
+      params  : RESET | Movable | 0 | 0
+  --- Climb_Up
+      actions : SendEventByName, SetFsmFloat, GetParent, GetChild, SendEventByName, SetVelocity2dChronos
+      on      : LedgeClimb -> Climbed
+      params  : V_Jump_Over | Crouching | RunTime | Climb_Down | Moving | 0 | 1 | 0 | 0 | 0 | {x: 0, y: 0}
+  --- Climbed
+      actions : SendEventByName, SetFsmFloat, DOTweenTransformMove
+      on      : FINISHED -> State 2
+      params  : ClimbUp | Crouching | RunTime | 0 | 1 | 0.33 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | {x: 0, y: 0, z: 0}
+  --- DontMoveWhileCrouching
+      actions : BoolTest, GetFsmFloat, SetVelocity2dChronos
+      on      : back -> FaceCheck
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | Crouching=0 | {x: 0, y: 0}
+  --- Check 2
+      actions : GetScale, GetName, SetGameObject, SetGameObject, FloatCompare, SendEventByName
+      params  : XScale=18 | 0 | 0 | GAME_MOVE=0 | XScale=18 | 0.1 | 0 | {x: 0, y: 0, z: 0}
+  --- State 1
+      actions : 
+  --- State 2
+      actions : SendEventByName
+      params  : RESET | 0
+  --- BackStep 2
+      actions : GetScale, SendEventByName, AnimatorPlay, SetVelocity2dChronos, SetFloatValue, FloatMultiply, AddForce2d, GetScale, FloatMultiply, CreateObject, SetScale, SendEventByName, SetFsmFloat, GetScale, ConditionalExpression
+      on      : Next -> Run Animation
+      on      : StepTurn -> State 33
+      params  : {fileID: 1709254077376921, guid: a83f67ccc06f521449b5c97e8832892b, type: 2} | {fileID: 668} | SE_BackStep | Run_StepTurn | Sliding | FSM | InvincibleTime | GAME_MOVE == XScale | XScale=18 | 0 | 0 | 0 | 0 | 0 | 0 | BackStepForce=-50 | -42 | BackStepForce=-50 | XScale=18 | BackStepForce=-50 | 0 | XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0.4 | XScale=18 | 0 | 0 | 0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 3
+      actions : AnimatorPlay
+      on      : FINISHED -> Input Ch.
+      params  : LandingToRunMotion=Landing_to_Run | 0 | 0
+  --- State 4
+      actions : SetAnimatorFloat, GetScale, FloatCompare, FloatCompare, GetFsmFloat, SetVelocity2dChronos
+      on      : AimWalk -> FaceCheck 2
+      on      : BackSteppable -> State 5
+      on      : Reload_Done -> ADS
+      params  : aimDir | VelocityControl | Velocity | 1 | 0 | XScale=18 | 0 | 0 | GAME_MOVE=0 | XScale=18 | 1 | GAME_MOVE=0 | 0 | 1 | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- FaceCheck 2
+      actions : BoolTest, GetScale, FloatSubtract, FloatAbs, SetAnimatorFloat, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, SetVelocity2dChronos, FloatCompare
+      on      : stop -> DontMoveWhileCrouching 2
+      on      : BackSteppable -> State 5
+      on      : Reload_Done -> FaceCheck
+      params  : aimDir | VelocityControl | Velocity | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | XScale=18 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _ADSXSpeed=4 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | 0 | GAME_MOVE=0 | 0 | 0 | Crouching=0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 5
+      actions : GetScale, FloatCompare, FloatCompare, GetFsmFloat, SetVelocity2dChronos
+      on      : AimWalk -> FaceCheck 2
+      on      : Reload_Done -> FaceCheck
+      params  : VelocityControl | Velocity | XScale=18 | 0 | 0 | GAME_MOVE=0 | XScale=18 | 0 | GAME_MOVE=0 | XScale=18 | 1 | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- DontMoveWhileCrouching 2
+      actions : BoolTest, GetFsmFloat, SetVelocity2dChronos
+      on      : back -> FaceCheck 2
+      on      : Reload_Done -> DontMoveWhileCrouching
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | Crouching=0 | {x: 0, y: 0}
+  --- BackStep 3
+      actions : SetAnimatorLayerWeight, SendEventByName, SendEventByName, GetScale, SendEventByName, AnimatorPlay, SetVelocity2dChronos, FloatOperator, AddForce2d, GetScale, FloatMultiply, CreateObject, SetScale, SendEventByName, SetFsmFloat
+      params  : {fileID: 1709254077376921, guid: a83f67ccc06f521449b5c97e8832892b, type: 2} | {fileID: 668} | Moving | Moving | SE_BackStep | BackStep | BackStep | FSM | InvincibleTime | 0 | 0 | 0 | XScale=18 | 0 | 0 | 0 | 0 | 0 | 0 | BackStepForce=-50 | XScale=18 | BackStepVelocity=0 | BackStepVelocity=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0.4 | 1 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- ADS 2
+      actions : SetAnimatorFloat, FloatCompare
+      on      : AimWalk -> FaceCheck 3
+      on      : OutofRange -> State 7
+      params  : aimDir | 1 | 0 | GAME_MOVE=0 | 0 | 0
+  --- FaceCheck 3
+      actions : BoolTest, GetScale, FloatSubtract, FloatAbs, SetAnimatorFloat, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, SetVelocity2dChronos
+      on      : stop -> DontMoveWhileCrouching 3
+      on      : OutofRange -> State 7
+      params  : aimDir | VelocityControl | Velocity | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | XScale=18 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | 6 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | 0 | Crouching=0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- DontMoveWhileCrouching 3
+      actions : BoolTest
+      on      : back -> FaceCheck 3
+      on      : OutofRange -> State 7
+      params  : Crouching=0
+  --- State 6
+      actions : GetVelocity2d, GetScale, FloatCompare, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d, FloatClamp, ConditionalExpression
+      on      : StopVelocity -> State 13
+      params  : VelocityControl | Velocity | GAME_MOVE *-1 == XScale && Ledge != Null | XAxis=0 | 0 | XScale=18 | 0 | 0 | XAxis=0 | VelocityMax=0 | 0 | XAxis=0 | VelocityMin=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 6 | ControlVelocity=0 | 0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | Bool1=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 7
+      actions : SendEventByName
+      params  : Movable | 0
+  --- State 8
+      actions : GetFsmFloat, SetVelocity2dChronos, BoolTest, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d
+      on      : Next -> State 14
+      on      : Controlled -> State 27
+      params  : VelocityControl | Velocity | VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | ControlVelocity=0 | 0 | 0.1 | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | IceBool=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 9
+      actions : NextFrameEvent, SetVelocity2dChronos, BoolTest
+      on      : FINISHED -> ONAIR
+      params  : 0 | 0 | WallStop=0 | {x: 0, y: 0}
+  --- State 10
+      actions : NextFrameEvent, SetVelocity2dChronos, BoolTest
+      on      : FINISHED -> Input Ch.
+      params  : 0 | 0 | WallStop=0 | {x: 0, y: 0}
+  --- State 11
+      actions : SendEventByName, ActivateGameObject, ActivateGameObject, AnimatorPlay, SendEventByName, DOTweenTransformMove
+      on      : FINISHED -> State 12
+      params  : Moving | Jump_Evade | V_Run_Over | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | {x: 0, y: 0, z: 0}
+  --- State 12
+      actions : GetScale, ActivateGameObject, ActivateGameObject, FloatOperator, SetVelocity2dChronos, AddForce2d, SendEventByName
+      params  : Flipping | XScale=18 | 0 | 0 | XScale=18 | 30 | JumpSpeed=0 | 0 | 0 | JumpSpeed=0 | 10 | 0 | 1 | 0 | 1 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 13
+      actions : SetVelocity2dChronos, ConditionalExpression
+      params  : GAME_MOVE *-1 == XScale && Ledge != Null | 0 | 0 | Bool1=0 | {x: 0, y: 0}
+  --- State 14
+      actions : GetScale, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d, GetFsmFloat, SetVelocity2dChronos
+      on      : Next -> State 15
+      params  : VelocityControl | Velocity | VelocityControl | Velocity | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 15
+      actions : SetVelocity2dChronos, FloatOperator, AddForce2d
+      params  : 0 | 0 | 35 | XScale=18 | BackStepVelocity=0 | BackStepVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 16
+      actions : GetVelocity2d, FloatCompare, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d, FloatClamp, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue
+      on      : StopVelocity -> State 17
+      params  : VelocityControl | Velocity | GAME_MOVE == XScale | XAxis=0 | 0 | XAxis=0 | VelocityMax=0 | 0 | XAxis=0 | VelocityMin=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 17
+      actions : SetVelocity2dChronos, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue
+      params  : GAME_MOVE == XScale | 0 | 0 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0}
+  --- State 18
+      actions : BoolTest
+      on      : FINISHED -> State 11
+      on      : ScaleFlip -> State 21
+      params  : BackLedge=0
+  --- State 19
+      actions : BoolTest
+      on      : FINISHED -> State 30
+      on      : ScaleFlip -> State 20
+      params  : BackLedge=0
+  --- State 20
+      actions : GetScale, FloatMultiply, SetScale, AnimatorPlay, GetAnimatorCurrentStateInfoIsName
+      on      : Next -> Climb_Up
+      params  : Jump_Over | Jump_Over | XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0 | 0 | 0 | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 21
+      actions : GetScale, FloatMultiply, SetScale
+      on      : FINISHED -> State 11
+      params  : XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 22
+      actions : GetVelocity2d, GetScale, FloatCompare, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d, FloatClamp, ConditionalExpression
+      on      : StopVelocity -> State 23
+      params  : VelocityControl | Velocity | GAME_MOVE *-1 == XScale && Ledge != Null | XAxis=0 | 0 | XScale=18 | 0 | 0 | XAxis=0 | VelocityMax=0 | 0 | XAxis=0 | VelocityMin=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 3 | ControlVelocity=0 | 0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | Bool1=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 23
+      actions : SetVelocity2dChronos, ConditionalExpression
+      params  : GAME_MOVE *-1 == XScale && Ledge != Null | 0 | 0 | Bool1=0 | {x: 0, y: 0}
+  --- State 24
+      actions : SetBoolValue, FloatChanged, GetScale, ConditionalExpression, BoolTest, GetFsmFloat, FloatMultiply, AddForce2d
+      on      : Next2 -> State 34
+      on      : Next -> State 25
+      params  : XScale == GAME_MOVE && Changed == True | VelocityControl | Velocity | GAME_MOVE=0 | XScale=18 | 0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | StepBool=0 | 0 | Changed=0 | 0 | IceBool=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 25
+      actions : GetScale, FloatCompare, GetFsmFloat, FloatMultiply, AddForce2d, GetFsmFloat, SetVelocity2dChronos
+      on      : Next -> State 26
+      params  : VelocityControl | Velocity | VelocityControl | Velocity | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 26
+      actions : SetVelocity2dChronos, FloatOperator, AddForce2d
+      params  : 0 | 0 | 35 | XScale=18 | BackStepVelocity=0 | BackStepVelocity=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 27
+      actions : GetFsmFloat, SetVelocity2dChronos
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0}
+  --- State 28
+      actions : GetScale, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, FloatClamp, SetVelocity2dChronos, GetScale, FloatMultiply, SetAnimatorFloat
+      params  : GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XScale=18 | 0 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _AirXSpeed=20 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 29
+      actions : GetFsmFloat, SetVelocity2dChronos
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0}
+  --- State 30
+      actions : AnimatorPlay, GetAnimatorCurrentStateInfoIsName
+      on      : Next -> Climb_Up
+      params  : Jump_Over | Jump_Over | 0 | 0 | 0 | 0
+  --- Idle 2
+      actions : GetFsmFloat, FloatCompare, SetVelocity2dChronos, FloatCompare
+      on      : Run -> Run Animation
+      on      : back -> Idle
+      params  : VelocityControl | Velocity | ControlVelocity=0 | GAME_MOVE=0 | 0 | 0 | ControlVelocity=0 | 0 | ControlVelocity=0 | 0 | 0 | {x: 0, y: 0}
+  --- State 31
+      actions : SetVelocity2dChronos
+      on      : FINISHED -> Idle
+      params  : 0 | 0 | {x: 0, y: 0}
+  --- BackStep 4
+      actions : SetBoolValue, BoolTest, SendEventByName, AnimatorPlay, GetScale, SetVelocity2dChronos, FloatOperator, AddForce2d, GetScale, FloatMultiply, CreateObject, SetScale, SendEventByName, SetFsmFloat, GetAnimatorCurrentStateInfoIsName
+      params  : {fileID: 1709254077376921, guid: a83f67ccc06f521449b5c97e8832892b, type: 2} | {fileID: 668} | SE_BackStep | Step_Forward | StepForward | FSM | InvincibleTime | Run | 0 | 0 | XScale=18 | 0 | 0 | 0 | 0 | 45 | XScale=18 | BackStepVelocity=0 | BackStepVelocity=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0.4 | 0 | 0 | Changed=0 | 0 | GAME_JUMP=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- ADS 3
+      actions : SetAnimatorFloat, FloatCompare, GetFsmFloat, SetVelocity2dChronos
+      on      : AimWalk -> FaceCheck
+      params  : aimDir | VelocityControl | Velocity | 1 | 0 | GAME_MOVE=0 | 0 | 0 | ControlVelocity=0 | ControlVelocity=0 | 0 | {x: 0, y: 0}
+  --- State 33
+      actions : GetScale, SendEventByName, FloatMultiply, SetScale, GetAnimatorCurrentStateInfoIsName
+      on      : FINISHED -> Input Ch.
+      params  : Movable | Run | XScale=18 | 0 | 0 | 0 | XScale=18 | -1 | XScale=18 | 0 | 0 | 0 | 0 | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- ONAIR 2
+      actions : GetPreviousStateName, StringCompare, BoolTest, GetScale, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, FloatClamp, FloatCompare, SetVelocity2dChronos, GetScale, FloatMultiply, SetAnimatorFloat
+      on      : WallStop -> State 32
+      on      : CorM -> State 36
+      on      : Next -> State 35
+      params  : State 6 | GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XScale=18 | 0 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _AirXSpeed=20 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | 0 | 0.1 | XAxis=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | 0 | WallStop=0 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 32
+      actions : NextFrameEvent, SetVelocity2dChronos, BoolTest
+      on      : FINISHED -> ONAIR 2
+      params  : 0 | 0 | WallStop=0 | {x: 0, y: 0}
+  --- State 36
+      actions : GetScale, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, FloatMultiply, GetFsmFloat, FloatAdd, FloatClamp, SetVelocity2dChronos, GetScale, FloatMultiply, SetAnimatorFloat
+      params  : GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XScale=18 | 0 | 0 | XAxis=0 | GAME_MOVE=0 | XAxis=0 | _AirXSpeed=20 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 34
+      actions : SetBoolValue, BoolTest, GetFsmFloat, FloatMultiply, AddForce2d
+      on      : Next -> State 25
+      params  : VelocityControl | Velocity | ControlVelocity=0 | ControlVelocity=0 | 9 | ControlVelocity=0 | 0 | StepBool=0 | 1 | IceBool=0 | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+  --- State 35
+      actions : BoolTest, GetScale, ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, GetFsmFloat, FloatAdd, FloatClamp, FloatCompare, GetScale, FloatMultiply, SetAnimatorFloat
+      on      : WallStop -> State 37
+      on      : CorM -> State 38
+      params  : GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XScale=18 | 0 | 0 | XAxis=0 | 0 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | XAxis=0 | 0 | 0.1 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | WallStop=0 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 37
+      actions : NextFrameEvent, SetVelocity2dChronos, BoolTest
+      on      : FINISHED -> State 35
+      params  : 0 | 0 | WallStop=0 | {x: 0, y: 0}
+  --- State 38
+      actions : ConditionalExpression, GameObjectIsNull, BoolNoneTrue, BoolAllTrue, SetFloatValue, GetFsmFloat, FloatAdd, FloatClamp, SetVelocity2dChronos, GetScale, FloatMultiply, SetAnimatorFloat
+      params  : GAME_MOVE == XScale | VelocityControl | Velocity | airfloat | XAxis=0 | 0 | ControlVelocity=0 | XAxis=0 | ControlVelocity=0 | XAxis=0 | VelocityMin=0 | VelocityMax=0 | ControlVelocity=0 | 0 | XScale=18 | 0 | 0 | XScale=18 | GAME_MOVE=0 | XScale=18 | 0.1 | Bool1=0 | Bool2=0 | Bool2=0 | Bool3=0 | Bool1=0 | Bool3=0 | 0 | {x: 0, y: 0} | {x: 0, y: 0, z: 0}
+============================================================
+HOST: _Heroine   FSM: Effects   start=State 1  states=35
+  GLOBAL SE_Run -> State 2
+  GLOBAL SE_OffMagazine -> State 6
+  GLOBAL SE_SetMagazine -> State 7
+  GLOBAL SE_Cocking -> State 8
+  GLOBAL E_Katana1 -> State 12
+  GLOBAL E_Katana2 -> State 13
+  GLOBAL E_Katana3 -> State 14
+  GLOBAL Cancelable3 -> State 19
+  GLOBAL SE_NoutouFast -> State 17
+  GLOBAL SE_Noutou -> State 18
+  GLOBAL SE_Noutou2 -> State 16
+  GLOBAL E_Katana4 -> State 15
+  GLOBAL SE_foldSMG -> State 11
+  GLOBAL End -> TimeReset
+  GLOBAL E_SlideKatana -> State 20
+  GLOBAL ClimbUp -> State 9
+  GLOBAL StepUp -> State 10
+  GLOBAL SE_Landing -> State 21
+  GLOBAL SE_JumpAttack -> State 22
+  GLOBAL SE_JumpAttackDown -> State 23
+  GLOBAL Damage1 -> State 24
+  GLOBAL Claw -> State 25
+  GLOBAL STOP -> State 26
+  GLOBAL SE_BackStep -> State 27
+  GLOBAL SE_Landing_Shirimochi -> State 28
+  GLOBAL Lock_Escape -> State 29
+  GLOBAL V_BearHugLoop -> State 30
+  GLOBAL V_MountedLoop -> State 31
+  GLOBAL V_BearHug_Escape -> State 32
+  GLOBAL V_Mount_Escape -> State 33
+  GLOBAL V_MountDead -> State 34
+  --- State 1
+      actions : 
+  --- State 2
+      actions : CircleCast2d, GetTag, StringSwitch
+      on      : Hard -> State 3
+      on      : Liquid -> State 4
+      on      : Soft -> State 5
+      params  : SoftGround | HardGround | LiquidGround | 1.25 | 0.1 | 0 | 0 | 0 | 0 | 1 | 9 | 0 | 0 | 1 | {x: 0, y: -1.5} | {x: 0, y: -1} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 3
+      actions : AudioPlay
+      params  : HardRun={fileID: 8300000, guid: e89cbd61bc72a2f46a3e6c826c5c186b, type: 3} | 0 | 0
+  --- State 4
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 965b5c49e2cd0cd47aec1563080af896, type: 3} | 0 | 0
+  --- State 5
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 787b7d8e2bc3dce45aec9094cf7535fa, type: 3} | 0 | 0
+  --- State 6
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 593f0604a870a0d4b8fd0c1d1e165414, type: 3} | 0 | 0
+  --- State 7
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 3f88003461f4c574b85178c63b0eefa3, type: 3} | 0 | 0
+  --- State 8
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 8bc709dd164ef9249a42bdcfb074e63e, type: 3} | 0 | 0
+  --- State 11
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 8bc709dd164ef9249a42bdcfb074e63e, type: 3} | 0 | 0
+  --- State 12
+      actions : SendEventByName, AudioPlay, AudioPlay, AudioPlay, GetScale, FloatMultiply, SetVector3XYZ, CreateObject, SetFsmFloat
+      params  : Slash1Particle={fileID: 1709254077376921, guid: 8c39c40c69f93a64dad17bfa1e7b4fb1, type: 2} | {fileID: 668} | V_Attack | FSM | scale | {fileID: 8300000, guid: 7ccb80b61d3bc00408f194aa259c11d7, type: 3} | {fileID: 8300000, guid: 8bc709dd164ef9249a42bdcfb074e63e, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 1.5 | scale=0 | 3.6 | 0 | scale=0 | 0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 13
+      actions : AudioPlay, AudioPlay, GetScale, SetVector3XYZ, CreateObject, SetFsmFloat
+      params  : Slash2Particle={fileID: 1709254077376921, guid: 244b29be64e027141afdfe1f94cbed7b, type: 2} | {fileID: 668} | FSM | scale | {fileID: 8300000, guid: ffffa42b0498eaf468af5b130e12f719, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 4 | 0 | scale=0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 14
+      actions : SendEventByName, AudioPlay, AudioPlay, GetScale, FloatMultiply, SetVector3XYZ, CreateObject, SetFsmFloat
+      params  : Slash3Particle={fileID: 1709254077376921, guid: 3b4cf5acb4353fd42bbc42d1c5207c8c, type: 2} | {fileID: 668} | V_Attack2 | FSM | scale | {fileID: 8300000, guid: a316a01af0a77e4459b88f7e8fa2a655, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 3 | scale=0 | 3.6 | 0 | scale=0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 15
+      actions : SendEventByName, AudioPlay, AudioPlay, AudioPlay, GetScale, FloatMultiply, SetVector3XYZ, CreateObject, SetFsmFloat, CreateObject, GetScale, FloatMultiply, SetScale, PC2DShakeWithValues, GetScale, CreateObject, SetScale
+      params  : Slash4Particle={fileID: 1709254077376921, guid: d79b6dfc5aadad24a958245ce97ce85f, type: 2} | {fileID: 668} | {fileID: 1709254077376921, guid: 09d8eeb46dc43de488afd6e7e64f7821, type: 2} | {fileID: 668} | Slash4AfterParticle={fileID: 1709254077376921, guid: ed94b17571b54884f8285a59e55a452f, type: 2} | {fileID: 668} | V_Attack3 | FSM | scale | {fileID: 8300000, guid: a6a7a9546b4ebe347bc8ffe16bca0afe, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | {fileID: 8300000, guid: 04cc455697adc384491ef4c5f2834573, type: 3} | 0 | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 3 | scale=0 | 3.6 | 0 | scale=0 | scale=0 | 0 | 0 | scale=0 | -2 | scale=0 | 0 | 0 | 0.1 | 0.1 | 0 | Scale=0 | 0 | 0 | 0 | 0 | 0 | 1 | 10 | 0 | 0 | 0 | {x: 0, y: 0.6} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 16
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 4266a3c78d539ed4d82c072aadda94b2, type: 3} | 0 | 0
+  --- State 17
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 21858975181c6804ab8593faa4c32400, type: 3} | 0 | 0
+  --- State 18
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 00ef62b65e7ff84488fd8edfce330eeb, type: 3} | 0 | 0
+  --- State 19
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 4266a3c78d539ed4d82c072aadda94b2, type: 3} | 0 | 0
+  --- TimeReset
+      actions : ScaleGlobalClockTime
+      params  : Root | 1
+  --- State 20
+      actions : SendEventByName, AudioPlay, AudioPlay, GetScale, SetVector3XYZ, CreateObject, SetFsmFloat
+      params  : SlashSlideParticle={fileID: 1709254077376921, guid: a1d1787418a3acd49a02f7b61613b61c, type: 2} | {fileID: 668} | V_Attack | FSM | scale | {fileID: 8300000, guid: ffffa42b0498eaf468af5b130e12f719, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 3.6 | 0 | scale=0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 9
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 92bf40a10bd40da4fb4d914f8dc9ce17, type: 3} | 0 | 0
+  --- State 10
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: d6c95353c1488f2448d4e35b6dd0271c, type: 3} | 0 | 0
+  --- State 21
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: f15c22d0e8600d343a9eccfd4bbb651c, type: 3} | 0 | 0
+  --- State 22
+      actions : SendEventByName, AudioPlay, AudioPlay, GetScale, SetVector3XYZ, CreateObject, SetFsmFloat, SetParent
+      params  : JumpAttackParticle={fileID: 1709254077376921, guid: 3a59c523dd1506f4c822158070440dc8, type: 2} | {fileID: 668} | {fileID: 668} | V_Jump_Attack_Up | FSM | scale | {fileID: 8300000, guid: 7ccb80b61d3bc00408f194aa259c11d7, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 5.6 | 0 | scale=0 | 0 | 0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 23
+      actions : SendEventByName, AudioPlay, AudioPlay, GetScale, SetVector3XYZ, CreateObject, SetFsmFloat
+      params  : JumpAttackDown={fileID: 1709254077376921, guid: 97f51792863c327489f5da6383f91b70, type: 2} | {fileID: 668} | V_Jump_Attack_Down | FSM | scale | {fileID: 8300000, guid: ffffa42b0498eaf468af5b130e12f719, type: 3} | {fileID: 8300000, guid: 67d2c61a7edb05d43b7d5533ced5c346, type: 3} | 0 | 0 | 0 | scale=0 | 0 | 0 | scale=0 | 2.4 | 0 | scale=0 | 0 | 0 | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0} | vector={x: 0, y: 0, z: 0} | {x: 0, y: 0, z: 0}
+  --- State 24
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 59a6144420bc9cb4891b93ca27c4b645, type: 3} | 0 | 0
+  --- State 25
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: bb5386c276eaad548ba8a4371242825c, type: 3} | 0 | 0
+  --- State 26
+      actions : ScaleGlobalClockTime
+      params  : Root | 1
+  --- State 27
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: b329d3cc8d35fb44cb642add0a69f006, type: 3} | 0 | 0
+  --- State 28
+      actions : SendEventByName, AudioPlay
+      params  : V_Shirimochi_Land | {fileID: 8300000, guid: cbad06e27723fa74fbcd9306cc721c1c, type: 3} | 0 | 0 | 0
+  --- State 29
+      actions : SendEventByName
+      params  : Lock_Escape | 0
+  --- State 30
+      actions : SendEventByName
+      params  : V_BearHugLoop | 0
+  --- State 31
+      actions : SendEventByName
+      params  : V_MountedLoop | 0
+  --- State 32
+      actions : SendEventByName
+      params  : V_Damage_BearHug_Escape | 0
+  --- State 33
+      actions : SendEventByName
+      params  : V_Mounted_Escape | 0
+  --- State 34
+      actions : SendEventByName
+      params  : V_Mounted_Loop_Dead | 0
+============================================================
+HOST: _Heroine   FSM: WallCheck2   start=State 3  states=6
+  --- State 3
+      actions : CircleCast2d, CircleCast2d, BoolTest, BoolTest, SetFsmFloat, SetFsmFloat
+      on      : Left -> State 1
+      on      : Right -> State 2
+      params  : Movement | VelocityMax | Movement | VelocityMin | 0.5 | 1 | 0 | 0 | 0.5 | 1 | 0 | 0 | 100 | -100 | 0 | 0 | 1 | 9 | 0 | 0 | 1 | 9 | Right=0 | 0 | 1 | Left=0 | 0 | 1 | Left=0 | Right=0 | {x: 0, y: 0} | {x: 1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: -1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 1
+      actions : CircleCast2d, BoolTest, SetFsmFloat
+      on      : Back -> State 3
+      params  : Movement | VelocityMin | 0.5 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 9 | Left=0 | 0 | 1 | Left=0 | {x: 0, y: 0} | {x: -1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 2
+      actions : CircleCast2d, BoolTest, SetFsmFloat
+      on      : Back -> State 3
+      params  : Movement | VelocityMax | 0.5 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 9 | Right=0 | 0 | 1 | Right=0 | {x: 0, y: 0} | {x: 1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 4
+      actions : CircleCast2d, CircleCast2d, BoolTest, BoolTest, SetFsmFloat, SetFsmFloat, LineCast2d, RayCast2d
+      on      : Left -> State 5
+      on      : Right -> State 6
+      params  : Movement | VelocityMax | Movement | VelocityMin | 0.5 | 0.6 | 0 | 0 | 0.5 | 0.6 | 0 | 0 | 100 | -100 | 0 | 100 | 0 | 0 | 0 | 0 | 1 | 9 | 0 | 0 | 1 | 9 | 0 | 0 | 1 | 0 | 0 | 1 | Right=0 | 0 | 1 | Left=0 | 0 | 1 | Left=0 | Right=0 | 0 | 0 | 0 | 0 | 0 | 0 | {x: 0, y: 3} | {x: 1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 3} | {x: -1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 5
+      actions : CircleCast2d, BoolTest, SetFsmFloat
+      on      : Back -> State 4
+      params  : Movement | VelocityMin | 0.5 | 0.6 | 0 | 0 | 0 | 0 | 0 | 1 | 9 | Left=0 | 0 | 1 | Left=0 | {x: 0, y: 3} | {x: -1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  --- State 6
+      actions : CircleCast2d, BoolTest, SetFsmFloat
+      on      : Back -> State 4
+      params  : Movement | VelocityMax | 0.5 | 0.6 | 0 | 0 | 0 | 0 | 0 | 1 | 9 | Right=0 | 0 | 1 | Right=0 | {x: 0, y: 3} | {x: 1, y: 0} | {x: 0, y: 0} | {x: 0, y: 0} | {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+============================================================
+HOST: _WalkHeroineParent   FSM: DataCheck   start=State 1  states=8
+  GLOBAL CHECKPOINT -> State 6
+  --- State 1
+      actions : SetGravity2dScaleChronos, SetGameObject, SetGameObject, GetFsmBool, BoolTest
+      on      : Next -> State 7
+      params  : {fileID: 668} | {fileID: 573} | FSM | Data_Loaded | 12 | Bool=0 | Bool=0
+  --- State 2
+      actions : GetFsmString, GetFsmString, GetFsmString, SetFsmString, SetFsmString, SetFsmString
+      on      : FINISHED -> State 3
+      params  : FSM | p_skill1 | FSM | p_skill2 | FSM | p_skill3 | Magic | Slot_0 | Magic | Slot_1 | Magic | Slot_2
+  --- State 3
+      actions : BuildString, StringCompare
+      on      : DisableFSM -> State 4
+      on      : Done -> State 5
+      params  : 1 | 0
+  --- State 4
+      actions : EnableFSM
+      params  : Magic | 0 | 0
+  --- State 5
+      actions : 
+  --- State 6
+      actions : AnimatorPlay
+      on      : FINISHED -> State 8
+      params  : Idle | 0 | 0
+  --- State 7
+      actions : GetFsmInt, IntSwitch
+      on      : DisableFSM -> State 4
+      on      : Enable -> State 2
+      params  : FSM | MagicUnlock | IsEnable=0 | IsEnable=0 | 0 | 1 | 2
+  --- State 8
+      actions : 
+============================================================
+HOST: _Heroine   FSM: Voice   start=State 1  states=14
+  GLOBAL V_Hyena_16 -> State 16
+  GLOBAL V_Hyena_15 -> State 15
+  GLOBAL V_Hyena_14 -> State 14
+  GLOBAL V_Hyena_13 -> State 13
+  GLOBAL V_Hyena_12 -> State 12
+  GLOBAL V_Hyena_11 -> State 11
+  GLOBAL V_Hyena_10 -> State 10
+  GLOBAL V_Hyena_9 -> State 9
+  GLOBAL V_Hyena_8 -> State 8
+  GLOBAL V_Hyena_7 -> State 7
+  GLOBAL V_Hyena_6 -> State 6
+  GLOBAL V_Hyena_5 -> State 5
+  GLOBAL V_Hyena_4 -> State 4
+  --- State 1
+      actions : 
+  --- State 4
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 223afe3e99926ed4f8b1e6aa058ca424, type: 3} | 0 | 0
+  --- State 5
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 3773bf05f03a40f46aedf6df783258c1, type: 3} | 0 | 0
+  --- State 6
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 66eba2074c6944e4e8f658e84b0bd22d, type: 3} | 0 | 0
+  --- State 7
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 1b822105af342ec4e9f499af07eecd13, type: 3} | 0 | 0
+  --- State 8
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: b74b3acb54c3b19459c11dee32e37773, type: 3} | 0 | 0
+  --- State 9
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 3dcd8a4180298ae48a35a7bb09f0bb3b, type: 3} | 0 | 0
+  --- State 10
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: d3374aa6bd2517648ad9fb259658107d, type: 3} | 0 | 0
+  --- State 11
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: ec3d2dbe18f0d524888491776e42daff, type: 3} | 0 | 0
+  --- State 12
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: fea5bf608cc424a448b9dc6fcb216c07, type: 3} | 0 | 0
+  --- State 13
+      actions : SetAudioLoop, SetAudioClip, AudioPlay
+      params  : {fileID: 8300000, guid: 958bfa66cdca6be4a8753af24936511e, type: 3} | VOICEVOLUME=1 | 1 | 0
+  --- State 14
+      actions : AudioStop, AudioPlay
+      params  : {fileID: 8300000, guid: a1ba8879f5770124cb48f7361a94388e, type: 3} | 0 | 0
+  --- State 15
+      actions : AudioPlay
+      params  : {fileID: 8300000, guid: 91c7fefc7b75f8d439172a9ec7f2a698, type: 3} | 0 | 0
+  --- State 16
+      actions : SetAudioClip, AudioPlay
+      params  : {fileID: 8300000, guid: 6e22e70f9ca047e43bd79404e7edc674, type: 3} | VOICEVOLUME=1 | 0
+============================================================
+HOST: _Heroine   FSM: VelocityControl   start=State 3  states=3
+  GLOBAL MinusVelocity -> State 1
+  GLOBAL PlusVelocity -> State 2
+  GLOBAL Zero -> State 3
+  --- State 1
+      actions : GetTimelineInfo, FloatOperator, FloatAdd, FloatCompare
+      params  : TimeScale=0 | TimeScale=0 | 20 | Float=0 | Velocity=0 | Float=0 | Velocity=0 | 0 | 1
+  --- State 2
+      actions : GetTimelineInfo, FloatOperator, FloatSubtract, FloatCompare
+      params  : TimeScale=0 | TimeScale=0 | 20 | Float=0 | Velocity=0 | Float=0 | Velocity=0 | 0 | 1
+  --- State 3
+      actions : SetFloatValue, FloatCompare
+      params  : Velocity=0 | 0 | Velocity=0 | 0 | 0
+============================================================
+HOST: _Heroine   FSM: Event   start=State 1  states=3
+  GLOBAL EventStop -> State 8
+  GLOBAL EventEnd -> State 10
+  --- State 1
+      actions : 
+  --- State 8
+      actions : SetBoolValue, SetVelocity2dChronos, ActivateGameObject
+      params  : 0 | 0 | INPUTDISABLE=0 | 1 | 0 | 0 | {x: 0, y: 0}
+  --- State 10
+      actions : SetBoolValue, ActivateGameObject
+      params  : INPUTDISABLE=0 | 0 | 1 | 0
+============================================================
+HOST: _Heroine   FSM: Grab   start=State 1  states=8
+  GLOBAL Landing -> State 1
+  GLOBAL Return -> State 1
+  GLOBAL STOP -> State 5
+  GLOBAL RESET -> State 1
+  GLOBAL Observe -> State 6
+  GLOBAL ObserveOnly -> State 7
+  GLOBAL ObserveEvent -> State 8
+  --- State 1
+      actions : SetStringValue, GameObjectIsNull
+      on      : Next -> State 2
+      params  : 0
+  --- State 2
+      actions : StringSwitch, GameObjectIsNull, BoolAnyTrue
+      on      : Back -> State 1
+      on      : Next -> State 3
+      params  : Observe | ObserveOnly | 0 | GAME_EVADE=0 | 0
+  --- State 3
+      actions : SetGameObject, SendEventByName, GameObjectIsNull
+      on      : Lost -> State 4
+      params  : Interacted | 0 | 0
+  --- State 4
+      actions : SendEventByName, SendEventByName
+      on      : FINISHED -> State 1
+      params  : Lost | Lost | 0 | 0
+  --- State 5
+      actions : SendEventByName
+      on      : Movable -> State 1
+      params  : Lost | 0
+  --- State 6
+      actions : GameObjectIsNull, BoolAnyTrue, BoolAnyTrue
+      on      : Next -> State 3
+      params  : 0 | GAME_EVADE=0 | 0 | INPUT_BACKLOG=0 | 0
+  --- State 7
+      actions : GameObjectIsNull, BoolAnyTrue
+      params  : 0 | INPUT_BACKLOG=0 | 0
+  --- State 8
+      actions : SetGameObject, SendEventByName, GameObjectIsNull
+      on      : Lost -> State 4
+      params  : Observe | 0 | 0

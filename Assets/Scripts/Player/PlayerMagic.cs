@@ -29,6 +29,8 @@ namespace Player
         [SerializeField] private float manaFlowScale = 3f;
         [SerializeField] private Vector2 windMagicOffset = Vector2.zero;
         [SerializeField] private float windMagicLifetime = 2f;
+        [Tooltip("地面引导时的刹车加速度（越大停得越快；原作是滑停，不是定住）")]
+        [SerializeField] private float chargeBrake = 5f;
 
         private PlayerMotor _motor;
         private PlayerAnimDriver _anim;
@@ -40,6 +42,13 @@ namespace Player
         private bool _wasSkill;
         /// <summary>在引导开始时冻结，以免地面/空中动画在蓄力中途翻转。</summary>
         private bool _airChannel;
+        /// <summary>进入引导瞬间的水平速度（滑停基准，避免被别处清零后失效）。</summary>
+        private float _channelVx;
+        private float _channelT;
+        /// <summary>蓄力慢动作：进入引导时保存/结束恢复。</summary>
+        private float _savedTimeScale = 1f;
+        private bool _slowMoActive;
+        [SerializeField] private float chargeSlowMoScale = 0.45f;
         private GameObject _manaFlow;
 
         public PlayerMagicPhase Phase => _phase;
@@ -49,6 +58,8 @@ namespace Player
             || _phase == PlayerMagicPhase.Cast
             || _phase == PlayerMagicPhase.Cancel;
         public bool LocksActions => LocksMovement;
+        /// <summary>地面引导刹车减速度（给 PlayerController 做滑停用）。</summary>
+        public float BrakeAcceleration => chargeBrake;
 
         /// <summary>魔法占用移动时：钉住速度（空中 = 悬停 / 无重力）。</summary>
         public bool HasVelocityOverride => IsBusy;
@@ -90,9 +101,14 @@ namespace Player
                 return;
             }
 
-            // Chronos 在自己的时间线上积分重力 — 每个 FixedUpdate 清零速度，
-            // 使空中引导悬停、地面引导定住。
-            _motor.SetVelocity(Vector2.zero);
+            // 以"进入引导时的速度"为基准慢慢滑停；空中引导保留 Y（正常下落，不悬停）
+            // 地面蓄力：直接停住；空中：保留原速度（不悬停）
+            if (_airChannel)
+            {
+                return;
+            }
+
+            _motor.SetVelocity(new Vector2(0f, _motor.GetVelocity().y));
         }
 
         public void Cancel()
@@ -134,6 +150,7 @@ namespace Player
 
                     if (skillReleased)
                     {
+                        RestoreTimeScaleNow();
                         BeginCancel();
                         break;
                     }
@@ -162,6 +179,7 @@ namespace Player
 
                     if (skillReleased)
                     {
+                        RestoreTimeScaleNow();
                         BeginCancel();
                         break;
                     }
@@ -198,6 +216,15 @@ namespace Player
         private void BeginChannel()
         {
             _airChannel = _motor != null && !_motor.IsGrounded;
+            _channelVx = _motor != null ? _motor.GetVelocity().x : 0f;
+            _channelT = 0f;
+
+            if (!_slowMoActive)
+            {
+                _savedTimeScale = Time.timeScale;
+                Time.timeScale = chargeSlowMoScale;
+                _slowMoActive = true;
+            }
             _phase = PlayerMagicPhase.ChannelIntro;
             _phaseTimer = _airChannel
                 ? PlayerAnimTimings.MagicChannelOnAir.ClipLength
@@ -206,10 +233,7 @@ namespace Player
             // 播放一次 intro（Magic_Channel / Magic_Channel_OnAir → 片段 Magic_Magic_Channel*）。
             // ChannelIntro 之后只 SyncCurrent，以免与 Mecanim exitTime → Channeling* 打架。
             _anim.ForcePlay(IntroState());
-            if (_airChannel && _motor != null)
-            {
-                _motor.SetVelocity(Vector2.zero);
-            }
+            // 空中引导保留正常的跳跃/下落速度（不再悬停清零）
 
             EnsureManaFlow();
         }
@@ -288,12 +312,28 @@ namespace Player
             _anim.ForcePlay(CancelState());
         }
 
+        /// <summary>立刻恢复时间倍速（松开 Shift 时用，不等取消片段播完）。</summary>
+        private void RestoreTimeScaleNow()
+        {
+            if (!_slowMoActive) return;
+
+            Time.timeScale = _savedTimeScale;
+            _slowMoActive = false;
+        }
+
         private void EndMagic()
         {
             StopManaFlow();
             _phase = PlayerMagicPhase.Idle;
             _phaseTimer = 0f;
             _airChannel = false;
+
+            // 恢复蓄力慢动作
+            if (_slowMoActive)
+            {
+                Time.timeScale = _savedTimeScale;
+                _slowMoActive = false;
+            }
         }
 
         private string IntroState() => _airChannel

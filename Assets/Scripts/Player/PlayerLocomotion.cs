@@ -22,9 +22,13 @@ namespace Player
         private float _stopLock;
         private PlayerLocoState _state = PlayerLocoState.Idle;
 
+        // 原版 Movement 的 Run_Turning：方向反转时先播一小段转身片段，播到一半才翻 scale
+        private float _turnLock;
+        private bool _turnFlipped;
+
         public PlayerLocoState State => _state;
-        /// <summary>未使用 — Run_Turning 已移除；保留以使 Arbiter 快照保持稳定。</summary>
-        public bool TurnLockActive => false;
+        /// <summary>Run_Turning 播放中（这期间不要再改朝向）。</summary>
+        public bool TurnLockActive => _turnLock > 0f;
         public bool IsStopping => _stopping;
 
         public void TickTimers(float dt)
@@ -32,6 +36,10 @@ namespace Player
             if (_stopLock > 0f)
             {
                 _stopLock -= dt;
+            }
+            if (_turnLock > 0f)
+            {
+                _turnLock -= dt;
             }
         }
 
@@ -91,6 +99,30 @@ namespace Player
             {
                 bool wasStopping = _stopping;
                 ClearStop();
+
+                // 转身片段播放中：保持 Run_Turning，播到一半翻朝向，播完再回 Run
+                if (_turnLock > 0f)
+                {
+                    if (!_turnFlipped && _turnLock <= PlayerAnimTimings.RunTurning.ClipLength * 0.5f)
+                    {
+                        motor.ForceFacing(move > 0f ? 1 : -1);
+                        _turnFlipped = true;
+                    }
+
+                    anim.SyncCurrent(PlayerAnimDriver.States.RunTurning);
+                    audio?.TryPlayFootstep();
+                    _state = PlayerLocoState.Run;
+                    return;
+                }
+
+                // 方向反转：先起 Run_Turning，不立刻翻 scale
+                if (StartTurnIfNeeded(intent, motor, anim, move))
+                {
+                    audio?.TryPlayFootstep();
+                    _state = PlayerLocoState.Run;
+                    return;
+                }
+
                 ApplyFacing(intent, motor, move);
 
                 // 软 Landing_to_Run：仅视觉 — 播完 / 已在移动时让给 Run。
@@ -175,6 +207,23 @@ namespace Player
             }
 
             _state = PlayerLocoState.Idle;
+        }
+
+        /// <summary>
+        /// 原版 Run_Turning：跑动中反方向输入 → 先播 0.133s 转身片段，片段过半才翻 scale，
+        /// 并且这期间不再改朝向。返回 true 表示本帧由转身片段接管。
+        /// </summary>
+        private bool StartTurnIfNeeded(PlayerIntent intent, PlayerMotor motor, PlayerAnimDriver anim, float move)
+        {
+            int desired = move > 0f ? 1 : -1;
+            if (desired == motor.Facing) return false;
+            if (PlayerJump.IsHoldingBackForFlip(move, motor.Facing, intent.Jump)) return false;
+            if (_state != PlayerLocoState.Run && !anim.IsPlaying(PlayerAnimDriver.States.Run)) return false;
+
+            _turnLock = PlayerAnimTimings.RunTurning.ClipLength;
+            _turnFlipped = false;
+            anim.ForcePlay(PlayerAnimDriver.States.RunTurning);
+            return true;
         }
 
         private static void ApplyFacing(PlayerIntent intent, PlayerMotor motor, float move)

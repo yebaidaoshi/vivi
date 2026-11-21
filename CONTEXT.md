@@ -179,3 +179,45 @@ Live2DHudBootstrap         RuntimeInitializeOnLoadMethod，开局建一个常驻
   `Live2DHudPlayTest` 在 forest 真跑：HUD 生成 → 绑定玩家 → 量到尺寸 → 受击播 `Damage1`。
   注意 batchmode 下编辑器不推进帧循环（`Time.frameCount` 一直是 1），
   所以冒烟测试是用反射手动调 `TickPerformance` 驱动的，不是靠帧。
+
+---
+
+## 10. 2026-11-20 收尾交接（本次会话全部改动）
+
+### 10.1 玩家手感
+- **Shift 蓄力滑停**：`PlayerMagic.ApplyFixedVelocity()` 地面引导从「速度清零」改成按 `chargeBrake`(默认 55) 减速滑停；空中引导仍然悬停清零。
+- **近战前冲顺滑**：`PlayerMelee.ApplyFixedVelocity()` 的 `_overrideVx` 从 `SetImmediateVelocityX` 一帧跳变改成按 `meleeLungeAccel`(默认 1400) 逼近。
+- **跑动转身**：`PlayerLocomotion` 接入原版 `Run_Turning`（0.133s 片段，播到一半才翻 scale，期间 `TurnLockActive=true` 不改朝向）。
+- **墙面系统第一版**：新文件 `PlayerWall.cs`，空中贴墙 + 朝墙输入 → 下落限速 `slideSpeed`(3.2)；接在 `PlayerController` 的 `jump.Tick` 之后。暴露 `IsSliding / TouchingWall / WallSide`。
+- **跳跃攻击保留空中移动**：`PlayerController.ComputeLocomotionSpeed()` 里 `jump.OnAir && melee.IsAttacking` → `axis * airSpeed * airAttackControl`（默认 0.75）。
+- **攻击中 S+攻击 立刻接蹲攻击**：`PlayerMelee.Tick()` 里 `SlashPressed && Crouch` → `Cancel()` + `DoCrouchAttack()`，不等蹲下过渡。
+- **蓄力滑停的修正**：真正清零速度的是 `ComputeLocomotionSpeed()` 的 `if (!_caps.CanMove) return 0f;`，所以现在在那里对 `magic.IsBusy` 单独返回 `MoveTowards(vx, 0, BrakeAcceleration * dt)`（`PlayerMagic.BrakeAcceleration` 暴露 `chargeBrake`）；`ApplyFixedVelocity` 里的刹车保留作为 ImmediateOverride 路径。- 未做：墙跳、爬墙/翻越（`Climb`/`LedgeClimb`）、台阶（`Step Up` 0.35s 补间 + `V_Run_Over`）——都需要动画资源，详见报告。
+
+### 10.2 敌人 / 战斗
+- 爪击判定窗口改到 **32~46 帧**（原 39~42），命中更跟手。
+- 束缚：抓中瞬间显式调用 `PlayerBinding.HandleBindingHit(...)`（之前根本没触发，人才会一直跑）；束缚每跳伤害走 `PlayerHealth.TakeBindingDamage()`，**只有束缚会闪屏幕血迹**，普通爪击/飞扑不闪。
+- 挣扎 UI：工程里没有 Spine 版 prefab，`PlayerStruggleUI` 在没有 Spine 时用 UGUI 现场画「黑底 + 红条」；`PlayerBinding` 在 `struggleUIPrefab` 为空时直接 new 一个。
+
+### 10.3 Live2D（对话）
+- RT / 屏幕层方案全部**停用**（`Live2DActor.Start` 里强制 `useScreenLayer=false`、`hideInPlace=false`、`_screenLayer=null`）。原因：这个 SDK 的 URP pass 不看 cullingMask；用 `CubismRenderController.enabled` 做隔离会破坏动作管线（动作 0.09s 就"结束"）；URP 也不回调 `OnPreCull/OnPostRender`。
+- 对话收场回到**移出屏幕**（`hidePosition`），`fadeSeconds`(0.35) 控制淡入淡出。
+- `Live2DCanvasLayer.cs` 保留但不会被创建（死代码，删了会编译不过）。
+- **自动眨眼**：`Live2DActor` 加了 `EnsureEyeBlink()`，运行时补 `CubismEyeBlinkController` + `CubismAutoEyeBlinkInput`（Vivi.prefab 里本来没有）。
+- HUD 待机：`Live2DHudConfig.idleFlavorMotions` 填了 `Face_Smile2 / Face_Smile1`（每 11~22s 随机播一个），不再是单一循环。
+- 血量归零 / 受击的淡出仍是「RawImage alpha + deadTint」，**不要**改 `CubismRenderController.Opacity`。
+
+### 10.4 血条（forest.unity）
+- `HUD/PlayerHealthBar` 已激活；RectTransform 改成 pivot(0,1)、anchors 左上、size(420,90)、anchoredPos(-445,694)（1920×1080 下贴左上角）；还原了两个子物体被写成 0 的 `m_AnchorMax`。
+
+### 10.5 原版逻辑资料（可继续挖）
+- `报告_玩家控制器可搬逻辑.md` —— 玩家 9 个 FSM 职责、事件/动作词表、变量表、P0/P1/P2 清单。
+- `报告数据/_Heroine_FSM_细节.txt` —— 玩家 149 个状态逐条（含参数）。
+- `报告数据/_HeroineFsm.json` —— Beach 场景 234 FSM / 1393 状态原始导出。
+- `报告数据/_Magic_FSM_细节.txt` —— 原版魔法是「Channeling 打断移动 + 技能预制体」+ `Skill/Skills/Skills3/MagicMenu` 技能槽 UI。
+- 重新生成：`powershell -NoProfile -ExecutionPolicy Bypass -File export_hyena_fsm_json.ps1 -Prefab <场景/预制体> -Out <json>`，再用 `报告数据\_extract_*.py` 过滤。
+
+### 10.6 已知未解 / 下一步
+1. 对话立绘「整体淡出无透底」只能改 SDK（`CubismRenderPassFeature` 加按相机过滤），需要 2~3 轮联调。
+2. 技能槽 UI（原版 `Skill*` FSM）未做；`PlayerMagic` 玩法本体已有。
+3. 墙跳 / 爬墙 / 台阶需要动画状态确认后再做。
+4. 近战"卡卡的"如果还有：先看 `PlayerAnimTimings` 的 `Cancelable/Movable` 阈值和 `ForcePlay` 是否打断混合。

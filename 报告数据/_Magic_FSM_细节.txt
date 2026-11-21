@@ -1,0 +1,203 @@
+============================================================
+HOST: Skills   FSM: FSM   start=State 3  states=8
+  GLOBAL Config -> State 3
+  --- State 1
+      actions : SetProperty, uGuiGetSelectedGameObject, GameObjectCompare, SetProperty
+      on      : UGUI / ON POINTER ENTER -> State 5
+      on      : Selected -> State 5
+      params  : 0
+  --- State 5
+      actions : SetProperty, uGuiSetSelectedGameObject, uGuiGetSelectedGameObject, BoolTest
+      on      : UGUI / ON POINTER EXIT -> State 1
+      on      : UGUI / ON CLICK -> State 4
+      on      : NotSelected -> State 1
+      on      : Next -> State 9
+      params  : aa={fileID: 696} | GAME_MENUOK=0
+  --- State 4
+      actions : CallMethod, AnyKey, uGuiNavigationSetMode, SetProperty
+      on      : FINISHED -> State 7
+      params  : KeyConfig | {fileID: 4854} | 1
+  --- State 3
+      actions : CallMethod, NextFrameEvent
+      on      : FINISHED -> State 6
+      params  : KeyConfigGet | {fileID: 4854}
+  --- State 6
+      actions : SetProperty
+      on      : FINISHED -> State 1
+  --- State 7
+      actions : Wait
+      on      : FINISHED -> State 8
+      params  : 0.2
+  --- State 8
+      actions : SendEventByName, SendEvent
+      params  : SetGraphics | 0 | 0
+  --- State 9
+      actions : BoolTest
+      on      : Next -> State 4
+      params  : GAME_MENUOK=0
+============================================================
+HOST: MagicPunchNotAllowed   FSM: FSM   start=State 1  states=4
+  --- State 1
+      actions : SetProperty, NextFrameEvent
+      on      : FINISHED -> State 2
+  --- State 2
+      actions : Wait
+      on      : FINISHED -> State 3
+      params  : Time=3
+  --- State 3
+      actions : EaseColor, SetProperty
+      on      : FINISHED -> State 4
+      params  : 1 | 0 | 0 | 0 | {r: 1, g: 1, b: 1, a: 1} | {r: 1, g: 1, b: 1, a: 0} | Color={r: 0, g: 0, b: 0, a: 1}
+  --- State 4
+      actions : ActivateGameObject
+      params  : 0 | 0
+============================================================
+HOST: Skill2   FSM: FSM   start=State 3  states=8
+  GLOBAL Config -> State 3
+  --- State 1
+      actions : SetProperty, uGuiGetSelectedGameObject, GameObjectCompare, SetProperty
+      on      : UGUI / ON POINTER ENTER -> State 5
+      on      : Selected -> State 5
+      params  : 0
+  --- State 5
+      actions : SetProperty, uGuiSetSelectedGameObject, uGuiGetSelectedGameObject, BoolTest
+      on      : UGUI / ON POINTER EXIT -> State 1
+      on      : UGUI / ON CLICK -> State 4
+      on      : NotSelected -> State 1
+      on      : Next -> State 9
+      params  : aa={fileID: 740} | GAME_MENUOK=0
+  --- State 4
+      actions : CallMethod, AnyKey, SetProperty, uGuiNavigationSetMode, GetInControlDeviceInputAxis, GetInControlDeviceInputAxis, FloatCompare, FloatCompare, GetInControlDeviceInputButtonDown, GetInControlDeviceInputButtonDown, SetProperty
+      on      : FINISHED -> State 7
+      params  : KeyConfig | {fileID: 4854} | 1 | LTrigger=0 | 1 | RTrigger=0 | LTrigger=0 | 0.5 | 0 | RTrigger=0 | 0.5 | 0 | -1 | -1 | -1 | -1 | 1 | 0 | 0
+  --- State 3
+      actions : NextFrameEvent
+      on      : FINISHED -> State 6
+  --- State 6
+      actions : SetProperty
+      on      : FINISHED -> State 1
+  --- State 7
+      actions : Wait, SetProperty
+      on      : FINISHED -> State 8
+      params  : 0.2
+  --- State 8
+      actions : SendEventByName, SendEventByName, SendEvent
+      params  : SetGraphics | SET | 0 | 0 | 0
+  --- State 9
+      actions : BoolTest
+      on      : Next -> State 4
+      params  : GAME_MENUOK=0
+============================================================
+HOST: MagicMenu   FSM: FSM   start=State 1  states=2
+  GLOBAL Close -> State 2
+  --- State 1
+      actions : uGuiGetSelectedGameObject
+  --- State 2
+      actions : ActivateGameObject, uGuiSetSelectedGameObject, ActivateGameObject
+      params  : 1 | 0 | 0 | 0
+============================================================
+HOST: Skills3   FSM: FSM   start=State 3  states=8
+  GLOBAL Config -> State 3
+  --- State 1
+      actions : SetProperty, uGuiGetSelectedGameObject, GameObjectCompare, SetProperty
+      on      : UGUI / ON POINTER ENTER -> State 5
+      on      : Selected -> State 5
+      params  : 0
+  --- State 5
+      actions : SetProperty, uGuiSetSelectedGameObject, uGuiGetSelectedGameObject, BoolTest
+      on      : UGUI / ON POINTER EXIT -> State 1
+      on      : UGUI / ON CLICK -> State 4
+      on      : NotSelected -> State 1
+      on      : Next -> State 9
+      params  : aa={fileID: 1054} | GAME_MENUOK=0
+  --- State 4
+      actions : CallMethod, AnyKey, SetProperty, uGuiNavigationSetMode, GetInControlDeviceInputAxis, GetInControlDeviceInputAxis, FloatCompare, FloatCompare, GetInControlDeviceInputButtonDown, GetInControlDeviceInputButtonDown, SetProperty
+      on      : FINISHED -> State 7
+      params  : KeyConfig | {fileID: 4854} | 1 | LTrigger=0 | 1 | RTrigger=0 | LTrigger=0 | 0.5 | 0 | RTrigger=0 | 0.5 | 0 | -1 | -1 | -1 | -1 | 1 | 0 | 0
+  --- State 3
+      actions : NextFrameEvent
+      on      : FINISHED -> State 6
+  --- State 6
+      actions : SetProperty
+      on      : FINISHED -> State 1
+  --- State 7
+      actions : Wait, SetProperty
+      on      : FINISHED -> State 8
+      params  : 0.2
+  --- State 8
+      actions : SendEventByName, SendEventByName, SendEvent
+      params  : SetGraphics | SET | 0 | 0 | 0
+  --- State 9
+      actions : BoolTest
+      on      : Next -> State 4
+      params  : GAME_MENUOK=0
+============================================================
+HOST: Skill   FSM: FSM   start=State 3  states=8
+  GLOBAL Config -> State 3
+  --- State 1
+      actions : SetProperty, uGuiGetSelectedGameObject, GameObjectCompare, SetProperty
+      on      : UGUI / ON POINTER ENTER -> State 5
+      on      : Selected -> State 5
+      params  : 0
+  --- State 5
+      actions : SetProperty, uGuiSetSelectedGameObject, uGuiGetSelectedGameObject, BoolTest
+      on      : UGUI / ON POINTER EXIT -> State 1
+      on      : UGUI / ON CLICK -> State 4
+      on      : NotSelected -> State 1
+      on      : Next -> State 9
+      params  : aa={fileID: 1019} | GAME_MENUOK=0
+  --- State 4
+      actions : CallMethod, AnyKey, SetProperty, uGuiNavigationSetMode, GetInControlDeviceInputAxis, GetInControlDeviceInputAxis, FloatCompare, FloatCompare, GetInControlDeviceInputButtonDown, GetInControlDeviceInputButtonDown, SetProperty
+      on      : FINISHED -> State 7
+      params  : KeyConfig | {fileID: 4854} | 1 | LTrigger=0 | 1 | RTrigger=0 | LTrigger=0 | 0.5 | 0 | RTrigger=0 | 0.5 | 0 | -1 | -1 | -1 | -1 | 1 | 0 | 0
+  --- State 3
+      actions : NextFrameEvent
+      on      : FINISHED -> State 6
+  --- State 6
+      actions : SetProperty
+      on      : FINISHED -> State 1
+  --- State 7
+      actions : Wait, SetProperty
+      on      : FINISHED -> State 8
+      params  : 0.2
+  --- State 8
+      actions : SendEventByName, SendEventByName, SendEvent
+      params  : SetGraphics | SET | 0 | 0 | 0
+  --- State 9
+      actions : BoolTest
+      on      : Next -> State 4
+      params  : GAME_MENUOK=0
+============================================================
+HOST: MagicSetUI   FSM: FSM   start=State 3  states=4
+  GLOBAL Default -> State 3
+  GLOBAL Opened -> State 4
+  --- State 1
+      actions : SetBoolValue, GetParent, GameObjectIsNull, ActivateGameObject
+      on      : SendClose -> State 2
+      params  : GAME_MENUBACK=0 | 0 | 0 | 0 | 0
+  --- State 2
+      actions : SendEventByName
+      params  : Close | 0
+  --- State 3
+      actions : BoolTest
+      on      : Next -> State 1
+      params  : GAME_MENUBACK=0
+  --- State 4
+      actions : 
+============================================================
+HOST: ChangeSkillsButton   FSM: FSM   start=State 1  states=3
+  --- State 1
+      actions : SetProperty, uGuiGetSelectedGameObject, GameObjectCompare, SetProperty
+      on      : UGUI / ON POINTER ENTER -> State 5
+      on      : Selected -> State 5
+      params  : 0
+  --- State 5
+      actions : SetProperty, uGuiSetSelectedGameObject, uGuiGetSelectedGameObject, BoolTest
+      on      : UGUI / ON POINTER EXIT -> State 1
+      on      : UGUI / ON CLICK -> State 4
+      on      : NotSelected -> State 1
+      on      : Next -> State 4
+      params  : aa={fileID: 1100} | GAME_MENUOK=0
+  --- State 4
+      actions : SetBoolValue, SetProperty, ActivateGameObject, ActivateGameObject
+      params  : GAME_MENUOK=0 | 0 | 0 | 0 | 1 | 0

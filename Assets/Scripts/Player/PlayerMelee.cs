@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using System.Collections.Generic;
 
 #if UNITY_EDITOR
@@ -153,6 +154,18 @@ namespace Player
         private float _movableAt;
         private float _sheathEndAt;
         private float _overrideVx;
+        [Tooltip("挥砍前冲的加速度（大 = 更冲，小 = 更黏）")]
+        [SerializeField] private float meleeLungeAccel = 1400f;
+        [Header("第三段残影")]
+        [Tooltip("两张残影之间的间隔（秒）")]
+        [SerializeField] private float afterimageInterval = 0.06f;
+        [Tooltip("单张残影存活时间（秒）")]
+        [SerializeField] private float afterimageLifetime = 0.24f;
+        [Tooltip("起手后持续生成残影多久（秒）")]
+        [SerializeField] private float afterimageWindow = 0.32f;
+
+        [Tooltip("挥砍起手带的前冲速度（原作挥砍不是原地急停；0 = 关掉）")]
+        [SerializeField] private float attackForwardDrift = 3f;
         private bool _hasOverrideVx;
         private string _activeState;
         /// <summary>Attack2 在动画事件 E_Katana3 @ 0.3167s 再发第二道斩击。</summary>
@@ -549,6 +562,15 @@ namespace Player
 
             if (_phase != PlayerMeleePhase.Idle)
             {
+                // 攻击中「S + 攻击」：立刻接蹲攻击，不等角色先蹲好
+                if (intent.SlashPressed && intent.Crouch && _ctx.IsGrounded && !_ctx.OnAir
+                    && !_isCrouchAttack && _phase != PlayerMeleePhase.WindupLocked)
+                {
+                    Cancel();
+                    DoCrouchAttack();
+                    return;
+                }
+
                 TickActiveAttack(intent, !canMelee);
                 return;
             }
@@ -632,7 +654,10 @@ namespace Player
             }
             if (_hasOverrideVx)
             {
-                _motor.SetImmediateVelocityX(_overrideVx);
+                // 冲刺/挥砍的前冲速度用加速度逼近，而不是一帧跳变（手感更顺）
+                var vx = _motor.GetVelocity().x;
+                var step = meleeLungeAccel * _motor.FixedDeltaTime;
+                _motor.SetImmediateVelocityX(Mathf.MoveTowards(vx, _overrideVx, step));
             }
         }
 
@@ -658,6 +683,7 @@ namespace Player
         private void TickActiveAttack(PlayerIntent intent, bool gunBusy)
         {
             float dt = _motor.DeltaTime;
+            // 残影：实验性实现已停用（Spine 克隆/材质覆盖都不成立），改用原版剪影 overlay。
             if (_isDashing)
             {
                 TickDash(intent, dt);
@@ -1011,8 +1037,7 @@ namespace Player
             _hasOverrideVx = true;
             _phase = PlayerMeleePhase.WindupLocked;
         }
-        private void BeginAttack(string state, float attackableAt, float cancelableAt,
-            float movableAt, float sheathEndAt, int combo)
+        private void BeginAttack(string state, float attackableAt, float cancelableAt,            float movableAt, float sheathEndAt, int combo)
         {
             DisableAllColliders();
             _phase = PlayerMeleePhase.WindupLocked;
@@ -1025,13 +1050,81 @@ namespace Player
             _activeState = state;
             _sheathEndAt = Mathf.Max(sheathEndAt, _movableAt);
             _anim.ForcePlay(state);
-            // 清掉任何到来的跑步/滑铲动量，以免打击带着横向惯性。
-            _overrideVx = 0f;
+
+            // 原版挥砍会带着一点前冲，不是原地急停（原来这里是直接 SetImmediateVelocityX(0)）
+            _overrideVx = _motor != null ? _motor.Facing * attackForwardDrift : 0f;
             _hasOverrideVx = true;
-            _motor.SetImmediateVelocityX(0f);
+
+            if (combo >= 3)
+            {
+                FlashThirdHitSilhouette();
+            }
 
             // ★ 新攻击开始 — 清空连招预输入缓冲，避免上一段的残留输入误触发衔接。
             _comboInputBuffered = false;
+        }
+
+        private PlayerEvade _evade;
+        [Header("第三段运动模糊（残影）")]
+        [Tooltip("第三段挥砍时的最大运动模糊强度")]
+        [SerializeField] private float motionBlurIntensity = 0.85f;
+
+        private Volume _mbVolume;
+        private UnityEngine.Rendering.Universal.MotionBlur _mb;
+
+        /// <summary>第三段的运动模糊（0 = 关）。首次调用时创建全局 Volume。</summary>
+        private void SetComboMotionBlur(float intensity)
+        {
+            if (_mb == null && intensity <= 0.001f) return;
+
+            if (_mb == null)
+            {
+                var go = new GameObject("ThirdHitMotionBlur");
+                go.transform.SetParent(transform, false);
+
+                _mbVolume = go.AddComponent<Volume>();
+                _mbVolume.isGlobal = true;
+                _mbVolume.priority = 100f;
+                _mbVolume.weight = 1f;
+
+                var profile = ScriptableObject.CreateInstance<VolumeProfile>();
+                _mb = profile.Add<UnityEngine.Rendering.Universal.MotionBlur>(true);
+                _mb.active = true;
+                _mb.mode.Override(UnityEngine.Rendering.Universal.MotionBlurMode.CameraAndObjects);
+                _mb.quality.Override(UnityEngine.Rendering.Universal.MotionBlurQuality.Medium);
+                _mb.intensity.Override(0f);
+                _mbVolume.sharedProfile = profile;
+            }
+
+            _mb.intensity.Override(Mathf.Clamp(intensity, 0f, 1f));
+        }
+        private float _afterimageTimer;
+
+        /// <summary>第三段挥砍：连续生成残影（原版是拖影，不是闪一下）。</summary>
+        private void SpawnAfterimage()
+        {
+            if (_evade == null && _motor != null) _evade = _motor.GetComponent<PlayerEvade>();
+            if (_evade == null) _evade = Object.FindObjectOfType<PlayerEvade>();
+            if (_evade != null) _evade.SpawnAfterimage(afterimageLifetime);
+        }
+
+        /// <summary>第三段挥砍的剪影（原作 Attack3 和完美闪避同款轮廓，材质 Assets/Material/PlayerSilhouette.mat）。</summary>
+        private void FlashThirdHitSilhouette()
+        {
+            if (_evade == null && _motor != null)
+            {
+                _evade = _motor.GetComponent<PlayerEvade>();
+            }
+
+            if (_evade == null)
+            {
+                _evade = Object.FindObjectOfType<PlayerEvade>();
+            }
+
+            if (_evade != null)
+            {
+                _evade.FlashSilhouette(0.28f);
+            }
         }
 
         private void EndAttack()

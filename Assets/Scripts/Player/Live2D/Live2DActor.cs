@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Live2D.Cubism.Framework;
 using UnityEngine;
 using Live2D.Cubism.Framework.Expression;
 using Live2D.Cubism.Framework.Motion;
@@ -160,9 +161,11 @@ public class Live2DActor : MonoBehaviour
             if (renderer != null && manageTransformAndFade) renderer.Opacity = 1f;
         }
 
+        // 模型里没有自动眨眼组件 → 补上（原版立绘会眨眼，否则待机很"死"）
         SetMultiplyColor(Color.white);
+        EnsureEyeBlink();
 
-        // 旧行为（移出屏幕收场）强制生效：prefab 里存了 hideInPlace: 1 也不管用。
+        // 回到稳定状态：世界空间直接渲染 + 移出屏幕收场（这部分已验证能正常显示）
         hideInPlace = false;
         useScreenLayer = false;
         _screenLayer = null;
@@ -178,6 +181,19 @@ public class Live2DActor : MonoBehaviour
         if (debugMotion && motion != null) motion.AnimationEndHandler += DebugOnAnimationEnd;
 
         if (!string.IsNullOrEmpty(_idleClipName)) Invoke(nameof(PlayIdleDelay), 0.1f);
+    }
+
+    private void EnsureEyeBlink()
+    {
+        if (GetComponent<CubismEyeBlinkController>() == null)
+        {
+            gameObject.AddComponent<CubismEyeBlinkController>();
+        }
+
+        if (GetComponent<CubismAutoEyeBlinkInput>() == null)
+        {
+            gameObject.AddComponent<CubismAutoEyeBlinkInput>();
+        }
     }
 
     void OnDestroy()
@@ -270,8 +286,18 @@ public class Live2DActor : MonoBehaviour
 
         float fadeStep = Time.deltaTime / Mathf.Max(0.01f, fadeSeconds);
 
-        _fadeT = Mathf.MoveTowards(_fadeT, targetAlpha, fadeStep);
-        renderer.Opacity = _fadeT;
+        if (_screenLayer != null)
+        {
+            // 屏幕层：整张 RawImage 一起淡，逐 drawable 的透明度问题不存在
+            _screenAlpha = Mathf.MoveTowards(_screenAlpha, targetAlpha, fadeStep);
+            _screenLayer.Alpha = _screenAlpha;
+            renderer.Opacity = 1f;
+        }
+        else
+        {
+            _fadeT = Mathf.MoveTowards(_fadeT, targetAlpha, fadeStep);
+            renderer.Opacity = _fadeT;
+        }
 
         Color currentColor = cubismRenderers.Length > 0 ? cubismRenderers[0].MultiplyColor : Color.white;
         if (currentColor != targetColor)

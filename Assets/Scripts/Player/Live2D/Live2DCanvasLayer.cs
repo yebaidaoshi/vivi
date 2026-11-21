@@ -1,37 +1,33 @@
-using System.Collections.Generic;
-using Live2D.Cubism.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>
-/// 对话用 Live2D 的"屏幕层"：把角色渲染到 RenderTexture，再用一张全屏 RawImage 贴回屏幕。
-/// 淡入淡出作用在整张图的 alpha 上，不会出现 Cubism 逐 drawable 透明导致的"重叠部位透底"。
+/// 对话用 Live2D 的"屏幕层"：把角色搬到很远的地方（主相机远裁剪面之外，主相机看不见它），
+/// 再用一台专用相机把它渲染到 RenderTexture，最后用一张全屏 RawImage 贴回屏幕。
 ///
-/// 隔离：这个 SDK 的 Cubism 渲染 pass 不按相机 cullingMask 过滤模型，所以每台 RT 相机都会
-/// 把所有 L2D 角色画进去。这里在每台 RT 相机的 OnPreCull 里临时关掉"其它角色"的
-/// CubismRenderController，OnPostRender 再恢复 —— 动画更新在 LateUpdate 已经跑完，不受影响。
+/// 好处：
+///  - 淡入淡出作用在整张 RawImage 的 alpha 上 → 整体一起淡，没有 Cubism 逐 drawable 的"重叠透底"
+///  - 不用关 CubismRenderController（那会破坏动作/参数更新）
+///  - 不依赖相机的 cullingMask（这个 SDK 的 URP pass 本来就不看它）
+///  - 每个角色自己的远端舞台相隔 10000，彼此相机看不到对方（被投影裁掉）
 /// </summary>
 public class Live2DCanvasLayer : MonoBehaviour
 {
-    private const string HudLayerName = "L2D";
+    private const float StageSpacing = 10000f;
+    private static int _nextStageIndex;
 
     [Tooltip("UI 排序层：比对话 UI 小一点，保证立绘在对话框下面")]
     public int canvasSortingOrder = -1;
-
-    private static readonly List<Live2DCanvasLayer> All = new List<Live2DCanvasLayer>();
 
     private Camera _renderCamera;
     private Camera _sourceCamera;
     private RenderTexture _rt;
     private RawImage _image;
-    private CubismRenderController _modelController;
+    private Vector3 _stageCenter;
+    private Vector3 _originalCameraOffset;
     private int _rtW;
     private int _rtH;
-    private int _layer = -1;
-    private int _savedCullingMask;
-    private bool _maskSaved;
 
     /// <summary>整层透明度（0~1）。</summary>
     public float Alpha
@@ -46,79 +42,31 @@ public class Live2DCanvasLayer : MonoBehaviour
         }
     }
 
-    /// <summary>给某个对话角色挂一层屏幕层。sourceCamera 一般是 Camera.main（对话用的那台相机）。</summary>
-    public static Live2DCanvasLayer Attach(GameObject modelRoot, Camera sourceCamera)
+    /// <summary>给某个对话角色挂一层屏幕层。sourceCamera 一般是 Camera.main；worldDisplayPosition 是角色"本该出现"的世界位置。</summary>
+    public static Live2DCanvasLayer Attach(GameObject modelRoot, Camera sourceCamera, Vector3 worldDisplayPosition)
     {
         if (modelRoot == null) return null;
 
         var go = new GameObject("[Live2D Screen Layer]");
         var layer = go.AddComponent<Live2DCanvasLayer>();
-        layer.Build(modelRoot, sourceCamera);
+        layer.Build(modelRoot, sourceCamera, worldDisplayPosition);
         return layer;
     }
 
-    private void OnEnable()
-    {
-        if (!All.Contains(this)) All.Add(this);
-    }
-
-    private void OnDisable()
-    {
-        All.Remove(this);
-    }
-
-    /// <summary>只让"自己"这一层参与渲染（其它层临时关掉）。</summary>
-    internal void SetRendering(bool on)
-    {
-        if (_modelController != null) _modelController.enabled = on;
-    }
-
-    /// <summary>只让 owner 这一层参与渲染（其它层关掉）。</summary>
-    internal static void PrepareForOwner(Live2DCanvasLayer owner)
-    {
-        for (var i = 0; i < All.Count; i++)
-        {
-            var layer = All[i];
-
-            if (layer != null) layer.SetRendering(layer == owner);
-        }
-    }
-
-    /// <summary>所有屏幕层角色都不参与渲染（主相机渲染时用）。</summary>
-    internal static void HideAll()
-    {
-        for (var i = 0; i < All.Count; i++)
-        {
-            if (All[i] != null) All[i].SetRendering(false);
-        }
-    }
-
-    private void Build(GameObject modelRoot, Camera sourceCamera)
+    private void Build(GameObject modelRoot, Camera sourceCamera, Vector3 worldDisplayPosition)
     {
         _sourceCamera = sourceCamera;
-        _modelController = modelRoot.GetComponent<CubismRenderController>();
 
-        // 默认关掉：主相机的 Cubism pass 不看 cullingMask，只有关掉 controller 才能不让主相机画到它。
-        // 具体哪台相机能画，由 Live2DCameraIsolation 的 OnPreCull/OnPostRender 控制。
-        if (_modelController != null) _modelController.enabled = false;
+        // 1) 角色搬到远端舞台（保持世界朝向/缩放），并脱离原父物体，避免对话移动影响它
+        var stageIndex = _nextStageIndex++;
+        _stageCenter = new Vector3(StageSpacing * (stageIndex + 1), 0f, 0f);
 
-        // 1) 模型换到 L2D 层，并从主相机里排除掉（由本层的相机单独渲染）
-        _layer = LayerMask.NameToLayer(HudLayerName);
+        _originalCameraOffset = sourceCamera != null
+            ? worldDisplayPosition - sourceCamera.transform.position
+            : Vector3.zero;
 
-        if (_layer < 0)
-        {
-            _layer = 0;
-            Debug.LogWarning($"[Live2D] 找不到层 \"{HudLayerName}\"，对话立绘的屏幕层会渲染 Default 层。");
-        }
-
-        SetLayerRecursively(modelRoot, _layer);
-
-        if (_sourceCamera != null && _layer > 0)
-        {
-            _savedCullingMask = _sourceCamera.cullingMask;
-            _sourceCamera.cullingMask = _savedCullingMask & ~(1 << _layer);
-            _maskSaved = true;
-        }
+        modelRoot.transform.SetParent(transform, true);
+        modelRoot.transform.position = _stageCenter;
 
         // 2) 全屏 RawImage
         var canvasGo = new GameObject("Canvas", typeof(RectTransform));
@@ -140,7 +88,7 @@ public class Live2DCanvasLayer : MonoBehaviour
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
 
-        // 3) 渲染相机（只画 L2D 层，背景透明）
+        // 3) 渲染相机：用主相机的参数，但站在远端舞台对应位置 —— 画面里角色的屏幕位置跟对话相机一致
         var camGo = new GameObject("Camera", typeof(Camera));
         camGo.transform.SetParent(transform, false);
 
@@ -148,7 +96,7 @@ public class Live2DCanvasLayer : MonoBehaviour
         _renderCamera.orthographic = true;
         _renderCamera.clearFlags = CameraClearFlags.SolidColor;
         _renderCamera.backgroundColor = new Color(0f, 0f, 0f, 0f);
-        _renderCamera.cullingMask = 1 << _layer;
+        _renderCamera.cullingMask = ~0;
         _renderCamera.allowHDR = false;
         _renderCamera.allowMSAA = false;
         _renderCamera.useOcclusionCulling = false;
@@ -159,11 +107,6 @@ public class Live2DCanvasLayer : MonoBehaviour
         data.renderPostProcessing = false;
         data.antialiasing = AntialiasingMode.None;
         data.SetRenderer(1);
-
-        // 隔离：这台相机渲染时，别的角色先关掉
-        var isolation = camGo.AddComponent<Live2DCameraIsolation>();
-        isolation.Owner = this;
-        isolation.TargetCamera = _renderCamera;
 
         EnsureRenderTexture(Mathf.Max(Screen.width, 128), Mathf.Max(Screen.height, 128));
         CopyCameraSettings();
@@ -177,18 +120,26 @@ public class Live2DCanvasLayer : MonoBehaviour
 
     private void CopyCameraSettings()
     {
-        if (_renderCamera == null || _sourceCamera == null) return;
+        if (_renderCamera == null) return;
 
-        _renderCamera.transform.SetPositionAndRotation(
-            _sourceCamera.transform.position,
-            _sourceCamera.transform.rotation);
+        if (_sourceCamera != null)
+        {
+            _renderCamera.transform.SetPositionAndRotation(
+                _stageCenter - _originalCameraOffset,
+                _sourceCamera.transform.rotation);
 
-        _renderCamera.orthographic = _sourceCamera.orthographic;
-        _renderCamera.orthographicSize = _sourceCamera.orthographicSize;
-        _renderCamera.fieldOfView = _sourceCamera.fieldOfView;
-        _renderCamera.nearClipPlane = _sourceCamera.nearClipPlane;
-        _renderCamera.farClipPlane = _sourceCamera.farClipPlane;
-        _renderCamera.rect = _sourceCamera.rect;
+            _renderCamera.orthographic = _sourceCamera.orthographic;
+            _renderCamera.orthographicSize = _sourceCamera.orthographicSize;
+            _renderCamera.fieldOfView = _sourceCamera.fieldOfView;
+            _renderCamera.nearClipPlane = _sourceCamera.nearClipPlane;
+            _renderCamera.farClipPlane = _sourceCamera.farClipPlane;
+            _renderCamera.rect = _sourceCamera.rect;
+        }
+        else
+        {
+            _renderCamera.transform.SetPositionAndRotation(_stageCenter - Vector3.forward * 10f, Quaternion.identity);
+            _renderCamera.orthographicSize = 10f;
+        }
     }
 
     private void EnsureRenderTexture(int width, int height)
@@ -220,25 +171,8 @@ public class Live2DCanvasLayer : MonoBehaviour
         if (_image != null) _image.texture = _rt;
     }
 
-    private static void SetLayerRecursively(GameObject go, int layer)
-    {
-        go.layer = layer;
-
-        foreach (Transform child in go.transform)
-        {
-            SetLayerRecursively(child.gameObject, layer);
-        }
-    }
-
     private void OnDestroy()
     {
-        if (_modelController != null) _modelController.enabled = true;
-
-        if (_maskSaved && _sourceCamera != null)
-        {
-            _sourceCamera.cullingMask = _savedCullingMask;
-        }
-
         if (_renderCamera != null) _renderCamera.targetTexture = null;
 
         if (_rt != null)
@@ -246,49 +180,6 @@ public class Live2DCanvasLayer : MonoBehaviour
             _rt.Release();
             Destroy(_rt);
             _rt = null;
-        }
-    }
-}
-
-/// <summary>
-/// 挂在屏幕层的 RT 相机上：URP 不会回调 OnPreCull/OnPostRender，
-/// 所以这里用 RenderPipelineManager.beginCameraRendering / endCameraRendering 来切换渲染权。
-/// </summary>
-public sealed class Live2DCameraIsolation : MonoBehaviour
-{
-    public Live2DCanvasLayer Owner;
-    public Camera TargetCamera;
-
-    private void OnEnable()
-    {
-        RenderPipelineManager.beginCameraRendering += OnBeginCamera;
-        RenderPipelineManager.endCameraRendering += OnEndCamera;
-    }
-
-    private void OnDisable()
-    {
-        RenderPipelineManager.beginCameraRendering -= OnBeginCamera;
-        RenderPipelineManager.endCameraRendering -= OnEndCamera;
-    }
-
-    private void OnBeginCamera(ScriptableRenderContext context, Camera cam)
-    {
-        if (cam == TargetCamera)
-        {
-            Live2DCanvasLayer.PrepareForOwner(Owner);
-        }
-        else
-        {
-            // 其它相机（主相机等）渲染时，对话立绘一个都不许被 pass 画出来
-            Live2DCanvasLayer.HideAll();
-        }
-    }
-
-    private void OnEndCamera(ScriptableRenderContext context, Camera cam)
-    {
-        if (cam == TargetCamera)
-        {
-            Live2DCanvasLayer.HideAll();
         }
     }
 }

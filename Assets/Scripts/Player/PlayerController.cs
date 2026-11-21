@@ -11,6 +11,8 @@ namespace Player
         [SerializeField] private PlayerInputReader inputReader;
         [SerializeField] private PlayerMotor motor;
         [SerializeField] private PlayerJump jump;
+        [Tooltip("跳跃攻击时的空中移动系数（1 = 正常空中速度）")]
+        [SerializeField] private float airAttackControl = 0.75f;
         [SerializeField] private PlayerCrouch crouch;
         [SerializeField] private PlayerMelee melee;
         [SerializeField] private PlayerGun gun;
@@ -32,6 +34,7 @@ namespace Player
         private bool _initialized = false;
         private PlayerContext _ctx;
         private PlayerLocomotion _loco;
+        private readonly PlayerWall wall = new PlayerWall();
         private PlayerCapabilities _caps;
 
         public PlayerIntent Intent => inputReader != null ? inputReader.Intent : default;
@@ -98,6 +101,7 @@ namespace Player
             _ctx.NotifyJumpAttack = jump.NotifyJumpAttack;
 
             jump.Init(_ctx);
+        wall.Init(_ctx);
             crouch.Init(_ctx);
             melee.Init(_ctx);
             gun.Init(_ctx);
@@ -200,6 +204,10 @@ namespace Player
             jump.Tick(jumpIntent, _caps.JumpLocked, actionOwnsAnim: magic.IsBusy);
             ResolveCaps();
 
+            // 墙面系统：空中贴墙下落限速（原版 WallStop / WallCheck2）
+            wall.Tick(intent, jump.OnAir, !_caps.JumpLocked);
+            ResolveCaps();
+
             melee.Tick(intent, _caps.CanMelee);
             ResolveCaps();
 
@@ -280,6 +288,12 @@ namespace Player
 
             if (_caps.VelocityOwner == PlayerVelocityOwner.ImmediateOverride)
             {
+                // 跳跃攻击：ImmediateOverride 这条路上没人写 vx，这里补上空中移动
+                if (jump.OnAir && melee.IsAttacking && !melee.HasVelocityOverride && !jump.HasVelocityOverride)
+                {
+                    motor.SetImmediateVelocityX(intent.Move * motor.Settings.airSpeed * airAttackControl);
+                }
+
                 if (jump.HasVelocityOverride) jump.ApplyFixedVelocity();
                 else if (backStep.HasVelocityOverride) backStep.ApplyFixedVelocity();
                 else if (magic.HasVelocityOverride) magic.ApplyFixedVelocity();
@@ -345,6 +359,19 @@ namespace Player
 
         private float ComputeLocomotionSpeed(float axis)
         {
+            // 蓄力（Shift）滑停：不直接定住，按减速度从当前速度刹到 0
+            if (magic.IsBusy && !crouch.IsSliding && !jump.OnAir)
+            {
+                var vx = motor.GetVelocity().x;
+                return Mathf.MoveTowards(vx, 0f, magic.BrakeAcceleration * motor.FixedDeltaTime);
+            }
+
+            // 跳跃攻击中保留空中控制（原作可以在空中移动）
+            if (jump.OnAir && melee.IsAttacking)
+            {
+                return axis * motor.Settings.airSpeed * airAttackControl;
+            }
+
             if (!_caps.CanMove) return 0f;
 
             if (!crouch.IsCrouching)
